@@ -1,9 +1,7 @@
-import json
 from dataclasses import dataclass, field
 from typing import List, Any, Dict
 
 from .message import Message
-from .message_update import MessageUpdate
 
 from .elements.pipeline_element import PipelineElement
 from .elements.send_prompt_element import SendPromptElement
