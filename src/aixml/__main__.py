@@ -4,6 +4,9 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 from .modes.chainplate_workflow import ChainplateWorkflow
 from .core import AIXMLCore  # your library function
+from .message import Message
+
+# TODO: Move most of this out of the __main__ file and into core.py or similar.
 
 def _read_text(path: Path | None, encoding: str) -> str:
     if path is None:
@@ -75,7 +78,9 @@ def main(argv: list[str] | None = None) -> int:
     elif(args.workflow):
         payload = args.payload if args.payload else ""
         workflow = ChainplateWorkflow(xml_string = _read_text(args.workflow, args.encoding))
-        workflow.run(payload)
+        message = Message()
+        message.set_payload(payload)
+        workflow.run(message)
         return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly

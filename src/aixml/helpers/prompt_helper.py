@@ -50,15 +50,12 @@ def chat(conversation_history: list) -> list:
     else:
         raise ValueError(f"Unsupported client: {CLIENT_NAME}")
 
-@staticmethod
 def create_message(role: str, content: str) -> dict:
     return {"role": role, "content": content}
 
-@staticmethod
 def create_user_message(content: str) -> dict:
     return create_message("user", content)
 
-@staticmethod
 def create_assistant_message(content: str) -> dict:
     return create_message("assistant", content)
 
