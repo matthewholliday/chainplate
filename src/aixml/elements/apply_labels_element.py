@@ -1,4 +1,3 @@
-from ..helpers.template_helper import TemplateHelper
 from .interpret_as_base_element import InterpretAsBase
 
 TEMPLATE_TEXT = """
@@ -26,7 +25,7 @@ TEMPLATE_TEXT = """
     ## Now output the result:
 """
 
-class ClassifyExclusive(InterpretAsBase):
+class ApplyLabelsElement(InterpretAsBase):
     def __init__(self, name, output_var, input_var, categories, criteria):
         super().__init__(name, output_var, input_var)
         self.categories = categories
