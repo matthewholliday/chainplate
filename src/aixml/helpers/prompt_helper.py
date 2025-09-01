@@ -28,10 +28,19 @@ def ask(prompt: str) -> str:
     else:
         raise ValueError(f"Unsupported client: {CLIENT_NAME}")
     
-def ask_with_context(prompt: str, context: str) -> str:
+def ask_with_context(prompt: str, context: str, chat_history: list) -> str:
     if context:
         prompt = f"{context}\n\n{prompt}"
-    return ask(prompt)
+    if(CLIENT_NAME == "openai"):
+
+        #append the latest user message to the chat history
+        messages = chat_history + [{"role": "user", "content": prompt}]
+        
+        resp = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=messages
+        )
+    return resp.choices[0].message.content
 
 def chat(conversation_history: list) -> list:
     if(CLIENT_NAME == "openai"):
