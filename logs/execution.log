@@ -1,4 +1,4 @@
-[2025-09-01 14:33:22]
+[2025-09-01 15:12:46]
 [SET-VARIABLE]
 NAME: 
  __payload__
@@ -7,40 +7,31 @@ VALUE:
  
 ===============END LOG ENTRY================
 
-[2025-09-01 14:33:22]
+[2025-09-01 15:12:46]
 [PIPELINE START]
-for loop testing
+Send Prompt Example
 ===============END LOG ENTRY================
 
-[2025-09-01 14:33:22]
+[2025-09-01 15:12:53]
 [SET-VARIABLE]
 NAME: 
- my_prompt
+ response
 
 VALUE: 
- This is a prompt.
+ Paris—the croissant-powered HQ of France where the Eiffel Tower does jazz hands and baguettes vote on fashion.
 ===============END LOG ENTRY================
 
-[2025-09-01 14:33:22]
+[2025-09-01 15:12:53]
 [SET-VARIABLE]
 NAME: 
- index
+ __payload__
 
 VALUE: 
- 2
+ What is the capital of France?
 ===============END LOG ENTRY================
 
-[2025-09-01 14:33:22]
-[SET-VARIABLE]
-NAME: 
- index
-
-VALUE: 
- 3
-===============END LOG ENTRY================
-
-[2025-09-01 14:33:22]
+[2025-09-01 15:12:53]
 [PIPELINE END]
-for loop testing
+Send Prompt Example
 ===============END LOG ENTRY================
 

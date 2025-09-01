@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
-
+from .modes.pipeline import PipelineMode
 from .core import AIXMLCore  # your library function
 from .tree import TreeNode
 
@@ -38,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-q", "--quiet", action="store_true", help="Suppress non-error messages")
     p.add_argument("--payload", type=str, help="Payload to pass into the execution")
     p.add_argument("--chat",type=Path, help="Run in chat mode with the given XML file")
+    p.add_argument("--pipeline", type=Path, help="TODO")
 
     args = p.parse_args(argv)
     
@@ -71,6 +72,11 @@ def main(argv: list[str] | None = None) -> int:
         payload = args.payload if args.payload else ""
         xml_string = _read_text(args.execute, args.encoding)
         AIXMLCore.run_pipeline_mode(xml_string,payload)
+        return 0
+    elif(args.pipeline):
+        payload = args.payload if args.payload else ""
+        pipeline = PipelineMode(xml_string = _read_text(args.pipeline, args.encoding))
+        pipeline.run(payload)
         return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly

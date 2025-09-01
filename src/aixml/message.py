@@ -5,6 +5,7 @@ import os
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
+CHAT_HISTORY_KEY = "__chat_history__"
 
 class Message:
     def __init__(self):
@@ -126,4 +127,14 @@ class Message:
     def prompt_chat(self) -> list:
         self.conversation_history = prompt_chat(self.conversation_history)
         return self
+    
+    def set_chat_history(self, history: list):
+        self.conversation_history = history
+        return self
+    
+    def get_chat_history(self) -> list:
+        return self.conversation_history
+    
+    def get_payload(self) -> str:
+        return self.get_var(PAYLOAD_KEY)
 
