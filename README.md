@@ -1,5 +1,5 @@
 
-# AIXML: AI-Driven XML Workflow Language
+# Chainplate: AI Workflow Markup Language
 
 AIXML is an XML-based language for interacting with AI models, allowing users to define structured prompts and workflows. It is designed for rapid prototyping of AI flows and agents, providing a flexible way to orchestrate LLM calls, variable management, and conditional logic in a readable XML format.
 
