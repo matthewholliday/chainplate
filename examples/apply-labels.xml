@@ -1,0 +1,10 @@
+<pipeline name="Apply labels example.">
+    <apply-labels 
+        name="apply_labels"
+        input_var="__payload__"
+        output_var="labels_result"
+        criteria="apply any label that fits"
+        labels="US President, British Monarch, Soviet Premier, French President">
+    </apply-labels>
+    <debug name="debug">Labels: {{labels_result}}</debug>
+</pipeline>

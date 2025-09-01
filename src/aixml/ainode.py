@@ -101,14 +101,14 @@ class AiNode:
                 name=attributes.get("name", "Debug Element"),
                 content=content or "Debug Message"
             )
-        elif tag == "classify-exclusive": #TODO - rename
+        elif tag == "apply-labels": #TODO - rename
             from .elements.classify_exclusive import ClassifyExclusive
             return ClassifyExclusive(
                 name=attributes.get("name", "Unnamed ClassifyExclusive"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input"),
-                categories=attributes.get("categories", ""),
-                criteria=attributes.get("categories", "")
+                categories=attributes.get("labels", ""),
+                criteria = attributes.get("criteria", "")
             )
         elif tag == "while-loop":
             element = WhileLoopElement(
