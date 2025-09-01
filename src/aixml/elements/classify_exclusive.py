@@ -1,5 +1,5 @@
 from ..helpers.template_helper import TemplateHelper
-from .interpret_as_base import InterpretAsBase
+from .interpret_as_base_element import InterpretAsBase
 
 TEMPLATE_TEXT = """
     You are a meticulous, pragmatic classifier.
@@ -39,4 +39,4 @@ class ClassifyExclusive(InterpretAsBase):
         return [c.strip() for c in self.categories.split(",") if c.strip()]
     
     def get_template_context(self):
-        return { "input_text": self.input_value, "categories": self.get_categories_as_list(), "criteria": self.criteria }
+        return { "input_text": self.get_input_value(), "categories": self.get_categories_as_list(), "criteria": self.criteria }

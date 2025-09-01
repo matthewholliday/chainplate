@@ -1,6 +1,4 @@
-from ..message import Message
-from ..helpers.template_helper import TemplateHelper
-from .interpret_as_base import InterpretAsBase
+from .interpret_as_base_element import InterpretAsBase
 
 TEMPLATE_TEXT = """
 You are a strict boolean interpreter.
