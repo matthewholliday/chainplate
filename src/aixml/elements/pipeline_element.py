@@ -11,8 +11,6 @@ class PipelineElement(BaseElement):
 
     def exit(self, message:Message) -> Message:
         message = message.log_pipeline_end(self.name)
-        payload = message.get_payload()
-        message.set_chat_response(payload)  # Set the assistant response to the final payload
         return message
     
     def conditions_passed(self, message: Message) -> bool:
