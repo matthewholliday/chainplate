@@ -1,37 +1,37 @@
-[2025-09-01 11:49:45]
+[2025-09-01 12:01:05]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- there were three dogs
+ Gerhardt Schroeder
 ===============END LOG ENTRY================
 
-[2025-09-01 11:49:45]
+[2025-09-01 12:01:05]
 [PIPELINE START]
-interpret as integer
+Apply labels example.
 ===============END LOG ENTRY================
 
-[2025-09-01 11:49:48]
+[2025-09-01 12:01:10]
 [SET-VARIABLE]
 NAME: 
- as_int_result
+ labels_result
 
 VALUE: 
- 3
+ 
 ===============END LOG ENTRY================
 
-[2025-09-01 11:49:48]
+[2025-09-01 12:01:10]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- 3
+ 
 ===============END LOG ENTRY================
 
-[2025-09-01 11:49:48]
+[2025-09-01 12:01:10]
 [PIPELINE END]
-interpret as integer
+Apply labels example.
 ===============END LOG ENTRY================
 
