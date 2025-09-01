@@ -1,37 +1,37 @@
-[2025-09-01 11:44:13]
+[2025-09-01 11:49:45]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- I would say that the result is negative.
+ there were three dogs
 ===============END LOG ENTRY================
 
-[2025-09-01 11:44:13]
+[2025-09-01 11:49:45]
 [PIPELINE START]
-interpret as bool
+interpret as integer
 ===============END LOG ENTRY================
 
-[2025-09-01 11:44:16]
+[2025-09-01 11:49:48]
 [SET-VARIABLE]
 NAME: 
- as_bool_result
+ as_int_result
 
 VALUE: 
- False
+ 3
 ===============END LOG ENTRY================
 
-[2025-09-01 11:44:16]
+[2025-09-01 11:49:48]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- False
+ 3
 ===============END LOG ENTRY================
 
-[2025-09-01 11:44:16]
+[2025-09-01 11:49:48]
 [PIPELINE END]
-interpret as bool
+interpret as integer
 ===============END LOG ENTRY================
 

@@ -49,10 +49,6 @@ class InterpretAsBase(BaseElement):
     
     @abstractmethod
     def get_prompt_template(self) -> str:
-        pass
-
-    @abstractmethod
-    def get_template_context() -> dict: 
-        pass   
+        pass 
     
     

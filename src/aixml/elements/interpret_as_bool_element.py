@@ -32,6 +32,3 @@ class InterpretAsBoolElement(InterpretAsBase):
 
     def get_prompt_template(self):
         return TEMPLATE_TEXT
-    
-    def get_template_context(self):
-        return {"input_txt": self.input_value}
