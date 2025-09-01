@@ -102,8 +102,8 @@ class AiNode:
                 content=content or "Debug Message"
             )
         elif tag == "apply-labels": #TODO - rename
-            from .elements.classify_exclusive import ClassifyExclusive
-            return ClassifyExclusive(
+            from .elements.apply_labels_element import ApplyLabelsElement
+            return ApplyLabelsElement(
                 name=attributes.get("name", "Unnamed ClassifyExclusive"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input"),
