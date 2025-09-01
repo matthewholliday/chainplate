@@ -1,0 +1,13 @@
+<pipeline name="continue-if">
+    <debug name="received">Received: {{__payload__}}</debug>
+    <continue-if name="check_if_42" condition="{{__payload__ == 42}}" output_var="is_42">
+        <debug name="debug_true">you 42, fool</debug>
+    </continue-if>
+    <continue-if name="check_if_not_42" condition="{{__payload__ != 42}}" output_var="is_not_42">
+        <debug name="debug_false">you aint 42</debug>
+    </continue-if>
+    <debug name="final">
+        is_42={{ is_42 }}
+        is_not_42={{ is_not_42 }}
+    </debug>
+</pipeline>

@@ -1,37 +1,61 @@
-[2025-09-01 12:02:37]
+[2025-09-01 12:26:01]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- Gerald Ford
+ 42
 ===============END LOG ENTRY================
 
-[2025-09-01 12:02:37]
+[2025-09-01 12:26:01]
 [PIPELINE START]
-Apply labels example.
+continue-if
 ===============END LOG ENTRY================
 
-[2025-09-01 12:02:42]
+[2025-09-01 12:26:01]
+[CONTINUE-IF START]
+Element: check_if_42 (var: is_42), Condition: {{__payload__ == 42}}
+===============END LOG ENTRY================
+
+[2025-09-01 12:26:01]
 [SET-VARIABLE]
 NAME: 
- labels_result
+ is_42
 
 VALUE: 
- US President
+ False
 ===============END LOG ENTRY================
 
-[2025-09-01 12:02:42]
+[2025-09-01 12:26:01]
+Skipping element <continue-if> as conditions not met.
+===============END LOG ENTRY================
+
+[2025-09-01 12:26:01]
+[CONTINUE-IF END]
+Element: check_if_42 (var: is_42), Condition: {{__payload__ == 42}}
+===============END LOG ENTRY================
+
+[2025-09-01 12:26:01]
+[CONTINUE-IF START]
+Element: check_if_not_42 (var: is_not_42), Condition: {{__payload__ != 42}}
+===============END LOG ENTRY================
+
+[2025-09-01 12:26:01]
 [SET-VARIABLE]
 NAME: 
- __payload__
+ is_not_42
 
 VALUE: 
- US President
+ True
 ===============END LOG ENTRY================
 
-[2025-09-01 12:02:42]
+[2025-09-01 12:26:01]
+[CONTINUE-IF END]
+Element: check_if_not_42 (var: is_not_42), Condition: {{__payload__ != 42}}
+===============END LOG ENTRY================
+
+[2025-09-01 12:26:01]
 [PIPELINE END]
-Apply labels example.
+continue-if
 ===============END LOG ENTRY================
 
