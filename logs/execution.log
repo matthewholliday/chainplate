@@ -1,19 +1,28 @@
-[2025-09-01 09:03:38]
+[2025-09-01 11:02:35]
 [SET-VARIABLE]
 NAME: 
  payload
 
 VALUE: 
- test payload
+ 
 ===============END LOG ENTRY================
 
-[2025-09-01 09:03:38]
+[2025-09-01 11:02:35]
 [PIPELINE START]
-payload testing
+Send Prompt Example
 ===============END LOG ENTRY================
 
-[2025-09-01 09:03:38]
+[2025-09-01 11:02:41]
+[SET-VARIABLE]
+NAME: 
+ response
+
+VALUE: 
+ Paris—the croissant castle where the Eiffel Tower does jazz hands and baguettes rule the land.
+===============END LOG ENTRY================
+
+[2025-09-01 11:02:41]
 [PIPELINE END]
-payload testing
+Send Prompt Example
 ===============END LOG ENTRY================
 

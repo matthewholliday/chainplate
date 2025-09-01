@@ -1,6 +1,7 @@
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper
 from abc import ABC, abstractmethod
+from ..helpers.prompt_helper import ask as prompt_ask
 
 class InterpretAsBase(ABC):
     def __init__(self, name, output_var, input_var):
@@ -24,7 +25,7 @@ class InterpretAsBase(ABC):
         self.input_value = message.get_var(self.input_var)
         self.template_text = self.get_prompt_template()
         self.try_apply_template()
-        self.response_text = message.ask_llm(self.transformed_prompt)
+        self.response_text = message.prompt_ask(self.transformed_prompt)
         message = self.try_set_variable(message)
         return message
 
