@@ -14,9 +14,9 @@ class ChainplateWorkflow:
     def run(self, message: Message) -> Message:
 
         # Run and display logs:
-        print('')
+        # print('')
         self.tree.execute(message)
-        print('')
-        print(self.termination_message)
-        message.print_logs()
+        # print('')
+        # print(self.termination_message)
+        # message.print_logs()
         return message

@@ -1,4 +1,3 @@
 <pipeline name="chat echo">
-    <debug name="echo">pipeline processing: {{ payload }} </debug>
-    <set-variable name="set_chat_output" output_var="chat_response"></set-variable>
+    <set-variable name="set_dummy_response" output_var="__payload__">Yo, I iz a robot.</set-variable>
 </pipeline>

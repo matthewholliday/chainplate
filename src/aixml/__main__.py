@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from .modes.chainplate_workflow import ChainplateWorkflow
+from .modes.chainplate_chat_session import ChainplateChatSession
 from .core import AIXMLCore  # your library function
 from .message import Message
 
@@ -82,16 +83,17 @@ def main(argv: list[str] | None = None) -> int:
         message.set_payload(payload)
         workflow.run(message)
         return 0
+    elif(args.chat):
+        xml_string = _read_text(args.chat, args.encoding)
+        chat_session = ChainplateChatSession(xml_string)
+        chat_session.run_interactive()
+        return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly
         response = AIXMLCore.query(prompt)
         _write_text(args.output, response, args.encoding, args.overwrite)
         if not args.quiet and args.output is not None:
             print(f"Wrote: {args.output}", file=sys.stderr)
-        return 0
-    elif(args.chat):
-        xml_string = _read_text(args.chat, args.encoding)
-        AIXMLCore.run_chat_mode(xml_string)
         return 0
     
 if __name__ == "__main__":
