@@ -8,11 +8,11 @@ class ChainplateChatSession:
         self.chat_history = []
     
     def run_interactive(self):
-        print("Entering interactive chat mode. Type 'exit' to quit.")
+        print("\nCHAINPLATE interactive chat session started. Type 'exit' to quit, 'history' to view chat history.\n")
         while True:
             try:
                 #Get input from the user...
-                user_input_txt = input("User: ")
+                user_input_txt = input("[USER]:\n >> ")
 
                 #Check for special commands...
                 if user_input_txt.lower() == 'exit':
@@ -43,7 +43,7 @@ class ChainplateChatSession:
                 self.chat_history.append(assistant_response_obj)
 
                 #Print the assistant response
-                print(f"Assistant: {assistant_response_text}")
+                print(f"\n[CHATBOT]:\n{assistant_response_text}\n")
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
