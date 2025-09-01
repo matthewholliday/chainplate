@@ -13,6 +13,7 @@ class ChainplateWorkflow:
 
     def run(self, message: Message) -> Message:
 
+        # TODO: return object with this info so caller can decide what to do.
         # Run and display logs:
         # print('')
         self.tree.execute(message)
