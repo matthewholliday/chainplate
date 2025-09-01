@@ -1,0 +1,183 @@
+import json
+from dataclasses import dataclass, field
+from typing import List, Any, Dict
+
+from .message import Message
+from .message_update import MessageUpdate
+
+from .elements.pipeline_element import PipelineElement
+from .elements.send_prompt_element import SendPromptElement
+from .elements.interpret_as_bool_element import InterpretAsBoolElement
+from .elements.context_element import ContextElement
+from .elements.interpret_as_integer import InterpretAsIntegerElement
+from .elements.while_loop_element import WhileLoopElement
+from .elements.for_loop_element import ForLoopElement
+from .elements.get_user_input_element import GetUserInputElement
+
+@dataclass
+class AiNode:
+    tag: str
+    contents: str
+    children: List["AiNode"] = field(default_factory=list)
+    attributes: Dict[str, Any] = field(default_factory=dict)
+    element: Any = None
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "AiNode":
+        """Recursively build a AiNode tree from a dict."""
+
+        tag = data["tag"]
+        contents = data["contents"]
+        attributes = data.get("attributes", {})
+        children = [cls.from_dict(child) for child in data.get("children", [])]
+        element = cls.get_element_by_tag(tag,attributes,contents)
+
+
+        return cls(
+            tag=tag,
+            contents=contents,
+            attributes=attributes,
+            children=children,
+            element = element
+        )
+
+    def __str__(self, level=0) -> str:
+        """Pretty-print the tree for inspection."""
+        indent = "  " * level
+        result = f"{indent}{self.tag}: {self.contents!r}\n"
+        for child in self.children:
+            result += child.__str__(level + 1)
+        return result
+    
+    @staticmethod
+    def get_element_by_tag(tag: str, attributes, content) -> List["AiNode"]:
+        if tag == "pipeline":
+            return PipelineElement(attributes.get("name", "Unnamed Pipeline"))
+        elif tag == "send-prompt":
+            return SendPromptElement(
+                name=attributes.get("name", "Unnamed Prompt"),
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                content=attributes.get("content", content)
+            )
+        elif tag == "set-variable":
+            from .elements.set_variable_element import SetVariableElement
+            return SetVariableElement(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                content=content
+            )
+        elif tag == "write-to-file":
+            from .elements.write_to_file_element import WriteToFileElement
+            return WriteToFileElement(
+                filename=attributes.get("filename", "output.txt"),
+                content=content
+            )
+        elif tag == "context":
+            return ContextElement(
+                name=attributes.get("name", "Unnamed Context"),
+                content=content
+            )
+        elif tag == "interpret-as-bool":
+            return InterpretAsBoolElement(
+                name=attributes.get("name", "Unnamed Bool Interpreter"),
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input")
+            )
+        elif tag == "interpret-as-integer":
+            return InterpretAsIntegerElement(
+                name=attributes.get("name", "Unnamed Integer Interpreter"),
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input")
+            )
+        elif tag == "continue-if":
+            from .elements.continue_if_element import ContinueIfElement
+            return ContinueIfElement(
+                name=attributes.get("name", "Unnamed ContinueIf"),
+                condition=attributes.get("condition", "false"),
+                output_var=attributes.get("output_var", None)
+            )
+        elif tag == "debug":
+            from .elements.debug_element import DebugElement
+            return DebugElement(
+                name=attributes.get("name", "Debug Element"),
+                content=content or "Debug Message"
+            )
+        elif tag == "classify-exclusive": #TODO - rename
+            from .elements.classify_exclusive import ClassifyExclusive
+            return ClassifyExclusive(
+                name=attributes.get("name", "Unnamed ClassifyExclusive"),
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input"),
+                categories=attributes.get("categories", ""),
+                criteria=attributes.get("categories", "")
+            )
+        elif tag == "while-loop":
+            element = WhileLoopElement(
+                name=attributes.get("name", "Unnamed WhileLoop"),
+                condition=attributes.get("condition", "false")
+            )
+            return element
+        elif tag == "for-loop":
+            element = ForLoopElement(
+                name=attributes.get("name", "Unnamed ForLoop"),
+                start_num=int(attributes.get("start", 0)),
+                stop_num=int(attributes.get("stop", 10))
+            )
+            return element
+        elif tag == "get-user-input":
+            from .elements.get_user_input_element import GetUserInputElement
+            return GetUserInputElement(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                content=content or "Please provide input: "
+            )
+        else:
+            raise ValueError(f"Unknown tag: {tag}")
+            # return None # Placeholder for other elements
+    
+    @staticmethod
+    def pretty_print(is_enter: bool, tag: str, depth: int):
+        spacing = "  " * depth
+        prefix = ">> " if is_enter else "<< "
+        # print(spacing + prefix + f"{tag}")
+
+    def enter(self,message,depth) -> Message:
+        AiNode.pretty_print(True,self.tag,depth)
+        if(self.element):
+            message = self.element.enter(message)
+        return message
+
+    def exit(self,message,depth) -> Message:
+        AiNode.pretty_print(False,self.tag,depth - 1)
+        if(self.element):
+            message = self.element.exit(message)
+        return message
+
+    def execute(self,message,depth=0) -> Message:
+        """Execute the node's action. Placeholder for actual logic."""
+        message = self.enter(message,depth)
+        depth += 1
+
+        # Check if conditions pass before running anything inside this element...
+        should_enter = self.element.should_enter(message)
+
+        if not should_enter:
+            message.log_message(f"Skipping element <{self.tag}> as conditions not met.")
+            message = self.exit(message,depth)
+            return message
+        
+        # If you made it here, any initial entry checks passed, so process at least once...
+        should_exit = False
+        while not should_exit:
+            message = self.element.increment_iteration(message) # For loops, etc.
+
+            for child in self.children:
+                message = child.execute(message,depth) # Pass the message down the tree.
+
+            # Check stop condition...
+            should_exit, message = self.element.should_exit(message) # Returns true by default for non-repeating elements...
+            
+
+        # Exit logic runs for every element type...
+        message = self.exit(message,depth)
+        return message
+
+    

@@ -1,0 +1,3 @@
+<pipeline name="payload testing">
+    <debug name="test payload">Payload at start: {{ payload }}</debug>
+</pipeline>

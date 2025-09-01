@@ -1,0 +1,5 @@
+scripts
+secrets
+output
+agent_instructions.local.txt
+__pycache__

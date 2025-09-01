@@ -1,0 +1,22 @@
+from ..message import Message
+from ..helpers.template_helper import TemplateHelper
+
+class ContinueIfElement:
+    def __init__(self, name, condition: str, output_var=None):
+        self.name = name
+        self.condition = condition
+        self.output_var = output_var
+
+    def enter(self, message:Message) -> Message:
+        message = message.log_continue_if_start(self.name,self.condition,self.output_var)
+        return message
+
+    def exit(self, message:Message) -> Message:
+        message = message.log_continue_if_end(self.name,self.condition,self.output_var)
+        return message
+    
+    def conditions_passed(self, message: Message) -> bool:
+        evaluation = TemplateHelper.render_template(self.condition, message.get_vars())
+        if evaluation.strip().lower() in ["true", "1", "yes"]:
+            return True
+        return False

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/pipeline"
+           xmlns="http://example.com/pipeline"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+  <!-- Root element -->
+  <xs:element name="pipeline" type="pipelineType">
+    <xs:annotation>
+      <xs:documentation>
+        The root element of a pipeline. It requires a name attribute
+        and can contain multiple steps such as context, debug, conditions,
+        prompts, variable assignments, and file outputs.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="pipelineType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="context"/>
+      <xs:element ref="continue-if"/>
+      <xs:element ref="debug"/>
+      <xs:element ref="interpret-as-bool"/>
+      <xs:element ref="interpret-as-integer"/>
+      <xs:element ref="send-prompt"/>
+      <xs:element ref="set-variable"/>
+      <xs:element ref="write-to-file"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="context" type="contextType">
+    <xs:annotation>
+      <xs:documentation>
+        A context defines a named execution scope. It requires a 'name' attribute
+        and cannot contain children.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="contextType">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="continue-if" type="continueIfType">
+    <xs:annotation>
+      <xs:documentation>
+        Conditional execution element. Requires 'name', 'condition', and 'output_var'.
+        Can contain set-variable or debug children.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="continueIfType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element ref="set-variable"/>
+      <xs:element ref="debug"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="condition" type="xs:string" use="required"/>
+    <xs:attribute name="output_var" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="debug" type="debugType">
+    <xs:annotation>
+      <xs:documentation>
+        Outputs debugging information. Requires 'name' and can contain text content.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="debugType" mixed="true">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="interpret-as-bool" type="interpretAsBoolType">
+    <xs:annotation>
+      <xs:documentation>
+        Interprets a variable as a boolean. Requires 'name', 'output_var', and 'input_var'.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="interpretAsBoolType">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="output_var" type="xs:string" use="required"/>
+    <xs:attribute name="input_var" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="interpret-as-integer" type="interpretAsIntegerType">
+    <xs:annotation>
+      <xs:documentation>
+        Interprets a variable as an integer. Requires 'name', 'output_var', and 'input_var'.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="interpretAsIntegerType">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="output_var" type="xs:string" use="required"/>
+    <xs:attribute name="input_var" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="send-prompt" type="sendPromptType">
+    <xs:annotation>
+      <xs:documentation>
+        Sends a prompt and stores its result. Requires 'name' and 'output_var'.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="sendPromptType">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="output_var" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="write-to-file" type="writeToFileType">
+    <xs:annotation>
+      <xs:documentation>
+        Writes data to a file. Requires 'name' and 'file_path'.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="writeToFileType" mixed="true">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="file_path" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="set-variable" type="setVariableType">
+    <xs:annotation>
+      <xs:documentation>
+        Defines or overrides a variable. Attributes like 'name' or 'output_var' may be included.
+        Can contain text content.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="setVariableType" mixed="true">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="output_var" type="xs:string"/>
+  </xs:complexType>
+
+</xs:schema>

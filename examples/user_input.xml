@@ -1,0 +1,4 @@
+<pipeline name="user input testing">
+    <get-user-input name="get user input" output_var="user_input">What is your favorite food?</get-user-input>
+    <debug name="show user input">User input was: {{ user_input }}</debug>
+</pipeline>
