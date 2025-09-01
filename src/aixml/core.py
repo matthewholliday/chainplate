@@ -29,16 +29,15 @@ class AIXMLCore:
         msg = Message()
         msg.set_payload(payload)
 
-        print('AIXML: executing pipeline...')
+        print('')
         node.execute(msg)
-        print('AIXML: execution complete. View logs: ' + os.path.abspath('logs/execution.log'))
+        print('')
+        print('Execution complete. Log location: ' + os.path.abspath('logs/execution.log'))
 
         msg.print_logs()
 
     @staticmethod
     def run_chat_mode(xml_string: str) -> None:
-        import os
-
         json_str = TreeNode.get_xml_as_json_string(xml_string)
         data = json.loads(json_str)
         tree = AiNode.from_dict(data)
