@@ -1,37 +1,19 @@
-[2025-08-31 12:40:03]
+[2025-09-01 09:03:38]
 [SET-VARIABLE]
 NAME: 
  payload
 
 VALUE: 
- 
+ test payload
 ===============END LOG ENTRY================
 
-[2025-08-31 12:40:03]
+[2025-09-01 09:03:38]
 [PIPELINE START]
-user input testing
+payload testing
 ===============END LOG ENTRY================
 
-[2025-08-31 12:40:03]
-[SET-VARIABLE]
-NAME: 
- user_input
-
-VALUE: 
- What is your favorite food?
-===============END LOG ENTRY================
-
-[2025-08-31 12:40:07]
-[SET-VARIABLE]
-NAME: 
- user_input
-
-VALUE: 
- Pizza
-===============END LOG ENTRY================
-
-[2025-08-31 12:40:07]
+[2025-09-01 09:03:38]
 [PIPELINE END]
-user input testing
+payload testing
 ===============END LOG ENTRY================
 
