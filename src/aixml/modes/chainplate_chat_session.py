@@ -51,7 +51,9 @@ class ChainplateChatSession:
         return ChainplateWorkflow(self.xml_string)
     
     def pretty_print_chat_history(self):
+        print("\n CHAT HISTORY:  \n")
         for msg in self.chat_history:
             role = msg['role']
             content = msg['content']
             print(f"{role.capitalize()}: {content}")
+            print("-----")

@@ -14,8 +14,10 @@ class SendPromptElement(AiBaseElement):
         # Get the current context from the message
         context = message.read_context()
         
+        chat_history = message.get_chat_history()
+
         # Send the prompt and get the response
-        response = ask_with_context(templated_content, context)
+        response = ask_with_context(templated_content, context, chat_history)
 
         # Store the response in the specified output variable     
         message.set_var(self.output_var, response)
