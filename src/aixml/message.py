@@ -5,8 +5,6 @@ import os
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
-CHAT_ASSISTANT_RESPONSE_KEY = "__assistant_response__"
-CHAT_USER_MESSAGE_KEY = "__user_message__"
 
 class Message:
     def __init__(self):
@@ -132,17 +130,9 @@ class Message:
     def get_payload(self) -> str:
         return self.get_var(PAYLOAD_KEY)
     
-    def set_user_message(self, message: str):
-        self.set_var(CHAT_USER_MESSAGE_KEY, message)
-        return self
-    
-    def get_user_message(self) -> str:
-        return self.get_var(CHAT_USER_MESSAGE_KEY)
-    
-    def set_assistant_response(self, response: str):
-        self.set_var(CHAT_ASSISTANT_RESPONSE_KEY, response)
-        return self
-    
-    def get_assistant_response(self) -> str:
-        return self.get_var(CHAT_ASSISTANT_RESPONSE_KEY)
+    def set_chat_history(self, chat_history: list) -> None:
+        self.conversation_history = chat_history
+
+    def get_chat_history(self) -> list:
+        return self.conversation_history    
 

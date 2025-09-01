@@ -1,37 +1,28 @@
-[2025-09-01 15:35:28]
+[2025-09-01 15:49:52]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- 
+ hello
 ===============END LOG ENTRY================
 
-[2025-09-01 15:35:28]
+[2025-09-01 15:49:52]
 [PIPELINE START]
-Send Prompt Example
+chat echo
 ===============END LOG ENTRY================
 
-[2025-09-01 15:35:33]
-[SET-VARIABLE]
-NAME: 
- response
-
-VALUE: 
- Paris! The majestic headquarters of baguettes, berets, and that big sparkly toothpick called the Eiffel Tower.
-===============END LOG ENTRY================
-
-[2025-09-01 15:35:33]
+[2025-09-01 15:49:52]
 [SET-VARIABLE]
 NAME: 
  __payload__
 
 VALUE: 
- What is the capital of France?
+ Yo, I iz a robot.
 ===============END LOG ENTRY================
 
-[2025-09-01 15:35:33]
+[2025-09-01 15:49:52]
 [PIPELINE END]
-Send Prompt Example
+chat echo
 ===============END LOG ENTRY================
 
