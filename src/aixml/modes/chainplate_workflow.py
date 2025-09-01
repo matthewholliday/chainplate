@@ -4,7 +4,7 @@ from ..tree import TreeNode
 import json
 import os
 
-class PipelineMode:
+class ChainplateWorkflow:
     def __init__(self, xml_string: str):
         json_str = TreeNode.get_xml_as_json_string(xml_string)
         data = json.loads(json_str)
