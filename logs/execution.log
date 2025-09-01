@@ -1,27 +1,36 @@
-[2025-09-01 11:02:35]
+[2025-09-01 11:23:37]
 [SET-VARIABLE]
 NAME: 
- payload
+ __payload__
 
 VALUE: 
  
 ===============END LOG ENTRY================
 
-[2025-09-01 11:02:35]
+[2025-09-01 11:23:37]
 [PIPELINE START]
 Send Prompt Example
 ===============END LOG ENTRY================
 
-[2025-09-01 11:02:41]
+[2025-09-01 11:23:46]
 [SET-VARIABLE]
 NAME: 
  response
 
 VALUE: 
- Paris—the croissant castle where the Eiffel Tower does jazz hands and baguettes rule the land.
+ Paris! The glittery baguette HQ where the Eiffel Tower moonlights as a giant metal hat rack for clouds.
 ===============END LOG ENTRY================
 
-[2025-09-01 11:02:41]
+[2025-09-01 11:23:46]
+[SET-VARIABLE]
+NAME: 
+ __payload__
+
+VALUE: 
+ What is the capital of France?
+===============END LOG ENTRY================
+
+[2025-09-01 11:23:46]
 [PIPELINE END]
 Send Prompt Example
 ===============END LOG ENTRY================

@@ -120,7 +120,7 @@ class Message:
         return self
     
     def set_payload(self, payload: str):
-        self.set_var("payload", payload)
+        self.set_var(PAYLOAD_KEY, payload)
         return self
     
     def prompt_chat(self) -> list:
