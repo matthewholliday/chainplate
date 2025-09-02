@@ -1,6 +1,6 @@
 import unittest
-from src.aixml.ainode import AiNode
-from src.aixml.elements.pipeline_element import PipelineElement
+from src.chainplate.ainode import AiNode
+from src.chainplate.elements.pipeline_element import PipelineElement
 
 class TestAiNode(unittest.TestCase):
     def test_pretty_print_no_error(self):

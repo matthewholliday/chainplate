@@ -1,7 +1,7 @@
 import unittest
 import os
-from src.aixml.ainode import AiNode
-from src.aixml.message import Message
+from src.chainplate.ainode import AiNode
+from src.chainplate.message import Message
 
 class TestWriteToFileElement(unittest.TestCase):
     def test_write_to_file_element(self):

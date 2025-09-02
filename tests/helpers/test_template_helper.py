@@ -1,5 +1,5 @@
 from unittest import TestCase
-from src.aixml.helpers.template_helper import TemplateHelper
+from src.chainplate.helpers.template_helper import TemplateHelper
 
 
 class TestTemplateHelper(TestCase):

@@ -1,5 +1,5 @@
 import unittest
-from src.aixml.tree import TreeNode
+from src.chainplate.tree import TreeNode
 
 class TestTreeNode(unittest.TestCase):
     def test_add_child(self):
