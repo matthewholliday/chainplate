@@ -1,25 +1,26 @@
 from .chainplate_workflow import ChainplateWorkflow
 from ..helpers.prompt_helper import create_user_message, create_assistant_message
 from ..message import Message
+from ..services.cli_service import CLIService
 
 class ChainplateChatSession:
-    def __init__(self, xml_string: str):
+    def __init__(self, xml_string: str): # Default to CLIService if no UX service is provided
         self.xml_string = xml_string
         self.chat_history = []
     
-    def run_interactive(self):
+    def run_interactive(self, ux_service=CLIService()):
         print("\nCHAINPLATE interactive chat session started. Type 'exit' to quit, 'history' to view chat history.\n")
         while True:
             try:
                 #Get input from the user...
-                user_input_txt = input("[USER]:\n >> ")
+                user_input_txt = ux_service.get_input_from_user("[USER]:\n >> ")
 
                 #Check for special commands...
                 if user_input_txt.lower() == 'exit':
-                    print("Exiting chat mode.")
+                    ux_service.show_output_to_user("Exiting chat session. Goodbye!")
                     break
                 elif user_input_txt == 'history':
-                    self.pretty_print_chat_history()
+                    self.pretty_print_chat_history(ux_service)
                     continue
 
                 #Process the user input through the workflow...
@@ -43,9 +44,9 @@ class ChainplateChatSession:
                 self.chat_history.append(assistant_response_obj)
 
                 #Print the assistant response
-                print(f"\n[CHATBOT]:\n{assistant_response_text}\n")
+                ux_service.show_output_to_user(f"\n[CHATBOT]:\n{assistant_response_text}\n")
             except Exception as e:
-                print(f"An error occurred: {e}")
+                ux_service.show_output_to_user(f"An error occurred: {e}")
                 break
 
     def get_latest_message_content(self) -> object:
@@ -56,10 +57,10 @@ class ChainplateChatSession:
     def create_workflow(self) -> ChainplateWorkflow:
         return ChainplateWorkflow(self.xml_string)
     
-    def pretty_print_chat_history(self):
-        print("\n CHAT HISTORY:  \n")
+    def pretty_print_chat_history(self, ux_service=None):
+        ux_service.show_output_to_user("\n CHAT HISTORY:  \n")
         for msg in self.chat_history:
             role = msg['role']
             content = msg['content']
-            print(f"{role.capitalize()}: {content}")
-            print("-----")
+            ux_service.show_output_to_user(f"{role.capitalize()}: {content}")
+            ux_service.show_output_to_user("-----")

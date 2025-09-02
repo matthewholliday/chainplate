@@ -11,6 +11,7 @@ from .elements.interpret_as_integer import InterpretAsIntegerElement
 from .elements.while_loop_element import WhileLoopElement
 from .elements.for_loop_element import ForLoopElement
 from .elements.get_user_input_element import GetUserInputElement #TODO - implement
+from .services.cli_service import CLIService
 
 @dataclass
 class AiNode:
@@ -47,7 +48,8 @@ class AiNode:
             result += child.__str__(level + 1)
         return result
     
-    @staticmethod
+    #TODO - refactor to use a registry pattern instead of hardcoding all elements here...
+    @staticmethod 
     def get_element_by_tag(tag: str, attributes, content) -> List["AiNode"]:
         if tag == "pipeline":
             return PipelineElement(attributes.get("name", "Unnamed Pipeline"))
