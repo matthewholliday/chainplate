@@ -5,6 +5,8 @@ import os
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
+CHAT_INPUT_KEY = "__chat_input__" # This is the latest message that was sent to the chat. It may or may not be equal to the payload, depending on how the workflow is designed.
+CHAT_RESPONSE_KEY = "__chat_response__"
 
 class Message:
     def __init__(self):
@@ -125,5 +127,28 @@ class Message:
     
     def prompt_chat(self) -> list:
         self.conversation_history = prompt_chat(self.conversation_history)
+        return self
+    
+    def get_payload(self) -> str:
+        return self.get_var(PAYLOAD_KEY)
+    
+    def set_chat_history(self, chat_history: list) -> None:
+        self.conversation_history = chat_history
+
+    def get_chat_history(self) -> list:
+        return self.conversation_history    
+    
+    def get_chat_input(self):
+        return self.get_var(CHAT_INPUT_KEY)
+    
+    def set_chat_input(self, chat_input: str):
+        self.set_var(CHAT_INPUT_KEY, chat_input)
+        return self
+    
+    def get_chat_response(self):
+        return self.get_var(CHAT_RESPONSE_KEY)
+    
+    def set_chat_response(self, chat_response: str):
+        self.set_var(CHAT_RESPONSE_KEY, chat_response)
         return self
 

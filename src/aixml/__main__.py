@@ -2,9 +2,12 @@ import argparse
 import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
-
+from .modes.chainplate_workflow import ChainplateWorkflow
+from .modes.chainplate_chat_session import ChainplateChatSession
 from .core import AIXMLCore  # your library function
-from .tree import TreeNode
+from .message import Message
+
+# TODO: Move most of this out of the __main__ file and into core.py or similar.
 
 def _read_text(path: Path | None, encoding: str) -> str:
     if path is None:
@@ -38,6 +41,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-q", "--quiet", action="store_true", help="Suppress non-error messages")
     p.add_argument("--payload", type=str, help="Payload to pass into the execution")
     p.add_argument("--chat",type=Path, help="Run in chat mode with the given XML file")
+    p.add_argument("--workflow", type=Path, help="TODO")
 
     args = p.parse_args(argv)
     
@@ -72,16 +76,24 @@ def main(argv: list[str] | None = None) -> int:
         xml_string = _read_text(args.execute, args.encoding)
         AIXMLCore.run_pipeline_mode(xml_string,payload)
         return 0
+    elif(args.workflow):
+        payload = args.payload if args.payload else ""
+        workflow = ChainplateWorkflow(xml_string = _read_text(args.workflow, args.encoding))
+        message = Message()
+        message.set_payload(payload)
+        workflow.run(message)
+        return 0
+    elif(args.chat):
+        xml_string = _read_text(args.chat, args.encoding)
+        chat_session = ChainplateChatSession(xml_string)
+        chat_session.run_interactive()
+        return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly
         response = AIXMLCore.query(prompt)
         _write_text(args.output, response, args.encoding, args.overwrite)
         if not args.quiet and args.output is not None:
             print(f"Wrote: {args.output}", file=sys.stderr)
-        return 0
-    elif(args.chat):
-        xml_string = _read_text(args.chat, args.encoding)
-        AIXMLCore.run_chat_mode(xml_string)
         return 0
     
 if __name__ == "__main__":

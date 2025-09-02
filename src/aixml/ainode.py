@@ -1,9 +1,7 @@
-import json
 from dataclasses import dataclass, field
 from typing import List, Any, Dict
 
 from .message import Message
-from .message_update import MessageUpdate
 
 from .elements.pipeline_element import PipelineElement
 from .elements.send_prompt_element import SendPromptElement
@@ -12,7 +10,7 @@ from .elements.context_element import ContextElement
 from .elements.interpret_as_integer import InterpretAsIntegerElement
 from .elements.while_loop_element import WhileLoopElement
 from .elements.for_loop_element import ForLoopElement
-from .elements.get_user_input_element import GetUserInputElement
+from .elements.get_user_input_element import GetUserInputElement #TODO - implement
 
 @dataclass
 class AiNode:
@@ -101,14 +99,14 @@ class AiNode:
                 name=attributes.get("name", "Debug Element"),
                 content=content or "Debug Message"
             )
-        elif tag == "classify-exclusive": #TODO - rename
-            from .elements.classify_exclusive import ClassifyExclusive
-            return ClassifyExclusive(
+        elif tag == "apply-labels": #TODO - rename
+            from .elements.apply_labels_element import ApplyLabelsElement
+            return ApplyLabelsElement(
                 name=attributes.get("name", "Unnamed ClassifyExclusive"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input"),
-                categories=attributes.get("categories", ""),
-                criteria=attributes.get("categories", "")
+                categories=attributes.get("labels", ""),
+                criteria = attributes.get("criteria", "")
             )
         elif tag == "while-loop":
             element = WhileLoopElement(
@@ -128,13 +126,6 @@ class AiNode:
             return GetUserInputElement(
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 content=content or "Please provide input: "
-            )
-        elif tag == "send-chat":
-            from .elements.send_chat_element import SendChatElement
-            return SendChatElement(
-                name=attributes.get("name", "Unnamed Chat"),
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                content=attributes.get("content", content)
             )
         else:
             raise ValueError(f"Unknown tag: {tag}")

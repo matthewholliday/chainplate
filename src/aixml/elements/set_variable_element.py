@@ -1,5 +1,6 @@
 from ..message import Message
 from .base_element import BaseElement
+from ..helpers.template_helper import TemplateHelper
 
 class SetVariableElement(BaseElement):
     def __init__(self, output_var, content):
@@ -9,7 +10,8 @@ class SetVariableElement(BaseElement):
         self.content = content
 
     def enter(self , message: Message) -> Message:
-        message = message.set_var(self.output_var, self.content)
+        content = TemplateHelper.safe_render_template(template_str=self.content, template_context=message.vars)
+        message = message.set_var(self.output_var, content)
         return message
 
     def exit(self, message: Message) -> Message:
