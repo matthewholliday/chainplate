@@ -28,7 +28,7 @@ def _write_text(path: Path | None, data: str, encoding: str, overwrite: bool) ->
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
-        prog="aixml",
+        prog="chainplate",
         description="Process AI-flavored XML: read input, run AIXMLCore.parse(), write output.",
     )
     p.add_argument("--encoding", default="utf-8", help="Text encoding (default: utf-8)")

@@ -12,18 +12,18 @@ class TestAiNode(unittest.TestCase):
         # Test all known tags return correct type
         tags = [
             ("pipeline", {}, PipelineElement),
-            ("send-prompt", {"output_var": "x"}, __import__("src.aixml.elements.send_prompt_element", fromlist=["SendPromptElement"]).SendPromptElement),
-            ("set-variable", {"output_var": "x"}, __import__("src.aixml.elements.set_variable_element", fromlist=["SetVariableElement"]).SetVariableElement),
-            ("write-to-file", {"filename": "f.txt"}, __import__("src.aixml.elements.write_to_file_element", fromlist=["WriteToFileElement"]).WriteToFileElement),
-            ("context", {}, __import__("src.aixml.elements.context_element", fromlist=["ContextElement"]).ContextElement),
-            ("interpret-as-bool", {"output_var": "x", "input_var": "y"}, __import__("src.aixml.elements.interpret_as_bool_element", fromlist=["InterpretAsBoolElement"]).InterpretAsBoolElement),
-            ("interpret-as-integer", {"output_var": "x", "input_var": "y"}, __import__("src.aixml.elements.interpret_as_integer", fromlist=["InterpretAsIntegerElement"]).InterpretAsIntegerElement),
-            ("continue-if", {"condition": "true"}, __import__("src.aixml.elements.continue_if_element", fromlist=["ContinueIfElement"]).ContinueIfElement),
-            ("debug", {}, __import__("src.aixml.elements.debug_element", fromlist=["DebugElement"]).DebugElement),
-            ("apply-labels", {"output_var": "x", "input_var": "y"}, __import__("src.aixml.elements.apply_labels_element", fromlist=["ApplyLabelsElement"]).ApplyLabelsElement),
-            ("while-loop", {"condition": "true"}, __import__("src.aixml.elements.while_loop_element", fromlist=["WhileLoopElement"]).WhileLoopElement),
-            ("for-loop", {"from": 1, "to": 2}, __import__("src.aixml.elements.for_loop_element", fromlist=["ForLoopElement"]).ForLoopElement),
-            ("get-user-input", {"output_var": "x"}, __import__("src.aixml.elements.get_user_input_element", fromlist=["GetUserInputElement"]).GetUserInputElement),
+            ("send-prompt", {"output_var": "x"}, __import__("src.chainplate.elements.send_prompt_element", fromlist=["SendPromptElement"]).SendPromptElement),
+            ("set-variable", {"output_var": "x"}, __import__("src.chainplate.elements.set_variable_element", fromlist=["SetVariableElement"]).SetVariableElement),
+            ("write-to-file", {"filename": "f.txt"}, __import__("src.chainplate.elements.write_to_file_element", fromlist=["WriteToFileElement"]).WriteToFileElement),
+            ("context", {}, __import__("src.chainplate.elements.context_element", fromlist=["ContextElement"]).ContextElement),
+            ("interpret-as-bool", {"output_var": "x", "input_var": "y"}, __import__("src.chainplate.elements.interpret_as_bool_element", fromlist=["InterpretAsBoolElement"]).InterpretAsBoolElement),
+            ("interpret-as-integer", {"output_var": "x", "input_var": "y"}, __import__("src.chainplate.elements.interpret_as_integer", fromlist=["InterpretAsIntegerElement"]).InterpretAsIntegerElement),
+            ("continue-if", {"condition": "true"}, __import__("src.chainplate.elements.continue_if_element", fromlist=["ContinueIfElement"]).ContinueIfElement),
+            ("debug", {}, __import__("src.chainplate.elements.debug_element", fromlist=["DebugElement"]).DebugElement),
+            ("apply-labels", {"output_var": "x", "input_var": "y"}, __import__("src.chainplate.elements.apply_labels_element", fromlist=["ApplyLabelsElement"]).ApplyLabelsElement),
+            ("while-loop", {"condition": "true"}, __import__("src.chainplate.elements.while_loop_element", fromlist=["WhileLoopElement"]).WhileLoopElement),
+            ("for-loop", {"from": 1, "to": 2}, __import__("src.chainplate.elements.for_loop_element", fromlist=["ForLoopElement"]).ForLoopElement),
+            ("get-user-input", {"output_var": "x"}, __import__("src.chainplate.elements.get_user_input_element", fromlist=["GetUserInputElement"]).GetUserInputElement),
         ]
         for tag, attrs, cls in tags:
             el = AiNode.get_element_by_tag(tag, attrs, "content")
