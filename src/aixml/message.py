@@ -50,7 +50,6 @@ class Message:
                 f.write(log + "\n")
 
     def set_var(self, key: str, value):
-        self.log_variable(key, value)
         self.vars[key] = value
         return self
 
@@ -60,13 +59,6 @@ class Message:
     def get_var(self, key: str):
         return self.vars.get(key, None)
     
-    def has_all_vars(self, keys: list) -> bool:
-        return all(key in self.vars for key in keys)
-    
-    def has_template_bindings(self, template_str: str) -> bool:
-        required_vars = TemplateHelper.get_template_vars(template_str)
-        return self.has_all_vars(required_vars)
-    
     def get_vars(self):
         return self.vars
     
@@ -75,52 +67,13 @@ class Message:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-    def log_message(self, text: str):
+    def log_message(self, text: str) -> str:
         timestamp = self.get_formatted_timestamp()
         formatted_text = f"[{timestamp}]"
         formatted_text += "\n" + text
+        formatted_text += "\n===============END LOG ENTRY================\n"
         self.log(formatted_text)
-        self.log("===============END LOG ENTRY================")
-        self.log("")  # Blank line for readability
-
-    def log_variable(self, output_var: str, var_value: any):
-        header_text = "[SET-VARIABLE]\n"
-        variable_text = f"NAME: \n {output_var}\n"
-        value_text =  f"VALUE: \n {var_value}"
-        full_text = header_text + variable_text + "\n" + value_text
-        self.log_message(full_text)
-
-    def generate_prompt(self, prompt: str) -> str:
-        context_str = self.read_context()
-        prompt_with_context = f"{context_str}\n\n{prompt}" if context_str else prompt
-        return prompt_with_context
-    
-    def log_pipeline_start(self, pipeline_name: str):
-        self.log_message(f"[PIPELINE START]\n{pipeline_name}")
-        return self
-    
-    def log_pipeline_end(self, pipeline_name: str):
-        self.log_message(f"[PIPELINE END]\n{pipeline_name}")
-        return self
-    
-    def log_continue_if_start(self, element_name: str, condition: str, output_var: str = None):
-        var_info = f" (var: {output_var})" if output_var else ""
-        self.log_message(f"[CONTINUE-IF START]\nElement: {element_name}{var_info}, Condition: {condition}")
-        return self
-    
-    def log_continue_if_end(self, element_name: str, condition: str, output_var: str = None):
-        var_info = f" (var: {output_var})" if output_var else ""
-        self.log_message(f"[CONTINUE-IF END]\nElement: {element_name}{var_info}, Condition: {condition}")
-        return self
-    
-    def log_write_to_file(self, filename: str, content: str):
-        self.log_message(f"[WRITE-TO-FILE]\nWrote content to file: {filename}\nContent:\n{content}")
-        return self
-    
-    def log_debug_message(self, name, text: str):
-        text = f"[DEBUG]\nElement: {name}\nMessage:{text}"
-        self.log_message(text)
-        return self
+        return formatted_text
     
     def set_payload(self, payload: str):
         self.set_var(PAYLOAD_KEY, payload)

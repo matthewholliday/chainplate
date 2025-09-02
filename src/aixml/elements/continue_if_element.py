@@ -8,11 +8,9 @@ class ContinueIfElement(BaseElement):
         self.output_var = output_var
 
     def enter(self, message:Message) -> Message:
-        message = message.log_continue_if_start(self.name,self.condition,self.output_var) #TODO: migrate to LoggingHelper
         return message
 
     def exit(self, message:Message) -> Message:
-        message = message.log_continue_if_end(self.name,self.condition,self.output_var) #TODO: migrate to LoggingHelper
         return message
     
     def should_enter(self, message: Message) -> bool:
