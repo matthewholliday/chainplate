@@ -1,4 +1,6 @@
 import jinja2
+from jinja2 import Environment, StrictUndefined, meta
+
 
 class TemplateHelper:
     @staticmethod
@@ -6,8 +8,6 @@ class TemplateHelper:
         template = jinja2.Template(template_str)
         return template.render(context)
     
-import jinja2
-from jinja2 import Environment, StrictUndefined, meta
 
 class TemplateHelper:
     # One shared environment for both parsing and rendering
