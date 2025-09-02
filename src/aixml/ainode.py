@@ -10,8 +10,6 @@ from .elements.context_element import ContextElement
 from .elements.interpret_as_integer import InterpretAsIntegerElement
 from .elements.while_loop_element import WhileLoopElement
 from .elements.for_loop_element import ForLoopElement
-from .elements.get_user_input_element import GetUserInputElement #TODO - implement
-from .services.cli_service import CLIService
 
 @dataclass
 class AiNode:
@@ -72,7 +70,6 @@ class AiNode:
             )
         elif tag == "context":
             return ContextElement(
-                name=attributes.get("name", "Unnamed Context"),
                 content=content
             )
         elif tag == "interpret-as-bool":
@@ -147,6 +144,9 @@ class AiNode:
         """Execute the node's action. Placeholder for actual logic."""
         message = self.enter(message,depth)
         depth += 1
+
+        if self.element is None:
+            return message
 
         # Check if conditions pass before running anything inside this element...
         should_enter = self.element.should_enter(message)

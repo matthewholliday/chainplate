@@ -3,18 +3,14 @@ from ..helpers.template_helper import TemplateHelper
 from .base_element import BaseElement
 
 class ContinueIfElement(BaseElement):
-    def __init__(self, name, condition: str, output_var=None):
-        self.name = name
+    def __init__(self, condition: str, output_var=None):
         self.condition = condition
         self.output_var = output_var
-        self
 
     def enter(self, message:Message) -> Message:
-        message = message.log_continue_if_start(self.name,self.condition,self.output_var) #TODO: migrate to LoggingHelper
         return message
 
     def exit(self, message:Message) -> Message:
-        message = message.log_continue_if_end(self.name,self.condition,self.output_var) #TODO: migrate to LoggingHelper
         return message
     
     def should_enter(self, message: Message) -> bool:

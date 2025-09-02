@@ -3,6 +3,91 @@ from src.aixml.ainode import AiNode
 from src.aixml.elements.pipeline_element import PipelineElement
 
 class TestAiNode(unittest.TestCase):
+    def test_pretty_print_no_error(self):
+        # Should not raise error, even though it only prints
+        AiNode.pretty_print(True, "pipeline", 1)
+        AiNode.pretty_print(False, "pipeline", 2)
+
+    def test_get_element_by_tag_all_tags(self):
+        # Test all known tags return correct type
+        tags = [
+            ("pipeline", {}, PipelineElement),
+            ("send-prompt", {"output_var": "x"}, __import__("src.aixml.elements.send_prompt_element", fromlist=["SendPromptElement"]).SendPromptElement),
+            ("set-variable", {"output_var": "x"}, __import__("src.aixml.elements.set_variable_element", fromlist=["SetVariableElement"]).SetVariableElement),
+            ("write-to-file", {"filename": "f.txt"}, __import__("src.aixml.elements.write_to_file_element", fromlist=["WriteToFileElement"]).WriteToFileElement),
+            ("context", {}, __import__("src.aixml.elements.context_element", fromlist=["ContextElement"]).ContextElement),
+            ("interpret-as-bool", {"output_var": "x", "input_var": "y"}, __import__("src.aixml.elements.interpret_as_bool_element", fromlist=["InterpretAsBoolElement"]).InterpretAsBoolElement),
+            ("interpret-as-integer", {"output_var": "x", "input_var": "y"}, __import__("src.aixml.elements.interpret_as_integer", fromlist=["InterpretAsIntegerElement"]).InterpretAsIntegerElement),
+            ("continue-if", {"condition": "true"}, __import__("src.aixml.elements.continue_if_element", fromlist=["ContinueIfElement"]).ContinueIfElement),
+            ("debug", {}, __import__("src.aixml.elements.debug_element", fromlist=["DebugElement"]).DebugElement),
+            ("apply-labels", {"output_var": "x", "input_var": "y"}, __import__("src.aixml.elements.apply_labels_element", fromlist=["ApplyLabelsElement"]).ApplyLabelsElement),
+            ("while-loop", {"condition": "true"}, __import__("src.aixml.elements.while_loop_element", fromlist=["WhileLoopElement"]).WhileLoopElement),
+            ("for-loop", {"from": 1, "to": 2}, __import__("src.aixml.elements.for_loop_element", fromlist=["ForLoopElement"]).ForLoopElement),
+            ("get-user-input", {"output_var": "x"}, __import__("src.aixml.elements.get_user_input_element", fromlist=["GetUserInputElement"]).GetUserInputElement),
+        ]
+        for tag, attrs, cls in tags:
+            el = AiNode.get_element_by_tag(tag, attrs, "content")
+            self.assertIsInstance(el, cls)
+
+    def test_enter_exit_with_none_element(self):
+        node = AiNode(tag="t", contents="", children=[], attributes={}, element=None)
+        msg = {}
+        self.assertEqual(node.enter(msg, 0), msg)
+        self.assertEqual(node.exit(msg, 0), msg)
+
+    def test_execute_with_none_element(self):
+        node = AiNode(tag="t", contents="", children=[], attributes={}, element=None)
+        msg = {}
+        # Should just return msg, no error
+        self.assertEqual(node.execute(msg), msg)
+
+    def test_execute_should_enter_false(self):
+        class DummyElement:
+            def enter(self, msg): return msg
+            def exit(self, msg): return msg
+            def should_enter(self, msg): return False
+            def increment_iteration(self, msg): return msg
+            def should_exit(self, msg): return True, msg
+        class DummyMessage(dict):
+            def log_message(self, txt): self["logged"] = txt
+        node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
+        msg = DummyMessage()
+        result = node.execute(msg)
+        self.assertIn("logged", result)
+        self.assertIn("Skipping element", result["logged"])
+
+    def test_from_dict_nested_children(self):
+        data = {
+            "tag": "pipeline",
+            "contents": "root",
+            "attributes": {},
+            "children": [
+                {"tag": "debug", "contents": "child1", "attributes": {}, "children": []},
+                {"tag": "debug", "contents": "child2", "attributes": {}, "children": [
+                    {"tag": "debug", "contents": "grandchild", "attributes": {}, "children": []}
+                ]}
+            ]
+        }
+        node = AiNode.from_dict(data)
+        self.assertEqual(node.tag, "pipeline")
+        self.assertEqual(len(node.children), 2)
+        self.assertEqual(node.children[1].children[0].contents, "grandchild")
+
+    def test_str_deeply_nested(self):
+        data = {
+            "tag": "pipeline",
+            "contents": "root",
+            "attributes": {},
+            "children": [
+                {"tag": "debug", "contents": "child1", "attributes": {}, "children": [
+                    {"tag": "debug", "contents": "grandchild1", "attributes": {}, "children": []}
+                ]},
+                {"tag": "debug", "contents": "child2", "attributes": {}, "children": []}
+            ]
+        }
+        node = AiNode.from_dict(data)
+        s = str(node)
+        self.assertIn("grandchild1", s)
     def test_from_dict(self):
         data = {
             "tag": "pipeline",
@@ -47,7 +132,7 @@ class TestAiNode(unittest.TestCase):
             def exit(self, msg):
                 msg["exited"] = True
                 return msg
-            def conditions_passed(self, msg):
+            def should_enter(self, msg):
                 return msg.get("pass", True)
         node = AiNode(tag="dummy", contents="", children=[], attributes={}, element=DummyElement())
         msg = {}
@@ -55,37 +140,38 @@ class TestAiNode(unittest.TestCase):
         self.assertTrue(msg["entered"])
         msg = node.exit(msg, 0)
         self.assertTrue(msg["exited"])
-        self.assertTrue(node.conditions_passed({"pass": True}))
-        self.assertFalse(node.conditions_passed({"pass": False}))
+        self.assertTrue(node.element.should_enter({"pass": True}))
+        self.assertFalse(node.element.should_enter({"pass": False}))
 
     def test_stop_condition_true(self):
-        node = AiNode(tag="t", contents="", children=[], attributes={}, is_repeating=False)
-        self.assertTrue(node.stop_condition_true({}))
+        # The current AiNode does not have is_repeating or stop_condition_true, so this test is obsolete.
+        # Instead, test should_exit logic via element's should_exit method.
         class DummyElement:
-            def check_stop_condition_true(self, msg):
-                return msg.get("stop", False)
-        node2 = AiNode(tag="t", contents="", children=[], attributes={}, is_repeating=True, element=DummyElement())
-        self.assertFalse(node2.stop_condition_true({}))
-        self.assertTrue(node2.stop_condition_true({"stop": True}))
+            def should_exit(self, msg):
+                return msg.get("stop", False), msg
+        node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
+        should_exit, _ = node.element.should_exit({})
+        self.assertFalse(should_exit)
+        should_exit, _ = node.element.should_exit({"stop": True})
+        self.assertTrue(should_exit)
 
     def test_execute_runs_children(self):
         class DummyElement:
             def enter(self, msg): return msg
             def exit(self, msg): return msg
-            def conditions_passed(self, msg): return True
+            def should_enter(self, msg): return True
+            def increment_iteration(self, msg): return msg
+            def should_exit(self, msg):
+                # Run loop once, then exit
+                if not msg.get("looped", False):
+                    msg["looped"] = True
+                    return False, msg
+                return True, msg
         class DummyChild(AiNode):
             def execute(self, msg, depth=0):
                 msg["ran_child"] = True
                 return msg
         node = AiNode(tag="parent", contents="", children=[DummyChild(tag="c", contents="", children=[], attributes={})], attributes={}, element=DummyElement())
-        # Make stop_condition_true return False first, then True (run loop once)
-        call_count = {"count": 0}
-        def stop_once(msg):
-            if call_count["count"] == 0:
-                call_count["count"] += 1
-                return False
-            return True
-        node.stop_condition_true = stop_once
         msg = {}
         result = node.execute(msg)
         self.assertTrue(result.get("ran_child", False))

@@ -15,7 +15,7 @@ class WriteToFileElement(BaseElement):
 			rendered_content = TemplateHelper.render_template(self.content, message.get_vars())
 			with open(self.filename, "w", encoding="utf-8") as f:
 				f.write(rendered_content)
-			return message.log_write_to_file(self.filename, rendered_content)
+			return message
 		except Exception as e:
 			message.log(f"WriteToFileElement: ERROR writing to {self.filename}: {e}")
 		return message
