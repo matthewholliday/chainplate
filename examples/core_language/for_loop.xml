@@ -1,6 +1,6 @@
 <pipeline name="for loop testing">
     <set-variable name="123" output_var="my_prompt">This is a prompt.</set-variable>
-    <for-loop name="test loop" start="1" stop="3">
+    <for-loop name="test loop" from="0" to="3">
         <debug name="test debug">current index: {{ my_prompt ~ index }}</debug>
     </for-loop>
 </pipeline>
