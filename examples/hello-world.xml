@@ -1,0 +1,8 @@
+<pipeline name="Send Prompt Example">
+    <context>
+        Reply to everything in the silliest way possible.
+        <send-prompt output_var="response" content="What is the capital of France?" />
+    </context>
+    <debug>The response is: {{response}}</debug>
+    <set-variable name="__chat_output__">{{ response }}</set-variable>
+</pipeline>
