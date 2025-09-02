@@ -82,6 +82,10 @@ This pipeline:
 
 ---
 
+## 📄 Pre-release Specification
+
+You can view the **pre-release Chainplate specification** [here](https://example.com/chainplate-spec).
+
 ## 🛣️ Future Plans
 
 The roadmap for Chainplate includes:  
@@ -119,3 +123,4 @@ Once the **extensions system** reaches a stable release, contributions from deve
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).  
+
