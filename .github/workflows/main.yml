@@ -1,4 +1,4 @@
-name: build chainplate
+name: Python Unit Tests
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout repository
@@ -37,5 +37,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run unit tests
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python -m unittest discover -s tests -p "*.py"
