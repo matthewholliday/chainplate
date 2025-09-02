@@ -25,9 +25,9 @@ class BaseElement(ABC):
     def should_exit(self, message: Message) -> tuple[bool, Message]:
         return (True, message)
     
-    def apply_template(self, message: Message) -> str:
+    def apply_template(self, template_str: str, message: Message) -> str:
         context = message.get_vars()
-        return TemplateHelper.safe_render_template(self.content, context)
+        return TemplateHelper.safe_render_template(template_str, context)
     
     def apply_templates(self, templates: list[str], message: Message) -> list[str]:
         context = message.get_vars()
