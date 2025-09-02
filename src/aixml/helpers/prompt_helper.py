@@ -20,7 +20,7 @@ except ImportError:
         return resp.choices[0].message["content"]
 
 CLIENT_NAME = "openai" # TODO: make configurable
-OPENAI_MODEL = "gpt-5" # TODO: make configurable
+OPENAI_MODEL = "gpt-5-mini" # TODO: make configurable
 
 def ask(prompt: str) -> str:
     if(CLIENT_NAME == "openai"):

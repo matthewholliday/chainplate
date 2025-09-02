@@ -109,8 +109,8 @@ class AiNode:
             return element
         elif tag == "for-loop":
             element = ForLoopElement(
-                start_num=int(attributes.get("start", 0)),
-                stop_num=int(attributes.get("stop", 10))
+                start_num=int(attributes.get("from", 0)),
+                stop_num=int(attributes.get("to", 10))
             )
             return element
         elif tag == "get-user-input":

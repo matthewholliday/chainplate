@@ -1,0 +1,10 @@
+<pipeline>
+    <debug>[APP] Enter a prompt, and I will respond with a enhanced prompt:</debug>
+    <get-user-input output_var="user_input" prompt="Your prompt: " />
+    <for-loop from="0" to="3">
+        <send-prompt output_var="enhanced_prompt">Enhance the following prompt for an AI language model to make it more detailed and specific: {{user_input}}</send-prompt>>
+        <debug>[APP] pass #{{ index }}: </debug>
+        <debug>[APP] {{enhanced_prompt}}</debug>
+        <debug>=============================================================</debug>
+    </for-loop>
+</pipeline>
