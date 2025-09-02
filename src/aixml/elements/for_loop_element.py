@@ -22,7 +22,7 @@ class ForLoopElement(BaseElement):
             self.stop_num_int = int(self.stop_num_evaluated)
         except Exception as e:
             error_message = f"ForLoopElement encountered an error during evaluation: {e}"
-            return message.log_message(error_message)
+            message = message.log_message(error_message)
         return message
     
     def exit(self, message: Message) -> Message:
