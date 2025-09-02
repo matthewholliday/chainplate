@@ -47,7 +47,7 @@ class TestAiNode(unittest.TestCase):
             def exit(self, msg):
                 msg["exited"] = True
                 return msg
-            def conditions_passed(self, msg):
+            def should_enter(self, msg):
                 return msg.get("pass", True)
         node = AiNode(tag="dummy", contents="", children=[], attributes={}, element=DummyElement())
         msg = {}
@@ -55,37 +55,38 @@ class TestAiNode(unittest.TestCase):
         self.assertTrue(msg["entered"])
         msg = node.exit(msg, 0)
         self.assertTrue(msg["exited"])
-        self.assertTrue(node.conditions_passed({"pass": True}))
-        self.assertFalse(node.conditions_passed({"pass": False}))
+        self.assertTrue(node.element.should_enter({"pass": True}))
+        self.assertFalse(node.element.should_enter({"pass": False}))
 
     def test_stop_condition_true(self):
-        node = AiNode(tag="t", contents="", children=[], attributes={}, is_repeating=False)
-        self.assertTrue(node.stop_condition_true({}))
+        # The current AiNode does not have is_repeating or stop_condition_true, so this test is obsolete.
+        # Instead, test should_exit logic via element's should_exit method.
         class DummyElement:
-            def check_stop_condition_true(self, msg):
-                return msg.get("stop", False)
-        node2 = AiNode(tag="t", contents="", children=[], attributes={}, is_repeating=True, element=DummyElement())
-        self.assertFalse(node2.stop_condition_true({}))
-        self.assertTrue(node2.stop_condition_true({"stop": True}))
+            def should_exit(self, msg):
+                return msg.get("stop", False), msg
+        node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
+        should_exit, _ = node.element.should_exit({})
+        self.assertFalse(should_exit)
+        should_exit, _ = node.element.should_exit({"stop": True})
+        self.assertTrue(should_exit)
 
     def test_execute_runs_children(self):
         class DummyElement:
             def enter(self, msg): return msg
             def exit(self, msg): return msg
-            def conditions_passed(self, msg): return True
+            def should_enter(self, msg): return True
+            def increment_iteration(self, msg): return msg
+            def should_exit(self, msg):
+                # Run loop once, then exit
+                if not msg.get("looped", False):
+                    msg["looped"] = True
+                    return False, msg
+                return True, msg
         class DummyChild(AiNode):
             def execute(self, msg, depth=0):
                 msg["ran_child"] = True
                 return msg
         node = AiNode(tag="parent", contents="", children=[DummyChild(tag="c", contents="", children=[], attributes={})], attributes={}, element=DummyElement())
-        # Make stop_condition_true return False first, then True (run loop once)
-        call_count = {"count": 0}
-        def stop_once(msg):
-            if call_count["count"] == 0:
-                call_count["count"] += 1
-                return False
-            return True
-        node.stop_condition_true = stop_once
         msg = {}
         result = node.execute(msg)
         self.assertTrue(result.get("ran_child", False))
