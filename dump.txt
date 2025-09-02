@@ -1,3 +1,0 @@
-first context greeting: Ahoy there, me hearties! Set sail and join me on this here ship o' mine as we navigate the treacherous seas in search of plunder and adventure. Aye, it be a fine day for pillaging and plunderin'! Arrr!
-        
-        second context greeting: Yo dude, what's good? How's it hanging, my man?
