@@ -1,0 +1,17 @@
+<pipeline name="x1">
+    <get-user-input output_var="food">[APP] Give me the name of a food: </get-user-input>
+    <get-user-input output_var="location">[APP] Now give me the name of a location: </get-user-input>
+    <get-user-input output_var="celebrity">[APP] Now give me the name of a celebrity: </get-user-input>
+    
+    <send-prompt output_var="__chat_output__">
+        Generate a compelling, detailed description of a hypothetical fragrance based on the following random inspirations:
+
+        Food: {{ food }}
+        Location: {{ location }}
+        Celebrity: {{ celebrity }}
+
+        The description should be vivid and imaginative, capturing the essence of the fragrance inspired by these elements.
+        Make it engaging and appealing, as if you are describing a luxurious and unique scent.
+        Don't forget to provide a catchy name for the fragrance at the beginning of the description.
+    </send-prompt>
+</pipeline>
