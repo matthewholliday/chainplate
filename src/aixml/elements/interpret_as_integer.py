@@ -1,6 +1,6 @@
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper
-from .interpret_as_base import InterpretAsBase
+from .interpret_as_base_element import InterpretAsBase
 
 TEMPLATE_TEXT = """
 You are a precise integer interpreter. Convert the given input into a single integer using the best available information.
@@ -30,6 +30,3 @@ class InterpretAsIntegerElement(InterpretAsBase):
 
     def get_prompt_template(self):
         return TEMPLATE_TEXT
-    
-    def get_template_context(self):
-        return {"input_txt": self.input_value}

@@ -129,6 +129,13 @@ class AiNode:
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 content=content or "Please provide input: "
             )
+        elif tag == "send-chat":
+            from .elements.send_chat_element import SendChatElement
+            return SendChatElement(
+                name=attributes.get("name", "Unnamed Chat"),
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                content=attributes.get("content", content)
+            )
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements

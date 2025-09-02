@@ -19,10 +19,28 @@ class TemplateHelper:
         cls._env.globals.update(kwargs)
 
     @classmethod
+    def has_bindings(cls,template_str: str, template_context: dict) -> bool:
+        referenced_vars = TemplateHelper.get_template_vars(template_str)
+        available_vars = template_context.keys()
+        return all(var in available_vars for var in referenced_vars)
+
+    @classmethod
     def render_template(cls, template_str: str, context: dict):
         template = cls._env.from_string(template_str)
         rendered_template = template.render(**context)
         return rendered_template
+    
+    #Checks bindings before rendering...
+    @classmethod
+    def safe_render_template(cls, template_str: str, template_context: dict):
+        try:
+            cls.render_template(template_str, template_context)
+        except jinja2.exceptions.UndefinedError as e:
+            return f"Error attempting to render template: \n {str(e)}"
+        if not cls.has_bindings(template_str, template_context):
+            missing_vars = cls.get_template_vars(template_str, template_context)
+            return f"Error attempting to render template: \n Missing variables for template rendering: {', '.join(missing_vars)}"
+        return cls.render_template(template_str, template_context)
 
     @classmethod
     def get_template_vars(cls, template_str: str, provided: dict | None = None):

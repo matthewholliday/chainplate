@@ -1,37 +1,37 @@
-[2025-08-31 12:40:03]
+[2025-09-01 11:49:45]
 [SET-VARIABLE]
 NAME: 
- payload
+ __payload__
 
 VALUE: 
- 
+ there were three dogs
 ===============END LOG ENTRY================
 
-[2025-08-31 12:40:03]
+[2025-09-01 11:49:45]
 [PIPELINE START]
-user input testing
+interpret as integer
 ===============END LOG ENTRY================
 
-[2025-08-31 12:40:03]
+[2025-09-01 11:49:48]
 [SET-VARIABLE]
 NAME: 
- user_input
+ as_int_result
 
 VALUE: 
- What is your favorite food?
+ 3
 ===============END LOG ENTRY================
 
-[2025-08-31 12:40:07]
+[2025-09-01 11:49:48]
 [SET-VARIABLE]
 NAME: 
- user_input
+ __payload__
 
 VALUE: 
- Pizza
+ 3
 ===============END LOG ENTRY================
 
-[2025-08-31 12:40:07]
+[2025-09-01 11:49:48]
 [PIPELINE END]
-user input testing
+interpret as integer
 ===============END LOG ENTRY================
 

@@ -1,18 +1,21 @@
 from .helpers.template_helper import TemplateHelper
 from .helpers.prompt_helper import ask as prompt_ask
+from .helpers.prompt_helper import chat as prompt_chat
 import os
 
-CONTEXT_output_var = "__context__"
+CONTEXT_KEY = "__context__"
+PAYLOAD_KEY = "__payload__"
 
 class Message:
     def __init__(self):
         self.logs = []
         self.vars = {}
         self.context_stack = []
-        self.vars[CONTEXT_output_var] = self.read_context()
+        self.vars[CONTEXT_KEY] = self.read_context()
+        self.conversation_history = []  # For chat mode
 
     def update_context_var(self):
-        self.vars[CONTEXT_output_var] = self.read_context()
+        self.vars[CONTEXT_KEY] = self.read_context()
         return self
 
     def push_context(self, content: str):
@@ -88,11 +91,6 @@ class Message:
         context_str = self.read_context()
         prompt_with_context = f"{context_str}\n\n{prompt}" if context_str else prompt
         return prompt_with_context
-
-    def ask_llm(self, prompt: str) -> str:
-        prompt_with_context = self.generate_prompt(prompt)
-        response = prompt_ask(prompt_with_context)
-        return response
     
     def log_pipeline_start(self, pipeline_name: str):
         self.log_message(f"[PIPELINE START]\n{pipeline_name}")
@@ -122,6 +120,10 @@ class Message:
         return self
     
     def set_payload(self, payload: str):
-        self.set_var("payload", payload)
+        self.set_var(PAYLOAD_KEY, payload)
+        return self
+    
+    def prompt_chat(self) -> list:
+        self.conversation_history = prompt_chat(self.conversation_history)
         return self
 

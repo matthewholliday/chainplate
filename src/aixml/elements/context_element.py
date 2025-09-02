@@ -1,6 +1,7 @@
 from ..message import Message
+from .base_element import BaseElement
 
-class ContextElement:
+class ContextElement(BaseElement):
     def __init__(self, name, content: str):
         self.name = name
         self.content = content
