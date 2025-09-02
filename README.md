@@ -17,6 +17,9 @@ Chainplate is an **XML-based markup language** for rapid development of **genera
 
 Currently, Chainplate must be installed from source. Future releases will be available on **PyPI** and as a **Docker container**.
 
+> **Note:** Chainplate currently only supports the **OpenAI API**. Support for **Claude**, **OpenLLaMA**, and custom extensions is coming soon.  
+> You will need to set your `OPENAI_API_KEY` environment variable with a valid OpenAI API key.
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/chainplate.git
@@ -37,7 +40,13 @@ Currently, Chainplate must be installed from source. Future releases will be ava
    python -m pip install -e .
    ```
 
-4. Test the installation:
+4. Set your OpenAI API key:
+   ```bash
+   export OPENAI_API_KEY=your_api_key_here   # Linux / macOS
+   setx OPENAI_API_KEY "your_api_key_here"   # Windows
+   ```
+
+5. Test the installation:
    ```bash
    chainplate
    ```
