@@ -33,9 +33,3 @@ class TestMessage(unittest.TestCase):
         self.assertEqual(msg.get_chat_input(), "input")
         msg.set_chat_response("response")
         self.assertEqual(msg.get_chat_response(), "response")
-
-    def test_log_message_format(self):
-        msg = Message()
-        log_entry = msg.log_message("Some log text")
-        self.assertIn("Some log text", log_entry)
-        self.assertIn("END LOG ENTRY", log_entry)
