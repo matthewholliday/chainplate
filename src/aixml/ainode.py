@@ -126,7 +126,7 @@ class AiNode:
     def pretty_print(is_enter: bool, tag: str, depth: int):
         spacing = "  " * depth
         prefix = ">> " if is_enter else "<< "
-        # print(spacing + prefix + f"{tag}")
+        # print(spacing + prefix + f"{tag}") TODO - supply ux service
 
     def enter(self,message,depth) -> Message:
         AiNode.pretty_print(True,self.tag,depth)

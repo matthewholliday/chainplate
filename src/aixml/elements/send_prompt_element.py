@@ -1,5 +1,5 @@
 from ..message import Message
-from .ai_base_element import AiBaseElement
+from .base_elements.ai_base_element import AiBaseElement
 from ..helpers.prompt_helper import ask_with_context
 from ..helpers.template_helper import TemplateHelper
 
@@ -8,11 +8,12 @@ class SendPromptElement(AiBaseElement):
         super().__init__(output_var, content)
 
     def enter(self , message: Message) -> Message:
-        # Render the content as a template using message.vars as the template context
-        templated_content= TemplateHelper.safe_render_template(template_str=self.content, template_context=message.get_vars())
+
+         # This will template output_var and content
+        super().enter(message)
 
         # Set the special __chat_input__ variable
-        message.set_chat_input(templated_content)
+        message.set_chat_input(self.content)
 
         # Get the current context from the message
         context = message.read_context()
@@ -20,13 +21,13 @@ class SendPromptElement(AiBaseElement):
         chat_history = message.get_chat_history()
 
         # Send the prompt and get the response
-        response = ask_with_context(templated_content, context, chat_history)
+        response = ask_with_context(self.content, context, chat_history)
 
         # Store the response in the specified output variable     
         message.set_var(self.output_var, response)
 
         # Also set the special __payload__ variable
-        message.set_payload(templated_content)
+        message.set_payload(self.content)
 
         # Also set the special __chat_response__ variable
         message.set_chat_response(response)
