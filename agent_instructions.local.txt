@@ -1,7 +1,0 @@
-about the project:
-
-# AIXML is an XML-based language for interacting with AI models, allowing users to define structured prompts and workflows. The project includes a core library for parsing and executing AIXML documents, as well as a command-line interface (CLI) for processing AIXML files.
-
-The project is currently under active development and is considered to be in a pre-release state. Users should be aware that the API and features may change as the project evolves.
-
-The current focus application of AIXML is to serve as a rapid prototytping tool for AI flows and agents. It is not intended to be a production-ready solution at this time.

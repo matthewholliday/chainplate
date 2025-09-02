@@ -3,3 +3,4 @@ secrets
 output
 scratch.xml
 __pycache__
+dist

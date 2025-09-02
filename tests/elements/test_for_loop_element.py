@@ -1,6 +1,6 @@
 import unittest
-from src.aixml.elements.for_loop_element import ForLoopElement
-from src.aixml.message import Message
+from src.chainplate.elements.for_loop_element import ForLoopElement
+from src.chainplate.message import Message
 
 class TestForLoopElement(unittest.TestCase):
     def setUp(self):

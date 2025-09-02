@@ -3,14 +3,14 @@ requires = ["hatchling>=1.24"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aixml"
+name = "chainplate"
 version = "0.1.0"
-description = "Tools for working with AI-flavored XML (example)."
+description = "XML-based AI workflow tool for chat and agentic applications."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [{ name = "Your Name", email = "you@example.com" }]
-keywords = ["xml", "ai", "parsing"]
+authors = [{ name = "Matthew Holliday", email = "matthewjacobholliday@gmail.com" }]
+keywords = ["xml", "ai", "parsing","agent","chatbot","workflow", "automation"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
@@ -26,20 +26,19 @@ dev = ["pytest>=8", "ruff>=0.5", "black>=24.0"]
 
 [project.urls]
 Homepage = "https://example.com/aixml"
-Repository = "https://example.com/aixml/repo"
-Issues = "https://example.com/aixml/issues"
+Repository = "https://github.com/matthewholliday/chainplate"
+Issues = "https://github.com/matthewholliday/chainplate/issues"
 
-# Optional: a console command `aixml` that runs main()
 [project.scripts]
-aixml = "aixml.__main__:main"
+chainplate = "chainplate.__main__:main"
 
 # Include non-code files if you have any (e.g., schemas/)
 [tool.hatch.build]
 include = [
-  "src/aixml/**",
+  "src/chainplate/**",
   "README.md",
   "LICENSE",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/aixml"]
+packages = ["src/chainplate"]

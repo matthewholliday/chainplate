@@ -1,5 +1,5 @@
 import unittest
-from src.aixml.helpers.boolean_helper import BooleanHelper
+from src.chainplate.helpers.boolean_helper import BooleanHelper
 
 class TestBooleanHelper(unittest.TestCase):
     def test_to_bool_true(self):

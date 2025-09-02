@@ -1,5 +1,5 @@
 import unittest
-from src.aixml.message import Message
+from src.chainplate.message import Message
 
 class TestMessage(unittest.TestCase):
     def test_message_logging(self):
