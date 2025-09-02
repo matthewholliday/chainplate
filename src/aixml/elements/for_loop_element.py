@@ -16,17 +16,13 @@ class ForLoopElement(BaseElement):
         self.stop_num_evaluated = ""
 
     def enter(self, message: Message) -> Message:
-        print("current_iteration_str:", self.current_iteration_str)
-        print("stop_num_str:", self.stop_num_str)
-
         try:
             self.current_iteration_evaluated, self.stop_num_evaluated = self.apply_templates(templates=[self.current_iteration_str, self.stop_num_str], message=message)
             self.current_iteration_int = int(self.current_iteration_evaluated)
             self.stop_num_int = int(self.stop_num_evaluated)
         except Exception as e:
             error_message = f"ForLoopElement encountered an error during evaluation: {e}"
-            print(error_message)
-            raise e
+            return message.log_message(error_message)
         return message
     
     def exit(self, message: Message) -> Message:
