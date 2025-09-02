@@ -1,0 +1,4 @@
+<pipeline name="write to file example">
+    <write-to-file filename="output.txt">This is a test file: {{ __payload__ }}</write-to-file>
+    <debug>File 'output.txt' has been written.</debug>
+</pipeline>
