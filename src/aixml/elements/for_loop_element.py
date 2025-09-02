@@ -3,8 +3,7 @@ from ..helpers.boolean_helper import BooleanHelper
 from .base_element import BaseElement
 
 class ForLoopElement(BaseElement):
-    def __init__(self, name: str, start_num: int, stop_num: int):
-        self.name = name
+    def __init__(self, start_num: int, stop_num: int):
         self.is_repeating = True
         self.current_iteration = start_num
         self.stop_num = stop_num

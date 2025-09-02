@@ -5,9 +5,6 @@ from ..message_update import MessageUpdate
 class BaseElement(ABC):
     """Abstract base class for all elements in the XML interpreter."""
 
-    def __init__(self, element_id: str):
-        self.element_id = element_id
-
     @abstractmethod
     def enter(self, message: "Message") -> "Message":
         """Called when entering the element."""

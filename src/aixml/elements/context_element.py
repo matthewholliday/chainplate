@@ -2,8 +2,7 @@ from ..message import Message
 from .base_element import BaseElement
 
 class ContextElement(BaseElement):
-    def __init__(self, name, content: str):
-        self.name = name
+    def __init__(self, content: str):
         self.content = content
 
     def enter(self, message:Message) -> Message:

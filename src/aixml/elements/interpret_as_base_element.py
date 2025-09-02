@@ -7,8 +7,7 @@ from ..helpers.prompt_helper import ask as ask_ai
 
 
 class InterpretAsBase(BaseElement):
-    def __init__(self, name, output_var, input_var):
-        self.name = "unnamed" if name is None else name
+    def __init__(self, output_var, input_var):
         self.output_var = "unnamed" if output_var is None else output_var
         self.input_var = "unnamed" if input_var is None else input_var
 

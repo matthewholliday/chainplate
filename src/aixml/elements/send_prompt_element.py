@@ -4,8 +4,8 @@ from ..helpers.prompt_helper import ask_with_context
 from ..helpers.template_helper import TemplateHelper
 
 class SendPromptElement(AiBaseElement):
-    def __init__(self, name, output_var, content):
-        super().__init__(name, output_var, content)
+    def __init__(self, output_var, content):
+        super().__init__(output_var, content)
 
     def enter(self , message: Message) -> Message:
         # Render the content as a template using message.vars as the template context

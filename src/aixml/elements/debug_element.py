@@ -3,8 +3,7 @@ from ..helpers.template_helper import TemplateHelper
 from .base_element import BaseElement
 
 class DebugElement(BaseElement):
-	def __init__(self, name, content="Debug Message"):
-		self.name = name
+	def __init__(self, content="Debug Message"):
 		self.content = content
 
 	def enter(self, message: Message) -> Message:
