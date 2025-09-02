@@ -1,74 +1,112 @@
+# Chainplate
 
-# chainplate: AI Workflow Markup Language
+Chainplate is an **XML-based markup language** for rapid development of **generative AI applications**, including chatbots, workflows, and agents.  
 
-*chainplate* is an XML-based language for interacting with AI models, allowing users to define structured prompts and workflows. It is designed for rapid prototyping of AI flows and agents, providing a flexible way to orchestrate LLM calls, variable management, and conditional logic in a readable XML format.
+⚠️ **Pre-release Notice**: Chainplate is under active development and not yet production-ready. Expect breaking changes and incomplete features.
 
-> **Note:** AIXML is in pre-release and under active development. APIs and features may change.
+---
 
-## Features
+## 🚀 Features (Coming Soon)
+- Define AI workflows using a simple XML-based DSL.  
+- Rapidly prototype and deploy chatbots and AI agents.  
+- Compose multi-step reasoning chains with minimal code.  
 
-- **XML-based syntax** for defining AI workflows
-- **Core library** for parsing and executing AIXML documents
-- **Command-line interface (CLI)** for processing AIXML files
-- **Rapid prototyping** of AI agents and flows
+---
 
-## Example Syntax
+## 📦 Installation
+
+Currently, Chainplate must be installed from source. Future releases will be available on **PyPI** and as a **Docker container**.
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/chainplate.git
+   cd chainplate
+   ```
+
+2. (Optional) Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux / macOS
+   venv\Scripts\activate     # Windows
+   ```
+
+3. Build and install locally:
+   ```bash
+   python -m pip install build
+   python -m build
+   python -m pip install -e .
+   ```
+
+4. Test the installation:
+   ```bash
+   chainplate
+   ```
+
+---
+
+## ⚡ Usage
+
+Once installed, you can run workflows defined in XML files. For example, the repository includes a **Hello World** workflow:
+
+```bash
+chainplate --workflow examples/hello-world.xml
+```
+
+### Example: `examples/hello-world.xml`
 
 ```xml
-<pipeline name="Example Pipeline">
-	<set-variable output_var="user_input">Hello world!</set-variable>
-	<interpret-as-bool input_var="user_input" output_var="is_greeting" />
-	<continue-if condition="{{ is_greeting }}">
-		<debug>The input was a greeting.</debug>
-	</continue-if>
-	<write-to-file filename="output.txt">
-		Result: {{ is_greeting }}
-	</write-to-file>
+<pipeline name="Send Prompt Example">
+    <context>
+        Reply to everything in the silliest way possible.
+        <send-prompt output_var="response" content="What is the capital of France?" />
+    </context>
+    <debug>The response is: {{response}}</debug>
+    <set-variable name="__chat_output__">{{ response }}</set-variable>
 </pipeline>
 ```
 
-## CLI Usage
+This pipeline:
+1. Defines a **context** (“Reply to everything in the silliest way possible”).  
+2. Sends a **prompt** to the model (`What is the capital of France?`) and stores the output in a variable `response`.  
+3. Prints the response with `<debug>`.  
+4. Sets the special variable `__chat_output__` so the final output can be captured.  
 
-The CLI is invoked as `aixml` and supports several commands and options:
+---
 
-### Parse XML to JSON
+## 🛣️ Future Plans
 
-```
-python -m aixml --parse-to-json -i input.xml -o output.json
-```
-- Parses the input XML and outputs a JSON representation.
+The roadmap for Chainplate includes:  
 
-### Execute an AIXML Pipeline
+- **Modes**  
+  - Workflow mode (currently functional)  
+  - Chat mode (currently functional)  
+  - Agent mode (planned)  
 
-```
-python -m aixml --execute examples/complex1.xml
-```
-- Executes the pipeline defined in the XML file.
+- **Core Goals**  
+  - Publish a stable, versioned specification for production use  
+  - Distribute via **PyPI** and **Docker**  
+  - Provide open-source contribution guidelines and a developer starter kit  
 
-### Run an Arbitrary Query
+- **New XML Elements (Planned)**  
+  - `<rest-server>`: Launch a REST API for programmatic integration  
+  - Built-in developer server and editor UI  
+  - `<mcp>`: Define MCP tools usable within a given scope  
+  - `<get-sentiment>`: Extract sentiment from text  
+  - `<get-collection>`: Retrieve structured collections from text  
+  - Support for **Claude AI**, **OpenLLaMA**, and **OpenAI-format-compatible services**  
 
-```
-python -m aixml --ask "What is the capital of France?"
-```
-- Sends a prompt directly to the LLM backend.
+---
 
-### Additional Options
+## 🤝 Contributing
 
-- `--encoding` (default: utf-8): Specify text encoding
-- `--overwrite`: Allow overwriting output files
-- `--quiet`: Suppress non-error messages
+At this stage, the best way to contribute is by:  
+- **Testing** workflows and features.  
+- **Submitting issues** for bugs, unexpected behavior, or feature requests.  
 
-## Syntax Reference
+Once the **extensions system** reaches a stable release, contributions from developers (PRs, plugins, new elements) will be welcomed.  
 
-- `<pipeline>`: Defines a workflow pipeline
-- `<set-variable output_var="...">value</set-variable>`: Sets a variable
-- `<interpret-as-bool input_var="..." output_var="..." />`: Interprets input as boolean using LLM
-- `<continue-if condition="...">...</continue-if>`: Conditional execution
-- `<debug>...</debug>`: Prints debug information
-- `<write-to-file filename="...">...</write-to-file>`: Writes output to a file
+---
 
-See the `examples/` directory for more sample pipelines and advanced usage.
+## 📜 License
 
-## Project Status
-
-AIXML is intended for experimentation and prototyping. It is not production-ready. Contributions and feedback are welcome!
+This project is licensed under the [MIT License](LICENSE).  
