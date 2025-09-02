@@ -67,13 +67,13 @@ class Message:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-    def log_message(self, text: str) -> str:
+    def log_message(self, text: str):
         timestamp = self.get_formatted_timestamp()
         formatted_text = f"[{timestamp}]"
         formatted_text += "\n" + text
         formatted_text += "\n===============END LOG ENTRY================\n"
         self.log(formatted_text)
-        return formatted_text
+        return self
     
     def set_payload(self, payload: str):
         self.set_var(PAYLOAD_KEY, payload)

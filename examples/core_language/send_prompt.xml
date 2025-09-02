@@ -1,7 +1,0 @@
-<pipeline name="Send Prompt Example">
-    <context>
-        Reply to everything in the silliest way possible.
-        <send-prompt name="SendPrompt1" output_var="response" content="What is the capital of France?" />
-    </context>
-    <debug name="Debug1">The response is: {{response}}</debug>
-</pipeline>

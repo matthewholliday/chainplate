@@ -34,6 +34,8 @@ class TemplateHelper:
     @classmethod
     def safe_render_template(cls, template_str: str, template_context: dict):
         try:
+            if(not isinstance(template_str, str)):
+                template_str = str(template_str)
             cls.render_template(template_str, template_context)
         except jinja2.exceptions.UndefinedError as e:
             return f"Error attempting to render template: \n {str(e)}"

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from ..message import Message
-from ..message_update import MessageUpdate
+from ..helpers.template_helper import TemplateHelper
 
 class BaseElement(ABC):
     """Abstract base class for all elements in the XML interpreter."""
@@ -24,3 +24,11 @@ class BaseElement(ABC):
 
     def should_exit(self, message: Message) -> tuple[bool, Message]:
         return (True, message)
+    
+    def apply_template(self, template_str: str, message: Message) -> str:
+        context = message.get_vars()
+        return TemplateHelper.safe_render_template(template_str, context)
+    
+    def apply_templates(self, templates: list[str], message: Message) -> list[str]:
+        context = message.get_vars()
+        return [TemplateHelper.safe_render_template(t, context) for t in templates]

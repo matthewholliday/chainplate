@@ -1,6 +1,7 @@
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper
 from .base_element import BaseElement
+from ..helpers.boolean_helper import BooleanHelper
 
 class ContinueIfElement(BaseElement):
     def __init__(self, condition: str, output_var=None):
@@ -14,14 +15,17 @@ class ContinueIfElement(BaseElement):
         return message
     
     def should_enter(self, message: Message) -> bool:
-        print("Evaluating ContinueIf condition...")
+        # Apply templating to condition and output_var
+        self.condition, self.output_var = self.apply_templates([self.condition, self.output_var], message)
 
+        # Evaluate the condition
         conditions_passed = False
 
-        evaluation = TemplateHelper.render_template(self.condition, message.get_vars())
-
-        if evaluation.strip().lower() in ["true", "1", "yes"]:
-            conditions_passed = True
+        try:
+            conditions_passed = BooleanHelper.evaluate_condition(self.condition, message)
+        except ValueError:
+            conditions_passed = False
+            raise ValueError(f"Cannot interpret condition '{self.condition}' as boolean.")
         
         message.set_var(self.output_var, conditions_passed)
 

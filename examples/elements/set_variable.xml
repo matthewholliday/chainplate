@@ -1,0 +1,5 @@
+<pipeline name="Set Variable Example">
+    <set-variable output_var="greeting">"Hello, World!"</set-variable>
+    <set-variable output_var="farewell">"Goodbye, World!"</set-variable>
+    <debug>greeting: {{ greeting }}, farewell: {{ farewell }} </debug>
+</pipeline>

@@ -9,6 +9,8 @@ class GetUserInputElement(BaseElement):
         self.content = content
 
     def enter(self , message: Message) -> Message:
+        self.content = self.apply_templates([self.content], message)[0]
+
         message = message.set_var(self.output_var, self.content)
 
         user_input = input(self.content)

@@ -12,7 +12,7 @@ class WriteToFileElement(BaseElement):
 	def enter(self, message: Message) -> Message:
 		# Render content with template variables from message
 		try:
-			rendered_content = TemplateHelper.render_template(self.content, message.get_vars())
+			rendered_content = self.apply_template(self.content, message)
 			with open(self.filename, "w", encoding="utf-8") as f:
 				f.write(rendered_content)
 			return message

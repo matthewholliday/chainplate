@@ -1,8 +1,9 @@
-from ..message import Message
-from ..helpers.template_helper import TemplateHelper
-from abc import ABC, abstractmethod
+from ...message import Message
+from ...helpers.template_helper import TemplateHelper
+from abc import abstractmethod
+from ..base_element import BaseElement
 
-class AiBaseElement(ABC):
+class AiBaseElement(BaseElement):
     def __init__(self, output_var, content):
         self.output_var = "unnamed" if output_var is None else output_var
         self.content = content
@@ -10,7 +11,7 @@ class AiBaseElement(ABC):
 
     @abstractmethod
     def enter(self , message: Message) -> Message:
-        pass
+        self.output_var, self.content, self.original_content = self.apply_templates([self.output_var, self.content, self.original_content], message)
 
     @abstractmethod
     def exit(self, message: Message) -> Message:
