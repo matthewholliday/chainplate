@@ -26,8 +26,8 @@ TEMPLATE_TEXT = """
 """
 
 class ApplyLabelsElement(InterpretAsBase):
-    def __init__(self, name, output_var, input_var, categories, criteria):
-        super().__init__(name, output_var, input_var)
+    def __init__(self, output_var, input_var, categories, criteria):
+        super().__init__(output_var, input_var)
         self.categories = categories
         self.criteria = criteria
 

@@ -3,8 +3,7 @@ from ..helpers.boolean_helper import BooleanHelper
 from .base_element import BaseElement
 
 class WhileLoopElement(BaseElement):
-    def __init__(self, name: str, condition: str):
-        self.name = name
+    def __init__(self,condition: str):
         self.condition = condition
         self.is_repeating = True
 

@@ -3,8 +3,7 @@ from ..helpers.template_helper import TemplateHelper
 from abc import ABC, abstractmethod
 
 class AiBaseElement(ABC):
-    def __init__(self, name, output_var, content):
-        self.name = "unnamed" if name is None else name
+    def __init__(self, output_var, content):
         self.output_var = "unnamed" if output_var is None else output_var
         self.content = content
         self.original_content = content

@@ -25,8 +25,8 @@ Now output exactly the integer and nothing else.
 """
 
 class InterpretAsIntegerElement(InterpretAsBase):
-    def __init__(self, name, output_var, input_var):
-        super().__init__(name, output_var, input_var)
+    def __init__(self, output_var, input_var):
+        super().__init__(output_var, input_var)
 
     def get_prompt_template(self):
         return TEMPLATE_TEXT

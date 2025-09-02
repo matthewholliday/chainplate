@@ -53,7 +53,6 @@ class AiNode:
             return PipelineElement(attributes.get("name", "Unnamed Pipeline"))
         elif tag == "send-prompt":
             return SendPromptElement(
-                name=attributes.get("name", "Unnamed Prompt"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 content=attributes.get("content", content)
             )
@@ -76,33 +75,28 @@ class AiNode:
             )
         elif tag == "interpret-as-bool":
             return InterpretAsBoolElement(
-                name=attributes.get("name", "Unnamed Bool Interpreter"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input")
             )
         elif tag == "interpret-as-integer":
             return InterpretAsIntegerElement(
-                name=attributes.get("name", "Unnamed Integer Interpreter"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input")
             )
         elif tag == "continue-if":
             from .elements.continue_if_element import ContinueIfElement
             return ContinueIfElement(
-                name=attributes.get("name", "Unnamed ContinueIf"),
                 condition=attributes.get("condition", "false"),
                 output_var=attributes.get("output_var", None)
             )
         elif tag == "debug":
             from .elements.debug_element import DebugElement
             return DebugElement(
-                name=attributes.get("name", "Debug Element"),
                 content=content or "Debug Message"
             )
         elif tag == "apply-labels": #TODO - rename
             from .elements.apply_labels_element import ApplyLabelsElement
             return ApplyLabelsElement(
-                name=attributes.get("name", "Unnamed ClassifyExclusive"),
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input"),
                 categories=attributes.get("labels", ""),
@@ -110,13 +104,11 @@ class AiNode:
             )
         elif tag == "while-loop":
             element = WhileLoopElement(
-                name=attributes.get("name", "Unnamed WhileLoop"),
                 condition=attributes.get("condition", "false")
             )
             return element
         elif tag == "for-loop":
             element = ForLoopElement(
-                name=attributes.get("name", "Unnamed ForLoop"),
                 start_num=int(attributes.get("start", 0)),
                 stop_num=int(attributes.get("stop", 10))
             )
