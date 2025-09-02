@@ -2,6 +2,7 @@ from .helpers.template_helper import TemplateHelper
 from .helpers.prompt_helper import ask as prompt_ask
 from .helpers.prompt_helper import chat as prompt_chat
 import os
+from .services.cli_service import CLIService
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
