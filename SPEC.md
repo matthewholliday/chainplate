@@ -342,4 +342,56 @@ or
 
 ---
 
-*End of specification.*
+---
+
+## Memory Elements
+
+### `<store-memory>`
+
+Stores a value in persistent memory for later retrieval.
+
+**Attributes**
+- `input_var` (string, optional): Name of the variable whose value to store.
+- (Body, optional): If `input_var` is not provided, the element body is used as the value.
+
+**Semantics**
+- Stores the value (from `input_var` or body) in persistent memory.
+
+**Structure**
+```xml
+<store-memory input_var="my_var" />
+```
+or
+```xml
+<store-memory>
+  Some value to remember
+</store-memory>
+```
+
+---
+
+### `<with-memory>`
+
+Retrieves all stored memories and makes them available in the current context.
+
+**Semantics**
+- Fetches all stored memories and pushes them onto the context stack, making them available for templating and downstream elements.
+
+**Structure**
+```xml
+<with-memory>
+  <!-- nested elements can access stored memories -->
+</with-memory>
+```
+
+---
+
+**Example**
+```xml
+<store-memory>
+  This is something to remember.
+</store-memory>
+<with-memory>
+  <debug>{{ memories }}</debug>
+</with-memory>
+```
