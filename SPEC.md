@@ -56,6 +56,7 @@ Send a prompt to the model. The element body is the prompt **content** (template
 
 ---
 
+
 ### `<for-loop>`
 Iterate a fixed number of times.
 
@@ -74,6 +75,40 @@ Iterate a fixed number of times.
 </for-loop>
 ```
 
+---
+
+### `<foreach-loop>`
+Iterate over a collection of items.
+
+**Attributes**
+- `input_var` (string, **required**): Name of the variable containing the collection (comma- or newline-delimited string, or list).
+- `output_var` (string, **required**): Name of the variable to assign the current item to during each iteration.
+
+**Semantics**
+- Iterates over each item in the collection referenced by `input_var`.
+- On each iteration, the current item is available as `{{ output_var }}` within the loop body.
+
+**Structure**
+```xml
+<foreach-loop input_var="my_collection" output_var="item">
+  <!-- nested elements -->
+</foreach-loop>
+```
+
+**Example**
+```xml
+<set-variable output_var="my_collection">
+  Canada, United States, Mexico, Brazil, Argentina
+</set-variable>
+<foreach-loop input_var="my_collection" output_var="country">
+  <debug>The current country is: {{ country }}</debug>
+</foreach-loop>
+```
+
+**Notes**
+- The collection can be a comma-separated string, newline-separated string, or a list variable.
+- Whitespace is trimmed from each item.
+- The loop body is executed once for each item.
 ---
 
 ### `<while-loop>`
