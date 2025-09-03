@@ -1,23 +1,47 @@
 from .base_element import BaseElement
 from ..message import Message
+from ..helpers.list_helper import ListHelper
 
 class ForEachLoopElement(BaseElement):
     """Element for handling foreach loops in the XML interpreter."""
     def __init__(self, output_var: str, input_var: str):
+        self.is_repeating = True
         self.output_var = output_var
         self.input_var = input_var
+        self.collection = []
+        self.index = 0
 
-    def enter(self, message: "Message") -> "Message":
-        """Initialize loop variables and prepare for iteration."""
-        # Initialize loop variables here if needed
+    def enter(self, message: Message) -> Message:
+        """Initialize the loop by retrieving the collection from the input variable."""
+        collection = self.get_collection(message)
+        if not collection:
+            raise ValueError(f"No collection found for input variable '{self.input_var}'")
+        
+        self.collection = collection
         return message
+    
+    def exit(self, message: Message) -> Message:
+        return message
+    
+    def should_enter(self, message):
+        collection = self.get_collection(message)
+        return self.index < len(collection)
 
-    def exit(self, message: "Message") -> "Message":
-        """Finalize loop processing."""
-        # Finalize loop variables here if needed
-        return message
+    def get_collection(self, message: Message) -> list:
+        """Retrieve the collection from the input variable."""
+        input_var_value = message.get_var(self.input_var)
+        return ListHelper.get_list_from_string(input_var_value)
+    
+    def get_current_item(self) -> str:
+        index = self.index
+        """Get the current item from the collection based on the index."""
+        if index < 0 or index >= len(self.collection):
+            raise IndexError("Index out of range for collection")
+        return self.collection[index]
+    
+    def increment_iteration(self, message) -> None:
+        """Increment the index for the next iteration. Does nothing if already at end."""
+        if self.index < len(self.collection):
+            self.index += 1
 
-    def increment_iteration(self, message: Message) -> Message:
-        """Increment the iteration count for the foreach loop."""
-        # Logic to increment the iteration count
-        return message
+
