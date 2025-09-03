@@ -1,14 +1,14 @@
 <pipeline name="demonstrating a more complex pipeline">
-    <set-variable name="outer_var" output_var="outer_var">pizza1</set-variable>
-    <while-loop name="outer_var" condition="{{ outer_var == 'pizza1' }}">
-        <debug name="testing">Outer loop executed!</debug>
-        <set-variable name="outer_var" output_var="outer_var">sushi1</set-variable>
+    <set-variable output_var="outer_var">pizza1</set-variable>
+    <while-loop condition="{{ outer_var == 'pizza1' }}">
+        <debug>Outer loop executed!</debug>
+        <set-variable output_var="outer_var">sushi1</set-variable>
 
         //Inner loop...
-        <set-variable name="inner_var" output_var="inner_var">pizza2</set-variable>
-        <while-loop name="inner_var" condition="{{ inner_var == 'pizza2' }}">
-            <debug name="testing">Inner loop executed!</debug>
-            <set-variable name="inner_var" output_var="inner_var">sushi2</set-variable>
+        <set-variable output_var="inner_var">pizza2</set-variable>
+        <while-loop  condition="{{ inner_var == 'pizza2' }}">
+            <debug>Inner loop executed!</debug>
+            <set-variable output_var="inner_var">sushi2</set-variable>
         </while-loop>
     </while-loop>
 </pipeline>

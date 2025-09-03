@@ -1,8 +1,8 @@
 <pipeline name="demonstrating a more complex pipeline">
-    <set-variable name="initial_prompt" output_var="advertisement">
+    <set-variable output_var="advertisement">
         You should buy some of Burt's Hometown Pizza. It is the best pizza in town!
     </set-variable>
-    <for-loop name="refinement_loop" start="0" stop="10">
+    <for-loop start="0" stop="10">
         <send-prompt name="refinement" output_var="advertisement">
             {{ advertisement }}
 
@@ -10,8 +10,8 @@
             Provide a concise and compelling version that would attract more customers to Burt's Hometown Pizza.
             Ensure the refined ad highlights the unique qualities of the pizza and encourages action.
         </send-prompt>
-        <debug name="current_iteration">================================</debug>
-        <debug name="refined_prompt">Refined ad:\n\n {{ advertisement }}</debug>
+        <debug>================================</debug>
+        <debug>Refined ad:\n\n {{ advertisement }}</debug>
     </for-loop>
-    <write-to-file name="write_output" filename="./examples/output/best_advertisement.txt"> {{ advertisement }}</write-to-file>
+    <write-to-file filename="./examples/output/best_advertisement.txt"> {{ advertisement }}</write-to-file>
 </pipeline>
