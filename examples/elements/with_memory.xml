@@ -1,0 +1,8 @@
+<pipeline name="with memory test">
+    <with-memory>
+        <send-prompt output_var="memory_summary_1">Generate a quick summary of my memories, please.</send-prompt>
+    </with-memory>
+    <send-prompt output_var="memory_summary_2">Generate a quick summary of my memories, please.</send-prompt>
+    <write-to-file filename="with_memory.txt">{{ memory_summary_1 }}</write-to-file>
+    <write-to-file filename="without_memory.txt">{{ memory_summary_2 }}</write-to-file>
+</pipeline>

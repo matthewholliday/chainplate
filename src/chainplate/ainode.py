@@ -156,6 +156,10 @@ class AiNode:
                 content=content or ""
             )
             return element
+        elif tag == "with-memory":
+            from .elements.with_memory import WithMemoryElement
+            element = WithMemoryElement()
+            return element
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements
