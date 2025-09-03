@@ -135,6 +135,8 @@ class TestAiNode(unittest.TestCase):
                 return msg
             def should_enter(self, msg):
                 return msg.get("pass", True)
+            def get_current_item(self):
+                return None
         node = AiNode(tag="dummy", contents="", children=[], attributes={}, element=DummyElement())
         msg = {}
         msg = node.enter(msg, 0)
@@ -150,6 +152,8 @@ class TestAiNode(unittest.TestCase):
         class DummyElement:
             def should_exit(self, msg):
                 return msg.get("stop", False), msg
+            def get_current_item(self):
+                return None
         node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
         should_exit, _ = node.element.should_exit({})
         self.assertFalse(should_exit)
@@ -168,6 +172,8 @@ class TestAiNode(unittest.TestCase):
                     msg["looped"] = True
                     return False, msg
                 return True, msg
+            def get_current_item(self):
+                return None
         class DummyChild(AiNode):
             def execute(self, msg, depth=0):
                 msg["ran_child"] = True
