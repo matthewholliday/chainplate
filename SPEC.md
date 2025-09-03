@@ -241,6 +241,7 @@ Reads the contents of a file and stores it in a variable.
 - If the file cannot be read, the variable will contain an error message string.
 
 ---
+
 ### `<extract-list>`
 Extracts a list of items from text using natural-language criteria.
 
@@ -270,6 +271,37 @@ Extracts a list of items from text using natural-language criteria.
 **Notes**
 - The extracted list can be a comma-separated string, newline-separated string, or a list variable.
 - The `criteria` attribute should clearly describe what to extract from the input.
+---
+
+### `<set-payload>`
+Sets the special `__payload__` variable, which is used as the main input for the pipeline or for downstream elements.
+
+**Attributes**
+- `value` (string, optional): Value to assign to `__payload__`. If omitted, the element body is used (templated).
+
+**Structure**
+```xml
+<set-payload value="Some input text" />
+```
+or
+```xml
+<set-payload>
+  <!-- string or template -->
+</set-payload>
+```
+**Access**: The value is available as `{{ __payload__ }}`.
+
+**Example**
+```xml
+<pipeline name="set-payload example">
+  <set-payload value="Hello, world!" />
+  <debug>{{ __payload__ }}</debug>
+</pipeline>
+```
+
+**Notes**
+- This is useful for setting or overriding the main input payload within a pipeline, especially for testing or chaining workflows.
+- If both `value` and body are provided, `value` takes precedence.
 ---
 
 ## Notes & Conventions
