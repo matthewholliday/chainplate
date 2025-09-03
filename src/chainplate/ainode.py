@@ -14,6 +14,7 @@ from .elements.foreach_loop_element import ForEachLoopElement
 from .elements.apply_labels_element import ApplyLabelsElement
 from .elements.get_user_input_element import GetUserInputElement
 from .elements.extract_list import ExtractList
+from .elements.set_payload import SetPayloadElement
 
 @dataclass
 class AiNode:
@@ -132,6 +133,21 @@ class AiNode:
                 criteria=attributes.get("criteria", ""),
                 content = content or "no input text provided"
             )
+        elif tag == "read-file":
+            from .elements.read_file_element import ReadFileElement
+            element = ReadFileElement()
+            element.props = {
+                "output_var": attributes.get("output_var", "Unnamed Variable"),
+                "path": attributes.get("path", "")
+            }
+            return element
+        elif tag == "set-payload":
+            from .elements.set_payload import SetPayloadElement
+            element = SetPayloadElement(
+                input_var=attributes.get("input_var", ""),
+                content=content or ""
+            )
+            return element
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements

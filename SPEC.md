@@ -215,6 +215,33 @@ Applies labeling criteria to an input payload and returns a comma‑delimited li
 
 ---
 
+
+### `<read-file>`
+Reads the contents of a file and stores it in a variable.
+
+**Attributes**
+- `path` (string, **required**): Path to the file to read (relative or absolute).
+- `output_var` (string, **required**): Variable name to store the file contents.
+
+**Structure**
+```xml
+<read-file path="examples/input/spain.txt" output_var="file_content" />
+```
+**Access**: The file contents are available as `{{ file_content }}`.
+
+**Example**
+```xml
+<pipeline name="read file example">
+  <read-file path="examples/input/spain.txt" output_var="file_content" />
+  <debug> {{ file_content }} </debug>
+</pipeline>
+```
+
+**Notes**
+- If the file cannot be read, the variable will contain an error message string.
+
+---
+
 ### `<extract-list>`
 Extracts a list of items from text using natural-language criteria.
 
@@ -234,16 +261,47 @@ Extracts a list of items from text using natural-language criteria.
 **Example**
 ```xml
 <pipeline name="extract-list example">
-    <extract-list input_var="__payload__" output_var="extracted_list" criteria="Extract only the fruit items mentioned in the text.">
-        Yesterday I bought apples, bananas, and a loaf of bread. Later, I also grabbed a chocolate bar and some milk.
-    </extract-list>
-    <set-variable output_var="__payload__"> {{ extracted_list }}</set-variable>
+  <extract-list input_var="__payload__" output_var="extracted_list" criteria="Extract only the fruit items mentioned in the text.">
+    Yesterday I bought apples, bananas, and a loaf of bread. Later, I also grabbed a chocolate bar and some milk.
+  </extract-list>
+  <set-variable output_var="__payload__"> {{ extracted_list }}</set-variable>
 </pipeline>
 ```
 
 **Notes**
 - The extracted list can be a comma-separated string, newline-separated string, or a list variable.
 - The `criteria` attribute should clearly describe what to extract from the input.
+---
+
+### `<set-payload>`
+Sets the special `__payload__` variable, which is used as the main input for the pipeline or for downstream elements.
+
+**Attributes**
+- `value` (string, optional): Value to assign to `__payload__`. If omitted, the element body is used (templated).
+
+**Structure**
+```xml
+<set-payload value="Some input text" />
+```
+or
+```xml
+<set-payload>
+  <!-- string or template -->
+</set-payload>
+```
+**Access**: The value is available as `{{ __payload__ }}`.
+
+**Example**
+```xml
+<pipeline name="set-payload example">
+  <set-payload value="Hello, world!" />
+  <debug>{{ __payload__ }}</debug>
+</pipeline>
+```
+
+**Notes**
+- This is useful for setting or overriding the main input payload within a pipeline, especially for testing or chaining workflows.
+- If both `value` and body are provided, `value` takes precedence.
 ---
 
 ## Notes & Conventions
