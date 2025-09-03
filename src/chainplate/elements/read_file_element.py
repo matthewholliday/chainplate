@@ -1,7 +1,10 @@
 from .base_element import BaseElement
 from ..message import Message
+import os
 
 class ReadFileElement(BaseElement):
+    print("Current working directory:", os.getcwd())
+
     """
     Element to read the contents of a file and store it in a variable.
     Attributes:

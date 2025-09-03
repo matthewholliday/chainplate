@@ -132,6 +132,14 @@ class AiNode:
                 criteria=attributes.get("criteria", ""),
                 content = content or "no input text provided"
             )
+        elif tag == "read-file":
+            from .elements.read_file_element import ReadFileElement
+            element = ReadFileElement()
+            element.props = {
+                "output_var": attributes.get("output_var", "Unnamed Variable"),
+                "path": attributes.get("path", "")
+            }
+            return element
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements

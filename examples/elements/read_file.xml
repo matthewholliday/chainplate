@@ -1,0 +1,4 @@
+<pipeline name="read file example">
+    <read-file path="examples/input/spain.txt" output_var="file_content"> </read-file>
+    <debug> {{ file_content }} </debug>
+</pipeline>
