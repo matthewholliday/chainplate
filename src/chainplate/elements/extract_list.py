@@ -25,7 +25,7 @@ TEMPLATE_TEXT = """
     ## Now output the result:
 """
 
-class InterpretAsList(InterpretAsBase):
+class ExtractList(InterpretAsBase):
     def __init__(self, output_var, input_var, criteria, content):
         super().__init__(output_var, input_var)
         self.criteria = criteria
