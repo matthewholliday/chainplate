@@ -32,3 +32,9 @@ class BaseElement(ABC):
     def apply_templates(self, templates: list[str], message: Message) -> list[str]:
         context = message.get_vars()
         return [TemplateHelper.safe_render_template(t, context) for t in templates]
+    
+    def get_collection(self, message: Message) -> list:
+        return None
+    
+    def get_current_item(self) -> str:
+        return None

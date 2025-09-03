@@ -1,0 +1,11 @@
+<pipeline>
+    <set-variable output_var="my_collection">
+        Canada, United States, Mexico, Brazil, Argentina
+    </set-variable>
+    <foreach-loop output_var="country" input_var="my_collection">
+            <debug>The current country is: {{ country }}</debug>
+    </foreach-loop>
+    <set-variable output_var="__payload__">
+        The loop has completed successfully.
+    </set-variable>
+</pipeline>
