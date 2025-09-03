@@ -15,6 +15,7 @@ from .elements.apply_labels_element import ApplyLabelsElement
 from .elements.get_user_input_element import GetUserInputElement
 from .elements.extract_list import ExtractList
 from .elements.set_payload import SetPayloadElement
+from .elements.store_memory import StoreMemory
 
 @dataclass
 class AiNode:
@@ -144,6 +145,13 @@ class AiNode:
         elif tag == "set-payload":
             from .elements.set_payload import SetPayloadElement
             element = SetPayloadElement(
+                input_var=attributes.get("input_var", ""),
+                content=content or ""
+            )
+            return element
+        elif tag == "store-memory":
+            from .elements.store_memory import StoreMemory
+            element = StoreMemory(
                 input_var=attributes.get("input_var", ""),
                 content=content or ""
             )
