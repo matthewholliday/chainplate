@@ -13,6 +13,7 @@ from .elements.for_loop_element import ForLoopElement
 from .elements.foreach_loop_element import ForEachLoopElement
 from .elements.apply_labels_element import ApplyLabelsElement
 from .elements.get_user_input_element import GetUserInputElement
+from .elements.extract_list import ExtractList
 
 @dataclass
 class AiNode:
@@ -123,6 +124,13 @@ class AiNode:
             return ForEachLoopElement(
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input")
+            )
+        elif tag == "extract-list":
+            return ExtractList(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input"),
+                criteria=attributes.get("criteria", ""),
+                content = content or "no input text provided"
             )
         else:
             raise ValueError(f"Unknown tag: {tag}")

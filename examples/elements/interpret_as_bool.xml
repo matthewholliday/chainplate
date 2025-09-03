@@ -1,4 +1,4 @@
 <pipeline name="interpret as bool">
-    <interpret-as-bool name="as_bool" input_var="__payload__" output_var="as_bool_result"></interpret-as-bool>
-    <debug name="debug">Result: {{as_bool_result}}</debug>
+    <interpret-as-bool input_var="__payload__" output_var="as_bool_result"></interpret-as-bool>
+    <debug>Result: {{as_bool_result}}</debug>
 </pipeline>
