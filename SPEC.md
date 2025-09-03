@@ -191,6 +191,7 @@ Parses text into an integer and stores it.
 
 ---
 
+
 ### `<apply-labels>`
 Applies labeling criteria to an input payload and returns a comma‑delimited list of labels.
 
@@ -212,6 +213,37 @@ Applies labeling criteria to an input payload and returns a comma‑delimited li
 ```
 **Access**: The resulting labels are available as `{{ labels_result }}` (comma‑delimited string).
 
+---
+
+### `<extract-list>`
+Extracts a list of items from text using natural-language criteria.
+
+**Attributes**
+- `input_var` (string, **required**): Variable name containing the input text. `__payload__` is commonly used for CLI input.
+- `output_var` (string, **required**): Variable to receive the extracted list (comma- or newline-delimited string, or list).
+- `criteria` (string, **required**): Natural-language criteria describing what to extract.
+
+**Structure**
+```xml
+<extract-list input_var="__payload__" output_var="extracted_list" criteria="Extract only the fruit items mentioned in the text.">
+  <!-- optional template/body -->
+</extract-list>
+```
+**Access**: The extracted list is available as `{{ extracted_list }}` (as a string or list, depending on implementation).
+
+**Example**
+```xml
+<pipeline name="extract-list example">
+    <extract-list input_var="__payload__" output_var="extracted_list" criteria="Extract only the fruit items mentioned in the text.">
+        Yesterday I bought apples, bananas, and a loaf of bread. Later, I also grabbed a chocolate bar and some milk.
+    </extract-list>
+    <set-variable output_var="__payload__"> {{ extracted_list }}</set-variable>
+</pipeline>
+```
+
+**Notes**
+- The extracted list can be a comma-separated string, newline-separated string, or a list variable.
+- The `criteria` attribute should clearly describe what to extract from the input.
 ---
 
 ## Notes & Conventions
