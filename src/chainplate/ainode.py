@@ -207,6 +207,7 @@ class AiNode:
         should_exit = False
         while not should_exit:
             message = self.element.increment_iteration(message) # For loops, etc.
+            
             if self.element.get_current_item():
                 message.set_var(self.element.output_var, self.element.get_current_item())
 

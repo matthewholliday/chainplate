@@ -1,0 +1,12 @@
+<pipeline name="Random Joke Generator">
+  <set-variable output_var="categories">cats, dogs, computers, dad jokes</set-variable>
+
+  <foreach-loop input_var="categories" output_var="topic">
+    <send-prompt output_var="joke">
+      Tell me a short, funny joke about {{ topic }}.
+    </send-prompt>
+    <debug>Joke about {{ topic }} : {{ joke }}</debug>
+  </foreach-loop>
+
+  <set-payload>Done generating jokes!</set-payload>
+</pipeline>

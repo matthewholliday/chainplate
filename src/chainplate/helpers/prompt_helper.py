@@ -31,6 +31,7 @@ def ask(prompt: str) -> str:
 def ask_with_context(prompt: str, context: str, chat_history: list) -> str:
     if context:
         prompt = f"{context}\n\n{prompt}"
+
     if(CLIENT_NAME == "openai"):
 
         #append the latest user message to the chat history
