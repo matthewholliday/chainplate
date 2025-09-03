@@ -36,12 +36,16 @@ class ForEachLoopElement(BaseElement):
         index = self.index
         """Get the current item from the collection based on the index."""
         if index < 0 or index >= len(self.collection):
-            raise IndexError("Index out of range for collection")
+            raise IndexError(f"Index {index} out of range for collection of length {len(self.collection)}")
         return self.collection[index]
     
     def increment_iteration(self, message) -> None:
         """Increment the index for the next iteration. Does nothing if already at end."""
         if self.index < len(self.collection):
             self.index += 1
+        return message
+    
+    def should_exit(self, message):
+        return (self.index >= len(self.collection) - 1,message)
 
 

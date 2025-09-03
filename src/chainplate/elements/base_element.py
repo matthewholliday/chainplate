@@ -35,3 +35,6 @@ class BaseElement(ABC):
     
     def get_collection(self, message: Message) -> list:
         return None
+    
+    def get_current_item(self) -> str:
+        return None

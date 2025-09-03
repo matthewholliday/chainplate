@@ -10,6 +10,9 @@ from .elements.context_element import ContextElement
 from .elements.interpret_as_integer import InterpretAsIntegerElement
 from .elements.while_loop_element import WhileLoopElement
 from .elements.for_loop_element import ForLoopElement
+from .elements.foreach_loop_element import ForEachLoopElement
+from .elements.apply_labels_element import ApplyLabelsElement
+from .elements.get_user_input_element import GetUserInputElement
 
 @dataclass
 class AiNode:
@@ -94,7 +97,6 @@ class AiNode:
                 content=content or "Debug Message"
             )
         elif tag == "apply-labels": #TODO - rename
-            from .elements.apply_labels_element import ApplyLabelsElement
             return ApplyLabelsElement(
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input"),
@@ -113,10 +115,14 @@ class AiNode:
             )
             return element
         elif tag == "get-user-input":
-            from .elements.get_user_input_element import GetUserInputElement
             return GetUserInputElement(
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 content=content or "Please provide input: "
+            )
+        elif tag == "foreach-loop":
+            return ForEachLoopElement(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input")
             )
         else:
             raise ValueError(f"Unknown tag: {tag}")
@@ -160,6 +166,8 @@ class AiNode:
         should_exit = False
         while not should_exit:
             message = self.element.increment_iteration(message) # For loops, etc.
+            if self.element.get_current_item():
+                message.set_var(self.element.output_var, self.element.get_current_item())
 
             for child in self.children:
                 message = child.execute(message,depth) # Pass the message down the tree.
