@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime
 
 class MemoryService:
-    def __init__(self, db_name="logs.db"):
+    def __init__(self, db_name="logs.db"): # make it easier to configure the database name for testing or different environments
         self.conn = sqlite3.connect(db_name)
         self._create_table()
 
