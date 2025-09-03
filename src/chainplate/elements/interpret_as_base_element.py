@@ -24,7 +24,7 @@ class InterpretAsBase(BaseElement):
 
         # Render the prompt template with the context
         rendered_text: str = TemplateHelper.safe_render_template(template_str=template_text, template_context=template_context)
-        
+
         # Send the rendered text to the AI and get the response
         response: str = ask_ai(rendered_text)
 
