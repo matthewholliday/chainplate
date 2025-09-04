@@ -1,12 +1,12 @@
 from ..services.cli_animation_service import run_with_spinner
-from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
+from ..services.external.external_services import ExternalServices
 
 CLIENT_NAME = "openai" # TODO: make configurable
 OPENAI_MODEL = "gpt-5-mini" # TODO: make configurable
 
 def ask_llm(prompt: str):
     if(CLIENT_NAME == "openai"):
-        response_text = OpenAIPromptService.get_completion(chat_history=[
+        response_text = ExternalServices().get_prompt_service().get_completion(chat_history=[
             {"role": "user", "content": prompt}
         ])
     return response_text
@@ -18,7 +18,7 @@ def ask_with_context(prompt: str, context: str, chat_history: list) -> str:
     if(CLIENT_NAME == "openai"):
         #append the latest user message to the chat history
         messages = chat_history + [{"role": "user", "content": prompt}]
-        response_text = OpenAIPromptService().get_completion(chat_history=messages)
+        response_text = ExternalServices().get_prompt_service().get_completion(chat_history=messages)
 
     return response_text
 
