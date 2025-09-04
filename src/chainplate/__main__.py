@@ -4,6 +4,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 from .modes.chainplate_workflow import ChainplateWorkflow
 from .modes.chainplate_chat_session import ChainplateChatSession
+from .modes.chainplate_server import run_server
 from .core import AIXMLCore  # your library function
 from .message import Message
 
@@ -42,7 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--payload", type=str, help="Payload to pass into the execution")
     p.add_argument("--chat",type=Path, help="Run in chat mode with the given XML file")
     p.add_argument("--workflow", type=Path, help="TODO")
-
+    p.add_argument("--server", action="store_true", help="Run the Chainplate server mode")
     args = p.parse_args(argv)
     
     if(args.parse_to_json):
@@ -87,6 +88,8 @@ def main(argv: list[str] | None = None) -> int:
         xml_string = _read_text(args.chat, args.encoding)
         chat_session = ChainplateChatSession(xml_string)
         chat_session.run_interactive()
+    elif(args.server):
+        run_server()
         return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly
