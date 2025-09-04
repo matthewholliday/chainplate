@@ -1,16 +1,26 @@
 <pipeline name="mcp list tools">
-    <mcp-list-tools output_var="tools_list" mcp_service="notion"/>
-    <write-to-file filename="notion_tool_list.txt">{{ tools_list }}</write-to-file>
     <context>
-        {{ tools_list }}
-        <send-prompt output_var="tool_selection">
-            Create a plan for using the notion tools to create a task to go to the grocery store and pick up some items for dinner tonight.
-        </send-prompt>
-        <write-to-file filename="tool_selection.txt">{{ tool_selection }}</write-to-file>
-        <set-variable output_var="is_ready_for_mcp_str">
-            You are a boolean gate. Decide whether the previous assistant message contains enough concrete information to execute a single, specific MCP tool call right now. Read only this merge field as input:
+        <debug>STEP 1: setting hardcoded tool selection...</debug>
+        <set-variable output_var="tool_selection">
+            call: API-post-page
 
+            {
+                "parent": { "page_id": "basd1023" },
+                "properties": {
+                "title": [
+                    { "text": { "content": "Grocery — Dinner Tonight" } }
+                ]
+                }
+            }        
+        </set-variable>
+        
+        <debug>STEP 2: analyzing tool selection...</debug>
+        <send-prompt output_var="is_ready_for_mcp_str">
+            You are a boolean gate. Decide whether the previous assistant message contains enough concrete information to execute a single, specific MCP tool call right now. Here is the input you should read:
+
+            ==START INPUT==
             {{ tool_selection }}
+            ==END INPUT==
 
             Decision rules (apply in order):
 
@@ -26,14 +36,13 @@
 
             If the message specifies exactly one tool by name and provides all necessary arguments with concrete, unambiguous values, with no pending questions or conditions → true.
 
-            Output format:
+            Write an explanation of your decision in the output variable "is_ready_for_mcp_str".
+        </send-prompt>
 
-            Return exactly one lowercase word with no extra text: either
-            true
-            or
-            false
-        </set-variable>
+        <debug>STEP 3: interpreting readiness for MCP execution...</debug>
         <interpret-as-bool input_var="is_ready_for_mcp_str" output_var="is_ready_for_mcp_bool"></interpret-as-bool>
-        <set-variable output_var="__payload__"> assessment: {{ is_ready_for_mcp_bool }} </set-variable>
+
+        <debug>STEP 4: final assessment output...</debug>
+        <set-variable output_var="__payload__"> assessment: {{ is_ready_for_mcp_str }} </set-variable>
     </context>
 </pipeline>
