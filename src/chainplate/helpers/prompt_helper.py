@@ -1,3 +1,4 @@
+from ..services.cli_animation_service import run_with_spinner
 
 # Try to import OpenAI client in a way compatible with both v1 and v0 APIs
 try:
@@ -42,6 +43,15 @@ def ask_with_context(prompt: str, context: str, chat_history: list) -> str:
             messages=messages
         )
     return resp.choices[0].message.content
+
+def ask_with_context_and_spinner(prompt: str, context: str, chat_history: list) -> str:
+    return run_with_spinner(
+        ask_with_context,
+        prompt,
+        context,
+        chat_history,
+        message=""
+    )
 
 def chat(conversation_history: list) -> list:
     if(CLIENT_NAME == "openai"):

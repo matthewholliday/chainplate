@@ -1,6 +1,6 @@
 from ..message import Message
 from .base_elements.ai_base_element import AiBaseElement
-from ..helpers.prompt_helper import ask_with_context
+from ..helpers.prompt_helper import ask_with_context, ask_with_context_and_spinner
 from ..helpers.template_helper import TemplateHelper2
 
 class SendPromptElement(AiBaseElement):
@@ -22,7 +22,7 @@ class SendPromptElement(AiBaseElement):
         fresh_content = TemplateHelper2.render_template(self.original_content, message.get_vars())
 
         # Send the prompt and get the response
-        response = ask_with_context(fresh_content, context, chat_history)
+        response = ask_with_context_and_spinner(fresh_content, context, chat_history)
 
         # Store the response in the specified output variable     
         message.set_var(self.output_var, response)
