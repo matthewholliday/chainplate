@@ -7,7 +7,8 @@ class SendPromptElement(AiBaseElement):
     def __init__(self, output_var, content):
         super().__init__(output_var, content)
 
-    def enter(self , message: Message) -> Message:
+    def enter(self , message: Message) -> Message: #test please
+        message.set_var("__chat_input__",message.get_payload())  # Set the special __chat_input__ variable to the current payload
 
          # This will template output_var and content
         super().enter(message)
