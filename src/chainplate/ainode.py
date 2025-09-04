@@ -19,6 +19,7 @@ from .elements.store_memory import StoreMemory
 from .elements.get_context_element import GetContextElement
 from .elements.with_memory import WithMemoryElement
 from .elements.read_file_element import ReadFileElement
+from .elements.mcp_list_tools import MCPListToolsElement
 
 
 @dataclass
@@ -163,6 +164,12 @@ class AiNode:
         elif tag == "get-context":
             element = GetContextElement(
                 output_var=attributes.get("output_var", "Unnamed Variable")
+            )
+            return element
+        elif tag == "mcp-list-tools":
+            element = MCPListToolsElement(
+                output_var=attributes.get("output_var", "tool_list"),
+                mcp_service=attributes.get("mcp_service", "notion")
             )
             return element
         else:

@@ -13,7 +13,7 @@ from mcp.shared.context import RequestContext
 
 class MCPService:
     def __init__(self, notion_token=None):
-        self.notion_token = notion_token or "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo"
+        self.notion_token = notion_token or "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" #TODO - remove compromised token and use environment variable or config file for security
         self.server_params = StdioServerParameters(
             command="npx",
             args=["-y", "@notionhq/notion-mcp-server"],

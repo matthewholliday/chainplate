@@ -1,0 +1,3 @@
+<pipeline name="mcp list tools">
+    <mcp-list-tools output_var="tools_list" mcp_service="notion"/>
+</pipeline>
