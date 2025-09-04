@@ -10,7 +10,12 @@ def print_ascii_art():
 ██      ███████ ███████ ██ ██ ██  ██ ██████  ██      ███████    ██    █████   
 ██      ██   ██ ██   ██ ██ ██  ██ ██ ██      ██      ██   ██    ██    ██      
  ██████ ██   ██ ██   ██ ██ ██   ████ ██      ███████ ██   ██    ██    ███████ 
-                                                                              
+
+ Chainplate (2025)
+ Open Source Project
+
+ Licensed under the MIT License
+ https://opensource.org/licenses/MIT                                                                     
                                                                               
 """
     print(art)
