@@ -1,4 +1,5 @@
 build
-jinja2
-openai
 flask
+jinja2
+mcp
+openai
