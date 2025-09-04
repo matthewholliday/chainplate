@@ -3,7 +3,14 @@ from ..services.external.prompt_completion_services.openai_llm_provider import O
 
 CLIENT_NAME = "openai" # TODO: make configurable
 OPENAI_MODEL = "gpt-5-mini" # TODO: make configurable
-    
+
+def ask_llm(prompt: str):
+    if(CLIENT_NAME == "openai"):
+        response_text = OpenAIPromptService.get_completion(chat_history=[
+            {"role": "user", "content": prompt}
+        ])
+    return response_text
+
 def ask_with_context(prompt: str, context: str, chat_history: list) -> str:
     if context:
         prompt = f"{context}\n\n{prompt}"
@@ -11,7 +18,7 @@ def ask_with_context(prompt: str, context: str, chat_history: list) -> str:
     if(CLIENT_NAME == "openai"):
         #append the latest user message to the chat history
         messages = chat_history + [{"role": "user", "content": prompt}]
-        response_text = OpenAIPromptService.get_completion(messages)
+        response_text = OpenAIPromptService().get_completion(chat_history=messages)
 
     return response_text
 
