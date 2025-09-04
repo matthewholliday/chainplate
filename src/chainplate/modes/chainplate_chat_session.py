@@ -28,7 +28,7 @@ class ChainplateChatSession:
         while True:
             try:
                 #Get input from the user...
-                user_input_txt = ux_service.get_input_from_user("[USER] >> ")
+                user_input_txt = ux_service.get_input_from_user("[USER]    >> ")
 
                 #Check for special commands...
                 if user_input_txt.lower() == 'exit':
@@ -68,8 +68,9 @@ class ChainplateChatSession:
         if self.chat_history:
             return self.chat_history[-1]['content']
         return None
+    
     def create_workflow(self) -> ChainplateWorkflow:
-        return ChainplateWorkflow(self.xml_string)
+        return ChainplateWorkflow(self.xml_string, mode="chat") #TODO - move "chat" to a constant or enum for modes
     
     def pretty_print_chat_history(self, ux_service=None):
         ux_service.show_output_to_user("\n CHAT HISTORY:  \n")
