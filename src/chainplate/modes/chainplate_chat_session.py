@@ -3,17 +3,32 @@ from ..helpers.prompt_helper import create_user_message, create_assistant_messag
 from ..message import Message
 from ..services.cli_service import CLIService
 
+def print_ascii_art():
+    art = r"""
+ ██████ ██   ██  █████  ██ ███    ██ ██████  ██       █████  ████████ ███████ 
+██      ██   ██ ██   ██ ██ ████   ██ ██   ██ ██      ██   ██    ██    ██      
+██      ███████ ███████ ██ ██ ██  ██ ██████  ██      ███████    ██    █████   
+██      ██   ██ ██   ██ ██ ██  ██ ██ ██      ██      ██   ██    ██    ██      
+ ██████ ██   ██ ██   ██ ██ ██   ████ ██      ███████ ██   ██    ██    ███████ 
+                                                                              
+                                                                              
+"""
+    print(art)
+
+if __name__ == "__main__":
+    print_ascii_art()
+
 class ChainplateChatSession:
     def __init__(self, xml_string: str): # Default to CLIService if no UX service is provided
         self.xml_string = xml_string
         self.chat_history = []
     
     def run_interactive(self, ux_service=CLIService()):
-        print("\nCHAINPLATE interactive chat session started. Type 'exit' to quit, 'history' to view chat history.\n")
+        print_ascii_art()
         while True:
             try:
                 #Get input from the user...
-                user_input_txt = ux_service.get_input_from_user("[USER]:\n >> ")
+                user_input_txt = ux_service.get_input_from_user("[USER] >> ")
 
                 #Check for special commands...
                 if user_input_txt.lower() == 'exit':
@@ -44,7 +59,7 @@ class ChainplateChatSession:
                 self.chat_history.append(assistant_response_obj)
 
                 #Print the assistant response
-                ux_service.show_output_to_user(f"\n[CHATBOT]:\n{assistant_response_text}\n")
+                ux_service.show_output_to_user(f"[CHATBOT] >> {assistant_response_text}\n\n")
             except Exception as e:
                 ux_service.show_output_to_user(f"An error occurred: {e}")
                 break
@@ -53,7 +68,6 @@ class ChainplateChatSession:
         if self.chat_history:
             return self.chat_history[-1]['content']
         return None
-
     def create_workflow(self) -> ChainplateWorkflow:
         return ChainplateWorkflow(self.xml_string)
     

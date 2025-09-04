@@ -43,6 +43,7 @@ class ForEachLoopElement(BaseElement):
         """Increment the index for the next iteration. Does nothing if already at end."""
         if self.index < len(self.collection):
             self.index += 1
+        message.set_var(self.output_var, self.get_current_item())
         return message
     
     def should_exit(self, message):

@@ -2,7 +2,7 @@ import jinja2
 from jinja2 import Environment, StrictUndefined, meta
 
 
-class TemplateHelper:
+class TemplateHelper2:
     @staticmethod
     def render_template(template_str, context):
         template = jinja2.Template(template_str)

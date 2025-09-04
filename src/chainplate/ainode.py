@@ -15,6 +15,11 @@ from .elements.apply_labels_element import ApplyLabelsElement
 from .elements.get_user_input_element import GetUserInputElement
 from .elements.extract_list import ExtractList
 from .elements.set_payload import SetPayloadElement
+from .elements.store_memory import StoreMemory
+from .elements.get_context_element import GetContextElement
+from .elements.with_memory import WithMemoryElement
+from .elements.read_file_element import ReadFileElement
+
 
 @dataclass
 class AiNode:
@@ -134,7 +139,6 @@ class AiNode:
                 content = content or "no input text provided"
             )
         elif tag == "read-file":
-            from .elements.read_file_element import ReadFileElement
             element = ReadFileElement()
             element.props = {
                 "output_var": attributes.get("output_var", "Unnamed Variable"),
@@ -142,10 +146,23 @@ class AiNode:
             }
             return element
         elif tag == "set-payload":
-            from .elements.set_payload import SetPayloadElement
             element = SetPayloadElement(
                 input_var=attributes.get("input_var", ""),
                 content=content or ""
+            )
+            return element
+        elif tag == "store-memory":
+            element = StoreMemory(
+                input_var=attributes.get("input_var", ""),
+                content=content or ""
+            )
+            return element
+        elif tag == "with-memory":
+            element = WithMemoryElement()
+            return element
+        elif tag == "get-context":
+            element = GetContextElement(
+                output_var=attributes.get("output_var", "Unnamed Variable")
             )
             return element
         else:
@@ -190,6 +207,7 @@ class AiNode:
         should_exit = False
         while not should_exit:
             message = self.element.increment_iteration(message) # For loops, etc.
+            
             if self.element.get_current_item():
                 message.set_var(self.element.output_var, self.element.get_current_item())
 

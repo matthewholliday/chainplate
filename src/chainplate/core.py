@@ -32,7 +32,7 @@ class AIXMLCore:
         print('')
         node.execute(msg)
         print('')
-        print('Execution complete. Log location: ' + os.path.abspath('logs/execution.log'))
+        # print('Execution complete. Log location: ' + os.path.abspath('logs/execution.log'))
 
         msg.print_logs()
 

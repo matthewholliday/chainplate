@@ -1,0 +1,11 @@
+<pipeline name="store memory example">
+    <store-memory>It was sunny outside yesterday.</store-memory>
+    <store-memory>Remember to buy groceries tomorrow.</store-memory>
+    <store-memory>Meeting with the team at 3 PM today.</store-memory>
+    <store-memory>Don't forget to call mom this weekend.</store-memory>
+    <store-memory>Finish reading the book by next week.</store-memory>
+    <store-memory>Plan the vacation itinerary for next month.</store-memory>
+    <store-memory>Prepare the presentation slides for the conference.</store-memory>
+    <store-memory>Check the weather forecast before leaving the house.</store-memory>
+    <set-payload>done</set-payload>
+</pipeline>

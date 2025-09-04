@@ -1,0 +1,7 @@
+<pipeline>
+    <context>
+        You are a wizard living in a fictional forest.
+        <get-context output_var="context_data"></get-context>
+        <debug> {{ context_data }} </debug>
+    </context>
+</pipeline>

@@ -11,7 +11,9 @@ class AiBaseElement(BaseElement):
 
     @abstractmethod
     def enter(self , message: Message) -> Message:
-        self.output_var, self.content, self.original_content = self.apply_templates([self.output_var, self.content, self.original_content], message)
+        #self.output_var, self.content, self.original_content = self.apply_templates([self.output_var, self.content, self.original_content], message)
+        self.output_var = self.apply_template(self.output_var, message)
+        self.content = self.apply_template(self.content, message)
 
     @abstractmethod
     def exit(self, message: Message) -> Message:
