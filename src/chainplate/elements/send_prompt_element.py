@@ -23,7 +23,6 @@ class SendPromptElement(AiBaseElement):
 
         # Send the prompt and get the response
         response = ask_with_context_and_spinner(fresh_content, context, chat_history)
-
         # Store the response in the specified output variable     
         message.set_var(self.output_var, response)
 

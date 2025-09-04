@@ -78,11 +78,12 @@ def main(argv: list[str] | None = None) -> int:
         AIXMLCore.run_pipeline_mode(xml_string,payload)
         return 0
     elif(args.workflow):
+        import asyncio
         payload = args.payload if args.payload else ""
         workflow = ChainplateWorkflow(xml_string = _read_text(args.workflow, args.encoding))
         message = Message()
         message.set_payload(payload)
-        workflow.run(message)
+        asyncio.run(workflow.run(message))
         return 0
     elif(args.chat):
         xml_string = _read_text(args.chat, args.encoding)

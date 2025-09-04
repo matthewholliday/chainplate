@@ -11,10 +11,9 @@ class MCPListToolsElement(BaseElement):
 
     async def enter(self, message) -> Message:
         service = MCPService()
-        # tools_list = await service.list_tools()
-        tools_list = asyncio.run(service.list_tools())
-        message.set_var(tools_list)
+        tools_list = await service.list_tools()
+        message.set_var(self.output_var, tools_list)
         return message
-    
+
     def exit(self, message):
         return message

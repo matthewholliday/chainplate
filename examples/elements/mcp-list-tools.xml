@@ -1,3 +1,10 @@
 <pipeline name="mcp list tools">
     <mcp-list-tools output_var="tools_list" mcp_service="notion"/>
+    <context>
+        {{ tools_list }}
+        <send-prompt output_var="tool_selection">
+            Create a plan for using the notion tools to create a task to go to the grocery store and pick up some items for dinner tonight.
+        </send-prompt>
+        <set-variable output_var="__payload__"> {{ tool_selection }} </set-variable>
+    </context>
 </pipeline>

@@ -65,7 +65,7 @@ class AiNode:
         elif tag == "send-prompt":
             return SendPromptElement(
                 output_var=attributes.get("output_var", "Unnamed Variable"),
-                content=attributes.get("content", content)
+                content=content
             )
         elif tag == "set-variable":
             from .elements.set_variable_element import SetVariableElement
@@ -182,21 +182,33 @@ class AiNode:
         prefix = ">> " if is_enter else "<< "
         # print(spacing + prefix + f"{tag}") TODO - supply ux service
 
-    def enter(self,message,depth) -> Message:
-        AiNode.pretty_print(True,self.tag,depth)
-        if(self.element):
-            message = self.element.enter(message)
+
+    async def enter(self, message, depth) -> Message:
+        AiNode.pretty_print(True, self.tag, depth)
+        if self.element:
+            # If the element's enter is async, await it; otherwise, call directly
+            enter_method = getattr(self.element, "enter", None)
+            if enter_method:
+                if hasattr(enter_method, "__code__") and enter_method.__code__.co_flags & 0x80:
+                    message = await enter_method(message)
+                else:
+                    message = enter_method(message)
         return message
 
-    def exit(self,message,depth) -> Message:
-        AiNode.pretty_print(False,self.tag,depth - 1)
-        if(self.element):
-            message = self.element.exit(message)
+    async def exit(self, message, depth) -> Message:
+        AiNode.pretty_print(False, self.tag, depth - 1)
+        if self.element:
+            exit_method = getattr(self.element, "exit", None)
+            if exit_method:
+                if hasattr(exit_method, "__code__") and exit_method.__code__.co_flags & 0x80:
+                    message = await exit_method(message)
+                else:
+                    message = exit_method(message)
         return message
 
-    def execute(self,message,depth=0) -> Message:
+    async def execute(self, message, depth=0) -> Message:
         """Execute the node's action. Placeholder for actual logic."""
-        message = self.enter(message,depth)
+        message = await self.enter(message, depth)
         depth += 1
 
         if self.element is None:
@@ -207,26 +219,25 @@ class AiNode:
 
         if not should_enter:
             message.log_message(f"Skipping element <{self.tag}> as conditions not met.")
-            message = self.exit(message,depth)
+            message = await self.exit(message, depth)
             return message
-        
+
         # If you made it here, any initial entry checks passed, so process at least once...
         should_exit = False
         while not should_exit:
-            message = self.element.increment_iteration(message) # For loops, etc.
-            
+            message = self.element.increment_iteration(message)  # For loops, etc.
+
             if self.element.get_current_item():
                 message.set_var(self.element.output_var, self.element.get_current_item())
 
             for child in self.children:
-                message = child.execute(message,depth) # Pass the message down the tree.
+                message = await child.execute(message, depth)  # Pass the message down the tree.
 
             # Check stop condition...
-            should_exit, message = self.element.should_exit(message) # Returns true by default for non-repeating elements...
-            
+            should_exit, message = self.element.should_exit(message)  # Returns true by default for non-repeating elements...
 
         # Exit logic runs for every element type...
-        message = self.exit(message,depth)
+        message = await self.exit(message, depth)
         return message
 
     
