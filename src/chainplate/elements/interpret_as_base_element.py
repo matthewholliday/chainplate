@@ -3,8 +3,7 @@ from .base_element import BaseElement
 from abc import abstractmethod
 
 from ..helpers.template_helper import TemplateHelper
-from ..helpers.prompt_helper import ask as ask_ai
-
+from ..helpers.prompt_helper import ask_llm
 
 class InterpretAsBase(BaseElement):
     def __init__(self, output_var, input_var):
@@ -26,7 +25,7 @@ class InterpretAsBase(BaseElement):
         rendered_text: str = TemplateHelper.safe_render_template(template_str=template_text, template_context=template_context)
 
         # Send the rendered text to the AI and get the response
-        response: str = ask_ai(rendered_text)
+        response: str = ask_llm(rendered_text)
 
         # Store the response in the specified output variable
         message.set_var(self.output_var, response)
