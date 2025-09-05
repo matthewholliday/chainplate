@@ -20,6 +20,7 @@ from .elements.get_context_element import GetContextElement
 from .elements.with_memory import WithMemoryElement
 from .elements.read_file_element import ReadFileElement
 from .elements.mcp_list_tools import MCPListToolsElement
+from .elements.mcp_invoke_element import MCPInvokeElement
 
 
 @dataclass
@@ -178,6 +179,13 @@ class AiNode:
                 mcp_service=attributes.get("mcp_service", "notion")
             )
             return element
+        elif tag == "mcp-invoke":
+            element = MCPInvokeElement(
+                mcp_service=attributes.get("mcp_service", "notion"),
+                action=attributes.get("action", ""),
+                arguments=attributes.get("arguments", {})
+            )
+            return element
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements
@@ -246,4 +254,5 @@ class AiNode:
         message = await self.exit(message, depth)
         return message
 
+    
     

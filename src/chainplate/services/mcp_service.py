@@ -1,9 +1,3 @@
-"""
-cd to the `examples/snippets/clients` directory and run:
-    uv run client
-"""
-
-
 import asyncio
 import os
 from pydantic import AnyUrl
@@ -34,6 +28,30 @@ class MCPService:
                     result_lines.append(json.dumps(tool.inputSchema, indent=2))
                     result_lines.append("----------------------------------")
                 return "\n".join(result_lines)
+    
+    async def test_call_tool(self):
+        print("mih")
+        """Test calling a specific tool with hardcoded arguments for demonstration purposes."""
+
+        tool_name = "API-get-users"
+        arguments ={
+                "properties": {}
+            } 
+        await self.call_tool(tool_name, arguments)
+
+    async def call_tool(self, tool_name: str, arguments: dict):
+        import json
+        async with stdio_client(self.server_params) as (read, write): # server is hardcoded to notion for now. TODO - make this configurable in the future.
+            async with ClientSession(read, write) as session:
+                await session.initialize() 
+
+                result = await session.call_tool(tool_name, arguments)
+                
+                result_unstructured = result.content[0]
+                if isinstance(result_unstructured, types.TextContent):
+                    print(f"### MCP - Tool result: {result_unstructured.text}")
+                result_structured = result.structuredContent
+                print(f"### MCP - Structured tool result: {result_structured}")
 
 def main():
     """Entry point for the client script."""
