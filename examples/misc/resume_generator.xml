@@ -1,0 +1,29 @@
+<pipeline name="resume generator">
+    <read-file output_var="resume_data" path="resume_data.txt"></read-file>
+    <read-file output_var="job_description" path="job_description.txt"></read-file>
+    <set-variable output_var="sections">X,purpose,skills,work history,education</set-variable>
+    
+    <debug>----------</debug>
+    <foreach-loop input_var="sections" output_var="section">
+        <debug>current section: {{ section }} </debug>
+        <send-prompt output_var="section_content">
+You are an expert resume writer. Using the raw candidate resume data in {{ resume_data }} and the job description in {{ job_description }}, generate a polished, professional version of the {{ section }} section of the candidate’s resume.
+
+Your goals:
+
+Tailor to the job: Emphasize experiences, skills, and accomplishments that are most relevant to the provided job description.
+
+Maintain accuracy: Do not add, exaggerate, or invent any details that are not present in the raw resume data. You may rephrase, reorganize, and enhance clarity, but every fact must remain true to the candidate’s actual background.
+
+Professional formatting and tone: Write in a clear, concise, and achievement-focused style appropriate for a resume. Use strong action verbs, quantify results when available in {{ resume_data }}, and ensure consistent formatting.
+
+Focus and readability: Keep the section targeted—omit irrelevant details and prioritize what will best position the candidate for the role described in {{ job_description }}.
+
+Return only the completed {{ section }} section, ready to be inserted into a resume.
+        </send-prompt>
+        <append-to-file filename="resume_output.md"> # {{ section }} </append-to-file>
+        <append-to-file filename="resume_output.md"> {{ section_content }} </append-to-file>
+    </foreach-loop>
+    <debug>----------</debug>
+    <set-payload>resume generation complete</set-payload>
+</pipeline>

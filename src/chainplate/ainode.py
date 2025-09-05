@@ -79,6 +79,12 @@ class AiNode:
                 filename=attributes.get("filename", "output.txt"),
                 content=content
             )
+        elif tag == "append-to-file":
+            from .elements.append_to_file_element import AppendToFileElement
+            return AppendToFileElement(
+                filename=attributes.get("filename", "output.txt"),
+                content=content
+            )
         elif tag == "context":
             return ContextElement(
                 content=content
