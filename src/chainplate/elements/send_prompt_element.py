@@ -4,8 +4,9 @@ from ..helpers.prompt_helper import ask_with_context, ask_with_context_and_spinn
 from ..helpers.template_helper import TemplateHelper2
 
 class SendPromptElement(AiBaseElement):
-    def __init__(self, output_var, content):
+    def __init__(self, output_var, content, disable_templating: bool = False):
         super().__init__(output_var, content)
+        self.disable_templating = disable_templating
 
     def enter(self , message: Message) -> Message: #test please
         message.set_var("__chat_input__",message.get_payload())  # Set the special __chat_input__ variable to the current payload
@@ -18,9 +19,13 @@ class SendPromptElement(AiBaseElement):
         
         chat_history = message.get_chat_history()
 
-        #re-render from the original content to ensure we have the latest template rendering
-        fresh_content = TemplateHelper2.render_template(self.original_content, message.get_vars())
-
+        fresh_content = ""
+        if self.disable_templating:
+            fresh_content = self.content
+        else:
+            #re-render from the original content to ensure we have the latest template rendering
+            fresh_content = TemplateHelper2.render_template(self.original_content, message.get_vars())
+            
         # Send the prompt and get the response
         response = ask_with_context_and_spinner(fresh_content, context, chat_history)
         # Store the response in the specified output variable     

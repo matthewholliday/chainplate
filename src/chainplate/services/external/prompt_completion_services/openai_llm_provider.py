@@ -12,3 +12,9 @@ class OpenAIPromptService(PromptCompletionService):
             messages=chat_history
         )
         return resp.choices[0].message.content
+    
+    def send_message(self, message: str) -> str:
+        chat_history = [
+            {"role": "user", "content": message}
+        ]
+        return self.get_completion(chat_history)
