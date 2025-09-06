@@ -21,9 +21,8 @@ from .elements.with_memory import WithMemoryElement
 from .elements.read_file_element import ReadFileElement
 from .elements.mcp_list_tools import MCPListToolsElement
 from .elements.mcp_invoke_element import MCPInvokeElement
-from .elements.mcp_extract_tool import MCPExtractTool
-from .elements.mcp_extract_payload import MCPExtractPayload
-from .elements.mcp_extract_service import MCPExtractService
+
+from .elements.mcp.mcp_element_factory import MCPElementFactory
 
 @dataclass
 class AiNode:
@@ -189,22 +188,13 @@ class AiNode:
             )
             return element
         elif tag == "mcp-extract-tool":
-            element = MCPExtractTool(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input")
-            )
-            return element
+            return MCPElementFactory.create_extract_tool_element()
         elif tag == "mcp-extract-payload":
-            element = MCPExtractPayload(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input")
-            )
+            return MCPElementFactory.create_extract_payload_element()
         elif tag == "mcp-extract-service":
-            element = MCPExtractService(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input")
-            )
-            return element
+            return MCPElementFactory.create_extract_service_element()
+        elif tag == "mcp-generate-plan":
+            return MCPElementFactory.create_generate_plan_element()
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements

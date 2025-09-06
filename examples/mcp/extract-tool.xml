@@ -1,0 +1,24 @@
+<pipeline name="MCP Extract Tool Example Pipeline">
+    <set-variable output_var="__mcp_available_tools__" >
+        [
+            {"name":"search_web","desc":"Search the web for results","args":{"q":"string","site":"string?"}},
+            {"name":"run_sql","desc":"Execute read-only SQL queries","args":{"query":"string","timeout_ms":"number?"}}
+        ]
+    </set-variable>
+    <set-variable output_var="__mcp_chat_history__">
+        [
+            {"role":"user","content":"Find the latest pricing for widgets."},
+            {"role":"assistant","content":"Sure—do you have a preferred vendor?"},
+            {"role":"user","content":"Acme Widgets."}
+        ]
+    </set-variable>
+    <set-variable output_var="__mcp_logs__">
+        [2025-09-05T09:14:03Z] session.init ok
+        [2025-09-05T09:14:04Z] tools.loaded count=2
+        [2025-09-05T09:14:07Z] web.search q="Acme Widgets pricing"
+        [2025-09-05T09:14:10Z] parser.results count=12
+        [2025-09-05T09:14:12Z] summarize top=3
+    </set-variable>
+    <mcp-generate-plan></mcp-generate-plan>
+    <set-variable output_var="__payload__"> selected tool: {{ __mcp_plan__ }} </set-variable>
+</pipeline>
