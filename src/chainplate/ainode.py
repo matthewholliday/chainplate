@@ -23,6 +23,7 @@ from .elements.mcp_list_tools import MCPListToolsElement
 from .elements.mcp_invoke_element import MCPInvokeElement
 
 from .elements.mcp.mcp_element_factory import MCPElementFactory
+from .elements.set_variable.set_variable_element_factory import SetVariableElementFactory
 
 @dataclass
 class AiNode:
@@ -195,6 +196,16 @@ class AiNode:
             return MCPElementFactory.create_extract_service_element()
         elif tag == "mcp-generate-plan":
             return MCPElementFactory.create_generate_plan_element()
+        elif tag == "set-mcp-plan":
+            return SetVariableElementFactory.create_set_mcp_plan_element(content=content)
+        elif tag == "set-mcp-tool":
+            return SetVariableElementFactory.create_set_mcp_tool_element(content=content)
+        elif tag == "set-mcp-log":
+            return SetVariableElementFactory.create_set_mcp_log_element(content=content)
+        elif tag == "set-mcp-service":
+            return SetVariableElementFactory.create_set_mcp_service_element(content=content)
+        elif tag == "set-mcp-payload":
+            return SetVariableElementFactory.create_set_mcp_payload_element(content=content)
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements
