@@ -1,5 +1,0 @@
-<pipeline name="mcp-invoke-example">
-    <debug>mih1</debug>
-    <mcp-invoke mcp_service="dummy" action="do_the_thing" arguments='{"test": "something"}'></mcp-invoke>
-    <debug>mih2</debug>
-</pipeline>

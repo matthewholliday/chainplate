@@ -9,9 +9,7 @@ class MCPInvokeElement(BaseElement):
         self.arguments = arguments
 
     async def enter(self, message: Message) -> Message:
-        print("mih1")
         await MCPService().test_call_tool()
-        print("mih2")
         return message
 
     def exit(self, message: Message) -> Message:

@@ -30,7 +30,6 @@ class MCPService:
                 return "\n".join(result_lines)
     
     async def test_call_tool(self):
-        print("mih")
         """Test calling a specific tool with hardcoded arguments for demonstration purposes."""
 
         tool_name = "API-get-users"
@@ -47,11 +46,10 @@ class MCPService:
 
                 result = await session.call_tool(tool_name, arguments)
                 
-                result_unstructured = result.content[0]
-                if isinstance(result_unstructured, types.TextContent):
-                    print(f"### MCP - Tool result: {result_unstructured.text}")
-                result_structured = result.structuredContent
-                print(f"### MCP - Structured tool result: {result_structured}")
+                print("-----------------------------------")
+                result_text = result.content[0].text if result.content else "No content returned from tool call."
+                print(f"Result from tool call '{tool_name}'\n: {result_text}")
+                print("-----------------------------------")
 
 def main():
     """Entry point for the client script."""

@@ -1,0 +1,4 @@
+<pipeline name="mcp-invoke-example">
+    <mcp-invoke mcp_service="notion" action="API-get-users" arguments='{}'></mcp-invoke>
+    <set-variable name="__payload__" value="{{ mcp-invoke-result }}"></set-variable>
+</pipeline>
