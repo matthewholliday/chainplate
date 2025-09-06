@@ -14,7 +14,7 @@ class AppendToFileElement(BaseElement):
 		try:
 			rendered_content = self.apply_template(self.content, message)
 			with open(self.filename, "a", encoding="utf-8") as f:
-				f.write(rendered_content)
+				f.write(rendered_content + "\n") 
 			return message
 		except Exception as e:
 			message.log(f"WriteToFileElement: ERROR writing to {self.filename}: {e}")

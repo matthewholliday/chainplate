@@ -1,0 +1,5 @@
+<pipeline name="file append test">
+    <for-loop start="0" end="5">
+        <append-to-file filename="output.txt" content="This is line {{ loop.index }}." />
+    </for-loop>
+</pipeline>

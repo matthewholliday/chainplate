@@ -1,0 +1,18 @@
+<pipeline name="world-builder">
+    <set-variable output_var="world_name">Terranelle</set-variable>
+    <set-variable output_var="fictional_kingdoms">Arandor, Eldoria, Valtoria, Drakonia, Sylvaris, Thaloria, Zephyria, Lumina, Noxterra, Aetheria</set-variable>
+    <set-variable output_var="world_description">
+        The world of {{ world_name }} is a vast and enchanting realm filled with diverse landscapes, magical creatures, and ancient civilizations. Each kingdom within this world has its own unique culture, traditions, and history that contribute to the rich tapestry of life in {{ world_name }}.
+
+        The kingdoms of {{ fictional_kingdoms }} are renowned for their distinct characteristics and contributions to the overall lore of {{ world_name }}.
+    </set-variable>
+    <foreach-loop input_var="fictional_kingdoms" output_var="kingdom">
+        <send-prompt output_var="kingdom_description">
+            Describe the kingdom of {{ kingdom }} in the world of {{ world_name }}. Include its unique features, culture, and any notable landmarks or historical events that define it. Format the output as markdown suitable for inclusion in a world-building document.
+            Use the following world description as context: {{ world_description }}
+        </send-prompt>
+        <append-to-file filename="world_description.txt"></append-to-file>
+        <append-to-file filename="world_description.txt"># {{ kingdom }}</append-to-file>
+        <append-to-file filename="world_description.txt">{{ kingdom_description }}</append-to-file>
+    </foreach-loop>
+</pipeline>

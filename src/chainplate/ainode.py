@@ -21,7 +21,8 @@ from .elements.with_memory import WithMemoryElement
 from .elements.read_file_element import ReadFileElement
 from .elements.mcp_list_tools import MCPListToolsElement
 from .elements.mcp_invoke_element import MCPInvokeElement
-
+from .elements.mcp_extract_tool import MCPExtractTool
+from .elements.mcp_extract_payload import MCPExtractPayload
 
 @dataclass
 class AiNode:
@@ -186,6 +187,17 @@ class AiNode:
                 arguments=attributes.get("arguments", {})
             )
             return element
+        elif tag == "mcp-extract-tool":
+            element = MCPExtractTool(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input")
+            )
+            return element
+        elif tag == "mcp-extract-payload":
+            element = MCPExtractPayload(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input")
+            )
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements
