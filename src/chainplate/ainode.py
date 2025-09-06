@@ -23,6 +23,7 @@ from .elements.mcp_list_tools import MCPListToolsElement
 from .elements.mcp_invoke_element import MCPInvokeElement
 from .elements.mcp_extract_tool import MCPExtractTool
 from .elements.mcp_extract_payload import MCPExtractPayload
+from .elements.mcp_extract_service import MCPExtractService
 
 @dataclass
 class AiNode:
@@ -198,6 +199,12 @@ class AiNode:
                 output_var=attributes.get("output_var", "Unnamed Variable"),
                 input_var=attributes.get("input_var", "Unnamed Input")
             )
+        elif tag == "mcp-extract-service":
+            element = MCPExtractService(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input")
+            )
+            return element
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements
