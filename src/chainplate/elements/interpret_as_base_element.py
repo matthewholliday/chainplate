@@ -48,5 +48,10 @@ class InterpretAsBase(BaseElement):
     @abstractmethod
     def get_prompt_template(self) -> str:
         pass 
+
+    def get_label(self) -> str:
+        return f"InterpretAsBase(output_var={self.output_var}, input_var={self.input_var})"
     
+    def get_tag(self) -> str:
+        return "interpret-as-base"
     

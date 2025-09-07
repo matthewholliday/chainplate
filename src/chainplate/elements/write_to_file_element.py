@@ -26,4 +26,8 @@ class WriteToFileElement(BaseElement):
 	def conditions_passed(self, message: Message) -> bool:
 		return True
 
+	def get_label(self) -> str:
+		return f"WriteToFileElement(filename={self.filename}, content={self.content})"
 	
+	def get_tag(self) -> str:
+		return "write-to-file"

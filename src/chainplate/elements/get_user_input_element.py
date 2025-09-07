@@ -20,3 +20,9 @@ class GetUserInputElement(BaseElement):
 
     def exit(self, message: Message) -> Message:
         return message
+    
+    def get_label(self) -> str:
+        return f"GetUserInputElement(output_var={self.output_var}, content={self.content})"
+    
+    def get_tag(self) -> str:
+        return "get-user-input"

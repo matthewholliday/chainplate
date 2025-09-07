@@ -12,3 +12,9 @@ class GetContextElement(BaseElement):
 
     def exit(self, message: Message) -> Message:
         return message
+    
+    def get_label(self) -> str:
+        return f"GetContextElement(output_var={self.output_var})"
+    
+    def get_tag(self) -> str:
+        return "get-context"

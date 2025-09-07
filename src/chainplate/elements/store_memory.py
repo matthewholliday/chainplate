@@ -25,3 +25,9 @@ class StoreMemory(BaseElement):
         elif self.content:
             retrieved_value = self.content
         return retrieved_value
+    
+    def get_label(self) -> str:
+        return f"StoreMemory(input_var={self.input_var}, content={self.content})"
+
+    def get_tag(self) -> str:
+        return "store-memory"

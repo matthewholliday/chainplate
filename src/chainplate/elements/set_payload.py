@@ -21,4 +21,12 @@ class SetPayloadElement(BaseElement):
             return content
         else:
             raise ValueError("Either 'input_var' or 'content' must be provided to get the input value.")
-        
+    
+    def get_payload(self, message: Message) -> str:
+        return message.get_var("__payload__")
+    
+    def get_label(self) -> str:
+        return f"SetPayloadElement(input_var={self.input_var}, content={self.content})"
+    
+    def get_tag(self) -> str:
+        return "set-payload"

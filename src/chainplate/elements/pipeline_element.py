@@ -13,3 +13,9 @@ class PipelineElement(BaseElement):
     
     def conditions_passed(self, message: Message) -> bool:
         return True
+    
+    def get_label(self) -> str:
+        return f"PipelineElement(name={self.name})"
+    
+    def get_tag(self) -> str:
+        return "pipeline"

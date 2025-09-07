@@ -46,3 +46,9 @@ class SendPromptElement(AiBaseElement):
 
     def should_exit(self, message: Message) -> tuple[bool, Message]:
         return (True, message)
+    
+    def get_label(self) -> str:
+        return f"SendPromptElement(output_var={self.output_var}, content={self.content})"
+    
+    def get_tag(self) -> str:
+        return "send-prompt"

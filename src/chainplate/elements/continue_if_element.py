@@ -30,3 +30,9 @@ class ContinueIfElement(BaseElement):
         message.set_var(self.output_var, conditions_passed)
 
         return conditions_passed
+    
+    def get_label(self) -> str:
+        return f"ContinueIfElement(condition={self.condition}, output_var={self.output_var})"
+    
+    def get_tag(self) -> str:
+        return "continue-if"

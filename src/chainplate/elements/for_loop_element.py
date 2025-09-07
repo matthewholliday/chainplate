@@ -41,3 +41,9 @@ class ForLoopElement(BaseElement):
             return (result == False, message) # Exit if condition is false
         except Exception as e:
             return (True, message.log_message(f"ForLoopElement encountered an error: {e}")) # Stop on error
+        
+    def get_label(self) -> str:
+        return f"ForLoopElement(start_num={self.current_iteration_str}, stop_num={self.stop_num_str})"
+    
+    def get_tag(self) -> str:
+        return "for-loop"

@@ -18,3 +18,9 @@ class DebugElement(BaseElement):
 
 	def exit(self, message: Message) -> Message:
 		return message
+	
+	def get_label(self) -> str:
+		return f"DebugElement(content={self.content})"
+	
+	def get_tag(self) -> str:
+		return "debug"

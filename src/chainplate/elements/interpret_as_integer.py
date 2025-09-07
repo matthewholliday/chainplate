@@ -30,3 +30,9 @@ class InterpretAsIntegerElement(InterpretAsBase):
 
     def get_prompt_template(self):
         return TEMPLATE_TEXT
+    
+    def get_label(self) -> str:
+        return f"InterpretAsIntegerElement(output_var={self.output_var}, input_var={self.input_var})"
+    
+    def get_tag(self) -> str:
+        return "interpret-as-integer"

@@ -43,3 +43,9 @@ class ExtractList(InterpretAsBase):
     def get_input_text(self):
         # Use the content directly as the input text
         return self.content if self.content else self.get_input_value()
+    
+    def get_label(self) -> str:
+        return f"ExtractList(output_var={self.output_var}, input_var={self.input_var}, criteria={self.criteria})"
+    
+    def get_tag(self) -> str:
+        return "extract-list"
