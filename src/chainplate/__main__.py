@@ -44,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--chat",type=Path, help="Run in chat mode with the given XML file")
     p.add_argument("--workflow", type=Path, help="TODO")
     p.add_argument("--server", action="store_true", help="Run the Chainplate server mode")
+    p.add_argument("--list-mcp-services", action="store_true", help="List available MCP services from the config file")
     args = p.parse_args(argv)
     
     if(args.parse_to_json):
@@ -91,6 +92,19 @@ def main(argv: list[str] | None = None) -> int:
     elif(args.server):
         run_server()
         return 0
+    elif(args.list_mcp_services):
+        
+        from .services.mcp.mcp_config_service import MCPConfigService
+        from .services.mcp.mcp_service import MCPService
+        config_file_path = "mcp/config.json"
+        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
+
+        for server_name, server_info in mcp_servers.items():
+            print(f"Server Name: {server_name}")
+            print(f"Command: {server_info['command']}")
+            print(f"Arguments: {server_info.get('args', [])}")
+            print(f"Environment Variables: {server_info.get('env', {})}")
+            print("-" * 40)
     elif(args.ask):
         prompt = args.ask  # Use the string directly
         response = AIXMLCore.query(prompt)

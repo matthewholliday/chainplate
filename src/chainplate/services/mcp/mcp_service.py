@@ -2,7 +2,7 @@ import json
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-class McpService:
+class MCPService:
 
     @staticmethod
     def get_stdio_params(command, args, env):

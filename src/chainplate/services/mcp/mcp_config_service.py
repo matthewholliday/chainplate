@@ -1,38 +1,33 @@
+import os
 import json
 
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
-
 class MCPConfigService:
+    def read_mcp_servers_config(file_path: str) -> dict:
+        """
+        Reads an MCP servers config file (JSON only) and returns its contents.
 
-    @staticmethod
-    def get_stdio_params(command, args, env):
-        server_params = StdioServerParameters(
-            command=command,
-            args=args,
-            env=env)
-        return server_params
+        Args:
+            file_path (str): Path to the MCP servers config file.
 
-    @staticmethod
-    async def get_stdio_tools(server_params: StdioServerParameters):
-        async with stdio_client(server_params) as (read, write):
-            async with ClientSession(read, write) as session:
-                await session.initialize()
-                tools = await session.list_tools()
-                result_lines = []
-                for tool in tools.tools:
-                    result_lines.append(f"Tool name: {tool.name}")
-                    result_lines.append(f"Tool description: {tool.description}")
-                    result_lines.append("Tool parameters:")
-                    result_lines.append(json.dumps(tool.inputSchema, indent=2))
-                    result_lines.append("----------------------------------")
-                return "\n".join(result_lines)
-            
-    @staticmethod
-    async def call_stdio_tool(server_params: StdioServerParameters, tool_name: str, arguments: dict):
-        async with stdio_client(server_params) as (read, write):
-            async with ClientSession(read, write) as session:
-                await session.initialize() 
-                result = await session.call_tool(tool_name, arguments)
-                result_text = result.content[0].text if result.content else "No content returned from tool call."
-                return f"Result from tool call '{tool_name}' was: \n\n {result_text}"
+        Returns:
+            dict: Dictionary of servers under 'mcpServers'.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            ValueError: If parsing fails or 'mcpServers' is missing.
+        """
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Config file not found: {file_path}")
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                config = json.load(f)
+
+            if "mcpServers" not in config:
+                raise ValueError("Invalid config: missing 'mcpServers' section")
+
+            return config["mcpServers"]
+
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse JSON: {e}")
+
