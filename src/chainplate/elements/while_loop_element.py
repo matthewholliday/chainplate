@@ -21,3 +21,10 @@ class WhileLoopElement(BaseElement):
             return (result == False, message) # Exit if condition is false
         except Exception as e:
             return (True, message.log_message(f"WhileLoopElement '{self.name}' encountered an error: {e}")) # Stop on error
+        
+    def get_label(self) -> str:
+        return f"WhileLoopElement(condition={self.condition})"
+    
+    @staticmethod
+    def get_tag() -> str:
+        return "while-loop"

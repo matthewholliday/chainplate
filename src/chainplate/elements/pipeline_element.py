@@ -6,10 +6,19 @@ class PipelineElement(BaseElement):
         self.name = name
 
     def enter(self, message:Message) -> Message:
+        message.set_var("__pipeline_input__", message.get_payload())
         return message
 
     def exit(self, message:Message) -> Message:
+        message.set_var("__pipeline_output__", message.get_payload())
         return message
     
     def conditions_passed(self, message: Message) -> bool:
         return True
+    
+    def get_label(self) -> str:
+        return f"PipelineElement(name={self.name})"
+    
+    @staticmethod
+    def get_tag() -> str:
+        return "pipeline"

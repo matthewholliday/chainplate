@@ -49,6 +49,7 @@ class Message:
 
     def set_var(self, key: str, value):
         self.vars[key] = value
+        self.vars["__payload__"] = value
         return self
 
     def has_var(self, key: str) -> bool:
@@ -74,11 +75,7 @@ class Message:
         return self
     
     def set_payload(self, payload: str):
-        self.set_var(PAYLOAD_KEY, payload)
-        return self
-    
-    def prompt_chat(self) -> list:
-        self.conversation_history = prompt_chat(self.conversation_history)
+        self.vars["__payload__"] = payload
         return self
     
     def get_payload(self) -> str:
@@ -90,17 +87,9 @@ class Message:
     def get_chat_history(self) -> list:
         return self.conversation_history    
     
-    def get_chat_input(self):
-        return self.get_var(CHAT_INPUT_KEY)
+    def get_pipeline_input(self) -> str:
+        return self.get_var("__pipeline_input__")
     
-    def set_chat_input(self, chat_input: str):
-        self.set_var(CHAT_INPUT_KEY, chat_input)
-        return self
-    
-    def get_chat_response(self):
-        return self.get_var(CHAT_RESPONSE_KEY)
-    
-    def set_chat_response(self, chat_response: str):
-        self.set_var(CHAT_RESPONSE_KEY, chat_response)
-        return self
+    def get_pipeline_output(self) -> str:
+        return self.get_var("__pipeline_output__")
 

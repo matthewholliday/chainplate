@@ -48,5 +48,12 @@ class ForEachLoopElement(BaseElement):
     
     def should_exit(self, message):
         return (self.index >= len(self.collection) - 1,message)
+    
+    def get_label(self) -> str:
+        return f"ForEachLoopElement(output_var={self.output_var}, input_var={self.input_var})"
+    
+    @staticmethod
+    def get_tag() -> str:
+        return "foreach-loop"
 
 

@@ -16,3 +16,10 @@ class SetVariableElement(BaseElement):
 
     def exit(self, message: Message) -> Message:
         return message
+    
+    def get_label(self) -> str:
+        return f"SetVariableElement(output_var={self.output_var}, content={self.content})"
+    
+    @staticmethod
+    def get_tag():
+        return "set-variable"

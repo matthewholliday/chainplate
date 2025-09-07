@@ -15,6 +15,11 @@ class BaseElement(ABC):
         """Called when exiting the element."""
         pass
 
+    @abstractmethod
+    def get_label(self) -> str:
+        """Returns a label for the element, used for logging or display purposes."""
+        pass
+
     # concrete methods...
     def should_enter(self, message: Message) -> bool:
         return True

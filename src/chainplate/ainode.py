@@ -57,117 +57,136 @@ class AiNode:
         return result
     
     #TODO - refactor to use a registry pattern instead of hardcoding all elements here...
-    @staticmethod 
+    @staticmethod
     def get_element_by_tag(tag: str, attributes, content) -> List["AiNode"]:
-        if tag == "pipeline":
-            return PipelineElement(attributes.get("name", "Unnamed Pipeline"))
-        elif tag == "send-prompt":
-            return SendPromptElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                content=attributes.get("content", content)
-            )
-        elif tag == "set-variable":
-            from .elements.set_variable_element import SetVariableElement
-            return SetVariableElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                content=content
-            )
-        elif tag == "write-to-file":
-            from .elements.write_to_file_element import WriteToFileElement
-            return WriteToFileElement(
-                filename=attributes.get("filename", "output.txt"),
-                content=content
-            )
-        elif tag == "context":
-            return ContextElement(
-                content=content
-            )
-        elif tag == "interpret-as-bool":
-            return InterpretAsBoolElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input")
-            )
-        elif tag == "interpret-as-integer":
-            return InterpretAsIntegerElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input")
-            )
-        elif tag == "continue-if":
-            from .elements.continue_if_element import ContinueIfElement
-            return ContinueIfElement(
-                condition=attributes.get("condition", "false"),
-                output_var=attributes.get("output_var", None)
-            )
-        elif tag == "debug":
-            from .elements.debug_element import DebugElement
-            return DebugElement(
-                content=content or "Debug Message"
-            )
-        elif tag == "apply-labels": #TODO - rename
-            return ApplyLabelsElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input"),
-                categories=attributes.get("labels", ""),
-                criteria = attributes.get("criteria", "")
-            )
-        elif tag == "while-loop":
-            element = WhileLoopElement(
-                condition=attributes.get("condition", "false")
-            )
-            return element
-        elif tag == "for-loop":
-            element = ForLoopElement(
-                start_num=int(attributes.get("from", 0)),
-                stop_num=int(attributes.get("to", 10))
-            )
-            return element
-        elif tag == "get-user-input":
-            return GetUserInputElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                content=content or "Please provide input: "
-            )
-        elif tag == "foreach-loop":
-            return ForEachLoopElement(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input")
-            )
-        elif tag == "extract-list":
-            return ExtractList(
-                output_var=attributes.get("output_var", "Unnamed Variable"),
-                input_var=attributes.get("input_var", "Unnamed Input"),
-                criteria=attributes.get("criteria", ""),
-                content = content or "no input text provided"
-            )
-        elif tag == "read-file":
-            element = ReadFileElement()
-            element.props = {
-                "output_var": attributes.get("output_var", "Unnamed Variable"),
-                "path": attributes.get("path", "")
-            }
-            return element
-        elif tag == "set-payload":
-            element = SetPayloadElement(
-                input_var=attributes.get("input_var", ""),
-                content=content or ""
-            )
-            return element
-        elif tag == "store-memory":
-            element = StoreMemory(
-                input_var=attributes.get("input_var", ""),
-                content=content or ""
-            )
-            return element
-        elif tag == "with-memory":
-            element = WithMemoryElement()
-            return element
-        elif tag == "get-context":
-            element = GetContextElement(
-                output_var=attributes.get("output_var", "Unnamed Variable")
-            )
-            return element
-        else:
-            raise ValueError(f"Unknown tag: {tag}")
-            # return None # Placeholder for other elements
+        # List of element classes to check (all statically imported)
+        from .elements.set_variable_element import SetVariableElement
+        from .elements.write_to_file_element import WriteToFileElement
+        from .elements.continue_if_element import ContinueIfElement
+        from .elements.debug_element import DebugElement
+
+        element_classes = [
+            PipelineElement,
+            SendPromptElement,
+            ContextElement,
+            InterpretAsBoolElement,
+            InterpretAsIntegerElement,
+            ApplyLabelsElement,
+            WhileLoopElement,
+            ForLoopElement,
+            GetUserInputElement,
+            ForEachLoopElement,
+            ExtractList,
+            ReadFileElement,
+            SetPayloadElement,
+            StoreMemory,
+            WithMemoryElement,
+            GetContextElement,
+            SetVariableElement,
+            WriteToFileElement,
+            ContinueIfElement,
+            DebugElement,
+        ]
+
+        for cls in element_classes:
+            if hasattr(cls, "get_tag") and tag == cls.get_tag():
+                # Instantiate with appropriate arguments
+                if cls is PipelineElement:
+                    return PipelineElement(attributes.get("name", "Unnamed Pipeline"))
+                elif cls is SendPromptElement:
+                    return SendPromptElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        content=attributes.get("content", content)
+                    )
+                elif cls is ContextElement:
+                    return ContextElement(content=content)
+                elif cls is InterpretAsBoolElement:
+                    return InterpretAsBoolElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        input_var=attributes.get("input_var", "Unnamed Input")
+                    )
+                elif cls is InterpretAsIntegerElement:
+                    return InterpretAsIntegerElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        input_var=attributes.get("input_var", "Unnamed Input")
+                    )
+                elif cls is ApplyLabelsElement:
+                    return ApplyLabelsElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        input_var=attributes.get("input_var", "Unnamed Input"),
+                        categories=attributes.get("labels", ""),
+                        criteria=attributes.get("criteria", "")
+                    )
+                elif cls is WhileLoopElement:
+                    return WhileLoopElement(
+                        condition=attributes.get("condition", "false")
+                    )
+                elif cls is ForLoopElement:
+                    return ForLoopElement(
+                        start_num=int(attributes.get("from", 0)),
+                        stop_num=int(attributes.get("to", 10))
+                    )
+                elif cls is GetUserInputElement:
+                    return GetUserInputElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        content=content or "Please provide input: "
+                    )
+                elif cls is ForEachLoopElement:
+                    return ForEachLoopElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        input_var=attributes.get("input_var", "Unnamed Input")
+                    )
+                elif cls is ExtractList:
+                    return ExtractList(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        input_var=attributes.get("input_var", "Unnamed Input"),
+                        criteria=attributes.get("criteria", ""),
+                        content=content or "no input text provided"
+                    )
+                elif cls is ReadFileElement:
+                    element = ReadFileElement()
+                    element.props = {
+                        "output_var": attributes.get("output_var", "Unnamed Variable"),
+                        "path": attributes.get("path", "")
+                    }
+                    return element
+                elif cls is SetPayloadElement:
+                    return SetPayloadElement(
+                        input_var=attributes.get("input_var", ""),
+                        content=content or ""
+                    )
+                elif cls is StoreMemory:
+                    return StoreMemory(
+                        input_var=attributes.get("input_var", ""),
+                        content=content or ""
+                    )
+                elif cls is WithMemoryElement:
+                    return WithMemoryElement()
+                elif cls is GetContextElement:
+                    return GetContextElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable")
+                    )
+                elif cls is SetVariableElement:
+                    return SetVariableElement(
+                        output_var=attributes.get("output_var", "Unnamed Variable"),
+                        content=content
+                    )
+                elif cls is WriteToFileElement:
+                    return WriteToFileElement(
+                        filename=attributes.get("filename", "output.txt"),
+                        content=content
+                    )
+                elif cls is ContinueIfElement:
+                    return ContinueIfElement(
+                        condition=attributes.get("condition", "false"),
+                        output_var=attributes.get("output_var", None)
+                    )
+                elif cls is DebugElement:
+                    return DebugElement(
+                        content=content or "Debug Message"
+                    )
+
+        raise ValueError(f"Unknown tag: {tag}")
     
     @staticmethod
     def pretty_print(is_enter: bool, tag: str, depth: int):

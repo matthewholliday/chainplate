@@ -29,7 +29,3 @@ class TestMessage(unittest.TestCase):
         msg = Message()
         msg.set_payload("payload data")
         self.assertEqual(msg.get_payload(), "payload data")
-        msg.set_chat_input("input")
-        self.assertEqual(msg.get_chat_input(), "input")
-        msg.set_chat_response("response")
-        self.assertEqual(msg.get_chat_response(), "response")

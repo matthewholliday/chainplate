@@ -18,3 +18,10 @@ class DebugElement(BaseElement):
 
 	def exit(self, message: Message) -> Message:
 		return message
+	
+	def get_label(self) -> str:
+		return f"DebugElement(content={self.content})"
+	
+	@staticmethod
+	def get_tag() -> str:
+		return "debug"

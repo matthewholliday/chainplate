@@ -29,3 +29,10 @@ class ReadFileElement(BaseElement):
 
     def exit(self, message: Message) -> Message:
         return message
+
+    def get_label(self) -> str:
+        return f"ReadFileElement(output_var={self.props.get('output_var')}, path={self.props.get('path')})"
+    
+    @staticmethod
+    def get_tag() -> str:
+        return "read-file"
