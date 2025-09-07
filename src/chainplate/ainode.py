@@ -206,6 +206,13 @@ class AiNode:
             return SetVariableElementFactory.create_set_mcp_service_element(content=content)
         elif tag == "set-mcp-payload":
             return SetVariableElementFactory.create_set_mcp_payload_element(content=content)
+        elif tag == "assure-json":
+            from .elements.assure_json_element import AssureJsonElement
+            return AssureJsonElement(
+                output_var=attributes.get("output_var", "Unnamed Variable"),
+                input_var=attributes.get("input_var", "Unnamed Input"),
+                max_attempts=int(attributes.get("max_attempts", 5))
+            )
         else:
             raise ValueError(f"Unknown tag: {tag}")
             # return None # Placeholder for other elements

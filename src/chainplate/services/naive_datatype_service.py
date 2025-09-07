@@ -1,10 +1,10 @@
-from .external.prompt_completion_services.openai_llm_provider import OpenAIPromptCompletionService
+from .external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
 
 class NaiveDataTypeService:
     
     @staticmethod
     def to_json_with_retry(payload: str, json_shape: str = None, max_retries: int = 3) -> str:
-        prompt_service = OpenAIPromptCompletionService()
+        prompt_service = OpenAIPromptService()
         prompt = NaiveDataTypeService.build_json_prompt(payload, json_shape)
         
         for attempt in range(max_retries):

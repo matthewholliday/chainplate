@@ -1,7 +1,5 @@
 <pipeline name="mcp-invoke-example">
     <set-variable output_var="tool_selection">
-        call: API-post-page
-
         {
             "parent": { "page_id": "basd1023" },
             "properties": {
@@ -9,10 +7,8 @@
                 { "text": { "content": "Grocery — Dinner Tonight" } }
             ]
             }
-        }        
+        }
     </set-variable>
-    <mcp-extract-tool>{{ tool_selection }}</mcp-extract-tool>
-    <debug>selected tool: {{ __mcp_tool__ }}  ...end</debug>
-    <mcp-invoke mcp_service="notion" action="API-get-users" arguments='{}'></mcp-invoke>
-    <set-variable name="__payload__" value="{{ mcp-invoke-result }}"></set-variable>
+    <assure-json input_var="tool_selection" output_var="validated_tool_selection" />
+    <debug>{{ validated_tool_selection }}</debug>       
 </pipeline>

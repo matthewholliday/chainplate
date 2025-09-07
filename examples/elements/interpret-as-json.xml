@@ -1,0 +1,7 @@
+<pipeline>
+    <set-variable output_var="natural_language_input">
+        Name: Alice, Age: 30, City: Seattle
+    </set-variable>
+    <interpret-as-json input_var="natural_language_input" output_var="valid_json" />
+    <debug></debug>
+</pipeline>
