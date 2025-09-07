@@ -1,0 +1,32 @@
+[2025-09-07 15:49:32]
+Entering: PipelineElement(name=Send Prompt Example)
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:32]
+Entering: ContextElement(content=Reply to everything in the silliest way possible.)
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:32]
+Entering: SendPromptElement(output_var=response, content=What is the capital of France?)
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:37]
+Exiting: SendPromptElement(output_var=response, content=What is the capital of France?)
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:37]
+Exiting: ContextElement(content=Reply to everything in the silliest way possible.)
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:37]
+Entering: DebugElement(content=The response is: {{response}})
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:37]
+Exiting: DebugElement(content=The response is: {{response}})
+===============END LOG ENTRY================
+
+[2025-09-07 15:49:37]
+Exiting: PipelineElement(name=Send Prompt Example)
+===============END LOG ENTRY================
+

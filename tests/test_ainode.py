@@ -30,8 +30,22 @@ class TestAiNode(unittest.TestCase):
             self.assertIsInstance(el, cls)
 
     def test_enter_exit_with_none_element(self):
-        node = AiNode(tag="t", contents="", children=[], attributes={}, element=None)
-        msg = {}
+        class DummyElement:
+            def enter(self, msg): return msg
+            def exit(self, msg): return msg
+            def should_enter(self, msg): return False
+            def increment_iteration(self, msg): return msg
+            def should_exit(self, msg): return True, msg
+            def get_current_item(self): return None
+            def update_enter_logs(self, msg): pass
+            def update_exit_logs(self, msg): pass
+        node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
+        class DummyMessage(dict):
+            def log_message(self, txt): self["logged"] = txt
+            def update_exit_logs(self, msg): pass
+            def update_enter_logs(self, msg): pass
+        msg = DummyMessage()
+
         self.assertEqual(node.enter(msg, 0), msg)
         self.assertEqual(node.exit(msg, 0), msg)
 
@@ -49,6 +63,8 @@ class TestAiNode(unittest.TestCase):
             def increment_iteration(self, msg): return msg
             def should_exit(self, msg): return True, msg
             def get_current_item(self): return None
+            def update_enter_logs(self, msg): pass
+            def update_exit_logs(self, msg): pass
         class DummyMessage(dict):
             def log_message(self, txt): self["logged"] = txt
         node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
@@ -137,6 +153,8 @@ class TestAiNode(unittest.TestCase):
                 return msg.get("pass", True)
             def get_current_item(self):
                 return None
+            def update_enter_logs(self, msg): pass
+            def update_exit_logs(self, msg): pass
         node = AiNode(tag="dummy", contents="", children=[], attributes={}, element=DummyElement())
         msg = {}
         msg = node.enter(msg, 0)
@@ -154,6 +172,8 @@ class TestAiNode(unittest.TestCase):
                 return msg.get("stop", False), msg
             def get_current_item(self):
                 return None
+            def update_enter_logs(self, msg): pass
+            def update_exit_logs(self, msg): pass
         node = AiNode(tag="t", contents="", children=[], attributes={}, element=DummyElement())
         should_exit, _ = node.element.should_exit({})
         self.assertFalse(should_exit)
@@ -174,6 +194,8 @@ class TestAiNode(unittest.TestCase):
                 return True, msg
             def get_current_item(self):
                 return None
+            def update_enter_logs(self, msg): pass
+            def update_exit_logs(self, msg): pass
         class DummyChild(AiNode):
             def execute(self, msg, depth=0):
                 msg["ran_child"] = True
