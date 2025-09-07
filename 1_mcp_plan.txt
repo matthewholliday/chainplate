@@ -1,0 +1,10 @@
+I can create that page. One piece of info is required: where should I create it?
+
+Please provide the parent page ID (the Notion page under which the new page should be created). If you want it created at the workspace root (if supported), reply with the word "workspace". 
+
+Once you give that, I'll:
+1) Call the Notion Create Page API (API-post-page) with parent.page_id and properties.title = "my stuff".
+2) Add a paragraph block as the page body with text "this is my stuff page" (via the children in the create call or by appending children).
+3) Return the new page ID and a confirmation.
+
+Give me the parent page_id (or "workspace") and I'll proceed.

@@ -28,7 +28,7 @@ class ChainplateChatSession:
         self.xml_string = xml_string
         self.chat_history = []
     
-    def run_interactive(self, ux_service=CLIService()):
+    async def run_interactive(self, ux_service=CLIService()):
         print_ascii_art()
         while True:
             try:
@@ -50,7 +50,7 @@ class ChainplateChatSession:
                 # temp testing
 
                 message.conversation_history = self.chat_history
-                message = self.create_workflow().run(message)
+                message = await self.create_workflow().run(message)
 
                 #Update the chat history with the latest user and assistant messages
                 #IMORTANT NOTE (!) transformed_input may be different from user_input_txt depending on how the workflow is designed.

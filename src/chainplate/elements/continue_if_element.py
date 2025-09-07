@@ -16,13 +16,13 @@ class ContinueIfElement(BaseElement):
     
     def should_enter(self, message: Message) -> bool:
         # Apply templating to condition and output_var
-        self.condition, self.output_var = self.apply_templates([self.condition, self.output_var], message)
+        evaluation_result = self.apply_template(self.condition, message)
 
         # Evaluate the condition
         conditions_passed = False
 
         try:
-            conditions_passed = BooleanHelper.evaluate_condition(self.condition, message)
+            conditions_passed = BooleanHelper.evaluate_condition(evaluation_result, message)
         except ValueError:
             conditions_passed = False
             raise ValueError(f"Cannot interpret condition '{self.condition}' as boolean.")

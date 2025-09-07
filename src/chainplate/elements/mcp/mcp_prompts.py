@@ -1,6 +1,9 @@
 MCP_GENERATE_PLAN_TEMPLATE = """
 You are an MCP client orchestrator. Your job is to analyze the current situation and formulate a clear, step-by-step plan for how to proceed. Here is contextual information about what has happened so far:
 
+Original User Request:
+{{ __mcp_user_request__ }}
+
 Available Tools:
 {{ __mcp_available_tools__}}
 
@@ -10,6 +13,7 @@ Chat History:
 What has occurred in the current MCP session:
 {{ __mcp_logs__ }}
 
+ Only ask the user for the minimum information required to determine the correct MCP tool to call, if absolutely necessary. Otherwise, make a reasonable guess based on the information provided.   
 """
 
 MCP_EXTRACT_TOOL_TEMPLATE = """
@@ -18,6 +22,7 @@ You are an assistant. You will be given some instructions. Your only task is to 
 Here are the instructions:
 
  {{ input_text }}
+
 """
 
 MCP_EXTRACT_PAYLOAD_TEMPLATE = """

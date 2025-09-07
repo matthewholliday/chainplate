@@ -8,12 +8,14 @@ class DebugElement(BaseElement):
 
 	def enter(self, message: Message) -> Message:
 		try:
+			print("vars: " + str(message.get_vars()))
 			rendered_content = TemplateHelper.render_template(self.content, message.get_vars())			
 			print(" >> " + rendered_content)
 			return message
 		except Exception as e:
 			print("XML Element '<debug>' encountered an error: " + str(e))
 			message.log_message(f"XML Element '<debug>' encountered an error: {e}")
+			raise e
 		return message
 
 	def exit(self, message: Message) -> Message:

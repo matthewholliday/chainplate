@@ -4,7 +4,7 @@ from ..message import Message
 import asyncio
 
 class MCPListToolsElement(BaseElement):
-    def __init__(self, output_var: str = "tool_list", mcp_service: str = "notion"):
+    def __init__(self, output_var: str = "__mcp_available_tools__", mcp_service: str = "notion"):
         super().__init__()
         self.output_var = output_var
         self.service = mcp_service

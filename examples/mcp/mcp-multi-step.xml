@@ -1,14 +1,26 @@
 <pipeline name="mcp-invoke-example">
-    <set-variable output_var="tool_selection">
-        {
-            "parent": { "page_id": "basd1023" },
-            "properties": {
-            "title": [
-                { "text": { "content": "Grocery — Dinner Tonight" } }
-            ]
-            }
-        }
+    <set-variable output_var="__mcp_user_request__">
+        create a new page with a title called "my stuff" and a body that says "this is my stuff page"
     </set-variable>
-    <assure-json input_var="tool_selection" output_var="validated_tool_selection" />
-    <debug>{{ validated_tool_selection }}</debug>       
+
+    <debug>STEP 1: Get Tool List...</debug>
+    <mcp-list-tools output_var="__mcp_available_tools__" service="notion"></mcp-list-tools>
+    <write-to-file filename="0_mcp_tool_list.txt">{{ __mcp_available_tools__ }}</write-to-file>
+    <mcp-generate-plan></mcp-generate-plan>
+    <debug>{{ __mcp_plan__ }}</debug>
+
+    <set-variable ouput_var="needs_more_input">
+        You are an assistant dedicated to reviewing a message and determining if the message is asking for more information from the user: 
+        ---BEGIN-MESSAGE---
+        {{ __mcp_plan__ }}
+    </set-variable>
+    <interpret-as-bool input_var="needs_more_input" output_var="get_user_input"></interpret-as-bool>
+
+    <debug>Needs user input?: {{ get_user_input }}</debug>
+
+    <continue-if condition="{{ get_user_input }}">
+        <get-user-input output_var="user_clarification"></get-user-input>
+    </continue-if>
+
+    <debug>finished</debug>
 </pipeline>

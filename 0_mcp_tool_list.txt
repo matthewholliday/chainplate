@@ -1,0 +1,76 @@
+Tool name: API-get-user
+Tool description: Notion | Retrieve a user
+Tool parameters:
+----------------------------------
+Tool name: API-get-users
+Tool description: Notion | List all users
+Tool parameters:
+----------------------------------
+Tool name: API-get-self
+Tool description: Notion | Retrieve your token's bot user
+Tool parameters:
+----------------------------------
+Tool name: API-post-database-query
+Tool description: Notion | Query a database
+Tool parameters:
+----------------------------------
+Tool name: API-post-search
+Tool description: Notion | Search by title
+Tool parameters:
+----------------------------------
+Tool name: API-get-block-children
+Tool description: Notion | Retrieve block children
+Tool parameters:
+----------------------------------
+Tool name: API-patch-block-children
+Tool description: Notion | Append block children
+Tool parameters:
+----------------------------------
+Tool name: API-retrieve-a-block
+Tool description: Notion | Retrieve a block
+Tool parameters:
+----------------------------------
+Tool name: API-update-a-block
+Tool description: Notion | Update a block
+Tool parameters:
+----------------------------------
+Tool name: API-delete-a-block
+Tool description: Notion | Delete a block
+Tool parameters:
+----------------------------------
+Tool name: API-retrieve-a-page
+Tool description: Notion | Retrieve a page
+Tool parameters:
+----------------------------------
+Tool name: API-patch-page
+Tool description: Notion | Update page properties
+Tool parameters:
+----------------------------------
+Tool name: API-post-page
+Tool description: Notion | Create a page
+Tool parameters:
+----------------------------------
+Tool name: API-create-a-database
+Tool description: Notion | Create a database
+Tool parameters:
+----------------------------------
+Tool name: API-update-a-database
+Tool description: Notion | Update a database
+Tool parameters:
+----------------------------------
+Tool name: API-retrieve-a-database
+Tool description: Notion | Retrieve a database
+Tool parameters:
+----------------------------------
+Tool name: API-retrieve-a-page-property
+Tool description: Notion | Retrieve a page property item
+Tool parameters:
+----------------------------------
+Tool name: API-retrieve-a-comment
+Tool description: Notion | Retrieve comments
+Tool parameters:
+----------------------------------
+Tool name: API-create-a-comment
+Tool description: Notion | Create comment
+Tool parameters:
+----------------------------------

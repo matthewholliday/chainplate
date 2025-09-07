@@ -7,6 +7,7 @@ from .modes.chainplate_chat_session import ChainplateChatSession
 from .modes.chainplate_server import run_server
 from .core import AIXMLCore  # your library function
 from .message import Message
+import asyncio
 
 # TODO: Move most of this out of the __main__ file and into core.py or similar.
 
@@ -27,7 +28,7 @@ def _write_text(path: Path | None, data: str, encoding: str, overwrite: bool) ->
         )
     path.write_text(data, encoding=encoding)
 
-def main(argv: list[str] | None = None) -> int:
+async def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="chainplate",
         description="Process AI-flavored XML: read input, run AIXMLCore.parse(), write output.",
@@ -88,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     elif(args.chat):
         xml_string = _read_text(args.chat, args.encoding)
         chat_session = ChainplateChatSession(xml_string)
-        chat_session.run_interactive()
+        await chat_session.run_interactive()
     elif(args.server):
         run_server()
         return 0
@@ -101,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     
 if __name__ == "__main__":
-    raise SystemExit(main())
+    asyncio.run(main())
 
 
 # xml_string = "<root><child>data</child></root>"
