@@ -45,6 +45,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--workflow", type=Path, help="TODO")
     p.add_argument("--server", action="store_true", help="Run the Chainplate server mode")
     p.add_argument("--list-mcp-services", action="store_true", help="List available MCP services from the config file")
+    p.add_argument("--list-mcp-tools", action="store_true", help="List available MCP tools from the specified MCP server")
+    p.add_argument("--mcp-service", type=str, help="Specify the MCP service to connect to for tool listing or calling")
     args = p.parse_args(argv)
     
     if(args.parse_to_json):
@@ -105,6 +107,35 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Arguments: {server_info.get('args', [])}")
             print(f"Environment Variables: {server_info.get('env', {})}")
             print("-" * 40)
+    elif(args.list_mcp_tools):
+        if not args.mcp_service:
+            print("Error: --mcp-service must be specified when using --list-mcp-tools", file=sys.stderr)
+            return 1
+        
+        from .services.mcp.mcp_config_service import MCPConfigService
+        from .services.mcp.mcp_service import MCPService
+
+        config_file_path = "mcp/config.json"
+        
+        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
+
+        if args.mcp_service not in mcp_servers:
+            print(f"Error: MCP service '{args.mcp_service}' not found in config file.", file=sys.stderr)
+            return 1
+
+        server_info = mcp_servers[args.mcp_service]
+
+        server_params = MCPService.get_stdio_params(
+            command=server_info['command'],
+            args=server_info.get('args', []),
+            env=server_info.get('env', {})
+        )
+
+        import asyncio
+        
+        tools_output = asyncio.run(MCPService.get_stdio_tools(server_params))
+        
+        print(tools_output)
     elif(args.ask):
         prompt = args.ask  # Use the string directly
         response = AIXMLCore.query(prompt)
