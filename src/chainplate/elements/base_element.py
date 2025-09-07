@@ -20,6 +20,18 @@ class BaseElement(ABC):
         """Returns a label for the element, used for logging or display purposes."""
         pass
 
+    def update_enter_logs(self, message: Message) -> Message:
+        self.update_logs("Entering: ", message)
+        return message
+    
+    def update_exit_logs(self, message: Message) -> Message:
+        self.update_logs("Exiting: ", message)
+        return message
+
+    def update_logs(self, prefix: str, message: Message) -> Message:
+        label = self.get_label()
+        message.log_message(f"{prefix}{label}")
+
     # concrete methods...
     def should_enter(self, message: Message) -> bool:
         return True

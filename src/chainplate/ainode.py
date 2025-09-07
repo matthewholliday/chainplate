@@ -197,6 +197,7 @@ class AiNode:
     def enter(self,message,depth) -> Message:
         AiNode.pretty_print(True,self.tag,depth)
         if(self.element):
+            self.element.update_enter_logs(message)
             message = self.element.enter(message)
         return message
 
@@ -204,6 +205,7 @@ class AiNode:
         AiNode.pretty_print(False,self.tag,depth - 1)
         if(self.element):
             message = self.element.exit(message)
+        self.element.update_exit_logs(message)
         return message
 
     def execute(self,message,depth=0) -> Message:
