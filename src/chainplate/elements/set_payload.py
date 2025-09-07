@@ -28,5 +28,6 @@ class SetPayloadElement(BaseElement):
     def get_label(self) -> str:
         return f"SetPayloadElement(input_var={self.input_var}, content={self.content})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "set-payload"

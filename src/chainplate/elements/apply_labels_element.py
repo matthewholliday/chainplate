@@ -34,7 +34,8 @@ class ApplyLabelsElement(InterpretAsBase):
     def get_label(self) -> str:
         return f"ApplyLabelsElement(output_var={self.output_var}, input_var={self.input_var})"
 
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "apply-labels"
 
     def get_prompt_template(self):

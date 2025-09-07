@@ -29,5 +29,6 @@ class StoreMemory(BaseElement):
     def get_label(self) -> str:
         return f"StoreMemory(input_var={self.input_var}, content={self.content})"
 
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "store-memory"

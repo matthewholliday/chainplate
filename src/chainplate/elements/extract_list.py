@@ -47,5 +47,6 @@ class ExtractList(InterpretAsBase):
     def get_label(self) -> str:
         return f"ExtractList(output_var={self.output_var}, input_var={self.input_var}, criteria={self.criteria})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "extract-list"

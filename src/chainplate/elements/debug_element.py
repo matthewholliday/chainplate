@@ -22,5 +22,6 @@ class DebugElement(BaseElement):
 	def get_label(self) -> str:
 		return f"DebugElement(content={self.content})"
 	
-	def get_tag(self) -> str:
+	@staticmethod
+	def get_tag() -> str:
 		return "debug"

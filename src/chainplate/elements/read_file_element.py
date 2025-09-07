@@ -33,5 +33,6 @@ class ReadFileElement(BaseElement):
     def get_label(self) -> str:
         return f"ReadFileElement(output_var={self.props.get('output_var')}, path={self.props.get('path')})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "read-file"

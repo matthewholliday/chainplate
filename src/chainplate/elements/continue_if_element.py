@@ -34,5 +34,6 @@ class ContinueIfElement(BaseElement):
     def get_label(self) -> str:
         return f"ContinueIfElement(condition={self.condition}, output_var={self.output_var})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "continue-if"

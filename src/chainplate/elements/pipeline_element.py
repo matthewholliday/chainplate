@@ -17,5 +17,6 @@ class PipelineElement(BaseElement):
     def get_label(self) -> str:
         return f"PipelineElement(name={self.name})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "pipeline"

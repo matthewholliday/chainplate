@@ -24,5 +24,6 @@ class GetUserInputElement(BaseElement):
     def get_label(self) -> str:
         return f"GetUserInputElement(output_var={self.output_var}, content={self.content})"
     
+    @staticmethod
     def get_tag(self) -> str:
         return "get-user-input"

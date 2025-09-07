@@ -52,7 +52,8 @@ class ForEachLoopElement(BaseElement):
     def get_label(self) -> str:
         return f"ForEachLoopElement(output_var={self.output_var}, input_var={self.input_var})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "foreach-loop"
 
 

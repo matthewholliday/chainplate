@@ -24,5 +24,6 @@ class WithMemoryElement(BaseElement):
     def get_label(self) -> str:
         return f"WithMemoryElement(content={self.content})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "with-memory"

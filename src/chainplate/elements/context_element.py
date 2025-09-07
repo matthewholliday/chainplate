@@ -26,5 +26,6 @@ class ContextElement(BaseElement):
     def get_label(self) -> str:
         return f"ContextElement(content={self.content})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "context"

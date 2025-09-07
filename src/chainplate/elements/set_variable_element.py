@@ -20,5 +20,6 @@ class SetVariableElement(BaseElement):
     def get_label(self) -> str:
         return f"SetVariableElement(output_var={self.output_var}, content={self.content})"
     
-    def get_tag(self):
+    @staticmethod
+    def get_tag():
         return "set-variable"

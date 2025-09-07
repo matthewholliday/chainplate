@@ -20,11 +20,6 @@ class BaseElement(ABC):
         """Returns a label for the element, used for logging or display purposes."""
         pass
 
-    @abstractmethod
-    def get_tag(self) -> str:
-        """Returns the tag name associated with this element."""
-        pass
-
     # concrete methods...
     def should_enter(self, message: Message) -> bool:
         return True

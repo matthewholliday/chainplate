@@ -25,5 +25,6 @@ class WhileLoopElement(BaseElement):
     def get_label(self) -> str:
         return f"WhileLoopElement(condition={self.condition})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "while-loop"

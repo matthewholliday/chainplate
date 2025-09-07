@@ -50,5 +50,6 @@ class SendPromptElement(AiBaseElement):
     def get_label(self) -> str:
         return f"SendPromptElement(output_var={self.output_var}, content={self.content})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "send-prompt"

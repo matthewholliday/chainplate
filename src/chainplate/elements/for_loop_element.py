@@ -45,5 +45,6 @@ class ForLoopElement(BaseElement):
     def get_label(self) -> str:
         return f"ForLoopElement(start_num={self.current_iteration_str}, stop_num={self.stop_num_str})"
     
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "for-loop"

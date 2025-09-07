@@ -29,5 +29,6 @@ class WriteToFileElement(BaseElement):
 	def get_label(self) -> str:
 		return f"WriteToFileElement(filename={self.filename}, content={self.content})"
 	
-	def get_tag(self) -> str:
+	@staticmethod
+	def get_tag() -> str:
 		return "write-to-file"
