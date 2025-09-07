@@ -54,12 +54,12 @@ class ChainplateChatSession:
 
                 #Update the chat history with the latest user and assistant messages
                 #IMORTANT NOTE (!) transformed_input may be different from user_input_txt depending on how the workflow is designed.
-                transformed_input = message.get_chat_input()
+                transformed_input = message.get_pipeline_input()
                 transformed_user_message_obj = create_user_message(transformed_input)
                 self.chat_history.append(transformed_user_message_obj)
 
                 #Update chat history with assistant response
-                assistant_response_text = message.get_chat_response()
+                assistant_response_text = message.get_pipeline_output()
                 assistant_response_obj = create_assistant_message(assistant_response_text)
                 self.chat_history.append(assistant_response_obj)
 
