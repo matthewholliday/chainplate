@@ -28,7 +28,7 @@ class MCPService:
                 return "\n".join(result_lines)
             
     @staticmethod
-    async def call_stdio_tool(server_params: StdioServerParameters, tool_name: str, arguments: dict):
+    async def call_stdio_tool(server_params: StdioServerParameters, tool_name: str, arguments: dict = dict()):
         async with stdio_client(server_params) as (read, write):
             async with ClientSession(read, write) as session:
                 await session.initialize() 
