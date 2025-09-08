@@ -50,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--call-mcp-tool", type=str, help="Call a specific MCP tool by name")
     p.add_argument("--args", action="append", help="Key-value pairs for MCP tool arguments, e.g. --args key1=value1 --args key2=value2")
     p.add_argument("--agent", action="store_true", help="Run in agent mode to manage MCP services")
+    p.add_argument("--agent-request", type=str, help="Make a request to the agent for a specific action or information")
 
     args = p.parse_args(argv)
     
@@ -178,11 +179,16 @@ def main(argv: list[str] | None = None) -> int:
         print(call_output)
     elif(args.agent):
         from .agent.agent import Agent
+        print("AGENT-MODE: Initializing agent...")
         agent = Agent()
+        print("AGENT-MODE: Loading MCP services and tools for the agent...")
         agent.load_mcp_services()
-        overview: str = agent.get_master_tool_overview_text()
-        print("MCP Services and their Tools Overview:")
-        print(overview)
+
+        if args.agent_request:
+            agent.set_conversation_history("user: " + args.agent_request)
+            response = agent.generate_plan()
+            print("AGENT-MODE: Generating plan...")
+            print(response)
         return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly

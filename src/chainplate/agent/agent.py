@@ -3,9 +3,23 @@ from ..services.mcp.mcp_config_service import MCPConfigService
 import json
 
 class Agent:
-
     def __init__(self):
         self.mcp_services = {}
+        self.conversation_history_text = "The conversation history is currently empty."
+        self.working_memory_text = "No working memory has been recorded so far."
+        self.planner_text = "No plan has been created yet."
+
+    def set_conversation_history(self, history_text: str) -> "Agent":
+        self.conversation_history_text = history_text
+        return self
+    
+    def set_working_memory(self, memory_text: str) -> "Agent":
+        self.working_memory_text = memory_text
+        return self
+    
+    def set_planner_text(self, planner_text: str) -> "Agent":
+        self.planner_text = planner_text
+        return self
 
     def create_mcp_service(self, service_name: str, command: str, args: list, env: dict):
         mcp_service = MCPService(command, args, env)
@@ -46,7 +60,44 @@ class Agent:
             for tool_info in service_tools:
                 overview_text.append(tool_info)
         return "\n".join(overview_text)
+    
+    def get_details_for_tool_text(self, service_name: str, tool_name: str):
+        if service_name not in self.mcp_services:
+            return f"Service '{service_name}' not found."
+        mcp_service = self.mcp_services[service_name]
+        if tool_name not in mcp_service.tools:
+            return f"Tool '{tool_name}' not found in service '{service_name}'."
+        tool_data = mcp_service.tools[tool_name]
+        details = [
+            f"Tool Name: {tool_name}",
+            f"Description: {tool_data['description']}",
+            "Input Schema:",
+            json.dumps(tool_data['inputSchema'], indent=2),
+            "Output Schema:",
+            json.dumps(tool_data['outputSchema'], indent=2),
+            "Annotations:",
+            json.dumps(tool_data['annotations'], indent=2)
+        ]
+        return "\n".join(details)
+    
+    def generate_plan(self) -> str:
+        context = self.build_context_text()
+        from .actions.generate_plan import GeneratePlanAction
+        return  GeneratePlanAction().execute(context)
+    
 
+    def build_context_text(self) -> str:
+        context_parts = [
+            "Conversation History: \n",
+            self.conversation_history_text,
+            "\nWorking Memory: \n",
+            self.working_memory_text,
+            "\nPlanner Information:\n",
+            self.planner_text,
+            "\nMCP Services and Tools Overview:\n",
+            self.get_master_tool_overview_text()
+        ]
+        return "\n\n".join(context_parts)
 
             
 
