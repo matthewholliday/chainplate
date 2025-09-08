@@ -1,0 +1,22 @@
+{
+    "mcpServers": {
+        "notion": {
+            "type" : "stdio",
+            "command" : "npx",
+            "args" : ["-y", "@notionhq/notion-mcp-server"],
+            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" }
+        },
+        "notion2": {
+            "type" : "stdio",
+            "command" : "npx",
+            "args" : ["-y", "@notionhq/notion-mcp-server"],
+            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" }
+        },
+        "notion3" : {
+            "type" : "stdio",
+            "command" : "npx",
+            "args" : ["-y", "@notionhq/notion-mcp-server"],
+            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" }
+        }
+    }
+}

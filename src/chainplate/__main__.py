@@ -44,6 +44,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--chat",type=Path, help="Run in chat mode with the given XML file")
     p.add_argument("--workflow", type=Path, help="TODO")
     p.add_argument("--server", action="store_true", help="Run the Chainplate server mode")
+    p.add_argument("--list-mcp-services", action="store_true", help="List available MCP services from the config file")
+    p.add_argument("--list-mcp-tools", action="store_true", help="List available MCP tools from the specified MCP server")
+    p.add_argument("--mcp-service", type=str, help="Specify the MCP service to connect to for tool listing or calling")
+    p.add_argument("--call-mcp-tool", type=str, help="Call a specific MCP tool by name")
+    p.add_argument("--tool-args", type=str, help="JSON string of arguments to pass to the MCP tool when calling it")
+
     args = p.parse_args(argv)
     
     if(args.parse_to_json):
@@ -91,6 +97,80 @@ def main(argv: list[str] | None = None) -> int:
     elif(args.server):
         run_server()
         return 0
+    elif(args.list_mcp_services):
+        
+        from .services.mcp.mcp_config_service import MCPConfigService
+        from .services.mcp.mcp_service import MCPService
+        config_file_path = "mcp/config.json"
+        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
+
+        for server_name, server_info in mcp_servers.items():
+            print(f"Server Name: {server_name}")
+            print(f"Command: {server_info['command']}")
+            print(f"Arguments: {server_info.get('args', [])}")
+            print(f"Environment Variables: {server_info.get('env', {})}")
+            print("-" * 40)
+    elif(args.list_mcp_tools):
+        if not args.mcp_service:
+            print("Error: --mcp-service must be specified when using --list-mcp-tools", file=sys.stderr)
+            return 1
+        
+        from .services.mcp.mcp_config_service import MCPConfigService
+        from .services.mcp.mcp_service import MCPService
+
+        config_file_path = "mcp/config.json"
+        
+        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
+
+        if args.mcp_service not in mcp_servers:
+            print(f"Error: MCP service '{args.mcp_service}' not found in config file.", file=sys.stderr)
+            return 1
+
+        server_info = mcp_servers[args.mcp_service]
+
+        server_params = MCPService.get_stdio_params(
+            command=server_info['command'],
+            args=server_info.get('args', []),
+            env=server_info.get('env', {})
+        )
+
+        import asyncio
+        
+        tools_output = asyncio.run(MCPService.get_stdio_tools(server_params))
+        
+        print(tools_output)
+    elif(args.call_mcp_tool):
+        
+        if not args.mcp_service:
+            print("Error: --mcp-service must be specified when using --call-mcp-tool", file=sys.stderr)
+            return 1
+        
+        from .services.mcp.mcp_config_service import MCPConfigService
+        from .services.mcp.mcp_service import MCPService
+
+        config_file_path = "mcp/config.json"
+        
+        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
+
+        tool_args = args,tool_args if args.tool_args else "{}"
+        
+        if args.mcp_service not in mcp_servers:
+            print(f"Error: MCP service '{args.mcp_service}' not found in config file.", file=sys.stderr)
+            return 1
+
+        server_info = mcp_servers[args.mcp_service]
+
+        server_params = MCPService.get_stdio_params(
+            command=server_info['command'],
+            args=server_info.get('args', []),
+            env=server_info.get('env', {})
+        )
+
+        import asyncio
+        
+        call_output = asyncio.run(MCPService.call_stdio_tool(server_params, args.call_mcp_tool, tool_args))
+        
+        print(call_output)
     elif(args.ask):
         prompt = args.ask  # Use the string directly
         response = AIXMLCore.query(prompt)
