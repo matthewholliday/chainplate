@@ -4,19 +4,15 @@
             "type" : "stdio",
             "command" : "npx",
             "args" : ["-y", "@notionhq/notion-mcp-server"],
-            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" }
+            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" },
+            "description" : "Notion is a tool for semistructured data storage and retrieval, allowing users to create, manage, and query databases and documents."
         },
-        "notion2": {
+                "notion": {
             "type" : "stdio",
             "command" : "npx",
             "args" : ["-y", "@notionhq/notion-mcp-server"],
-            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" }
-        },
-        "notion3" : {
-            "type" : "stdio",
-            "command" : "npx",
-            "args" : ["-y", "@notionhq/notion-mcp-server"],
-            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" }
+            "env": { "NOTION_TOKEN": "ntn_b89841075978RYBDlJ8XFoUZYblF89YINv7MystOtNW2Uo" },
+            "description" : "Notion is a tool for semistructured data storage and retrieval, allowing users to create, manage, and query databases and documents."
         }
     }
 }

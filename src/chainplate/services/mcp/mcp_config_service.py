@@ -30,4 +30,10 @@ class MCPConfigService:
 
         except json.JSONDecodeError as e:
             raise ValueError(f"Failed to parse JSON: {e}")
+        
+    def get_services_list(filepath: str = "mcp/config.json") -> list:
+        mcp_servers = MCPConfigService.read_mcp_servers_config(filepath)
+        if not mcp_servers:
+            raise ValueError("No MCP servers found in config file.")
+        return list(mcp_servers.keys())
 
