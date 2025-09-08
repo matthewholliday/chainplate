@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--list-mcp-tools", action="store_true", help="List available MCP tools from the specified MCP server")
     p.add_argument("--mcp-service", type=str, help="Specify the MCP service to connect to for tool listing or calling")
     p.add_argument("--call-mcp-tool", type=str, help="Call a specific MCP tool by name")
-    p.add_argument("--tool-args", type=str, help="JSON string of arguments to pass to the MCP tool when calling it")
+    p.add_argument("--args", action="append", help="Key-value pairs for MCP tool arguments, e.g. --args key1=value1 --args key2=value2")
 
     args = p.parse_args(argv)
     
@@ -140,20 +140,26 @@ def main(argv: list[str] | None = None) -> int:
         
         print(tools_output)
     elif(args.call_mcp_tool):
-        
         if not args.mcp_service:
             print("Error: --mcp-service must be specified when using --call-mcp-tool", file=sys.stderr)
             return 1
-        
+
         from .services.mcp.mcp_config_service import MCPConfigService
         from .services.mcp.mcp_service import MCPService
 
         config_file_path = "mcp/config.json"
-        
         mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
 
-        tool_args = args,tool_args if args.tool_args else "{}"
-        
+        # Parse --args key=value pairs into a dictionary
+        tool_args_dict = {}
+        if args.args:
+            for arg in args.args:
+                if '=' in arg:
+                    k, v = arg.split('=', 1)
+                    tool_args_dict[k] = v
+                else:
+                    print(f"Warning: Argument '{arg}' is not in key=value format and will be ignored.", file=sys.stderr)
+
         if args.mcp_service not in mcp_servers:
             print(f"Error: MCP service '{args.mcp_service}' not found in config file.", file=sys.stderr)
             return 1
@@ -167,9 +173,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
         import asyncio
-        
-        call_output = asyncio.run(MCPService.call_stdio_tool(server_params, args.call_mcp_tool, tool_args))
-        
+        call_output = asyncio.run(MCPService.call_stdio_tool(server_params, args.call_mcp_tool, tool_args_dict))
         print(call_output)
     elif(args.ask):
         prompt = args.ask  # Use the string directly
