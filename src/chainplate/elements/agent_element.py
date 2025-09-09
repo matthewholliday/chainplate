@@ -88,50 +88,14 @@ class AgentElement(BaseElement):
         while not goals_are_accomplished and iteration_count < self.max_iterations:
             message = self.run_agent_iteration(message)
             iteration_count += 1
-
-            user_input = input("action: ").strip().lower()
-            if user_input == "stop":
-                break
-            elif user_input == "continue" or user_input == "":
-                print("Continuing to the next iteration of the agent's process...")
-                continue
-            elif user_input == "plan":
-                print(f"Current plan text: {self.plan_text}")
-                continue
-            elif user_input == "goals":
-                print(f"Current goals text: {self.goals_text}")
-                continue
-            elif user_input == "logs":
-                print(f"Current agent log text: {self.agent_log_text}")
-                continue
-            else:
-                print("Unrecognized input. Please enter 'stop', 'continue', or 'plan'.")
-                continue
-
         
     def run_agent_iteration(self, message: Message) -> Message:
+        print(f"[AGENT] Give me one moment to think about what my next action should be...")
         self.next_action_text = self.get_next_action_text(message)
-        print(f"Agent '{self.name}' has determined the next action to take based on the current plan and goals.")
-        print(f"Next action text: {self.next_action_text}")
+        print(f"[AGENT] I thought about my next action.")
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
         self.process_action_object(next_action_object)
         pass
-
-    # Methods to update and retrieve plan from the message object
-    def update_plan(self, message: Message, plan_text: str) -> "AgentElement":
-        message.set_var(self.plan_var_name, plan_text)
-        return self
-    
-    def get_current_plan(self, message: Message) -> str:
-        return message.get_var(self.plan_var_name)
-    
-    # Methods to update and retrieve goals from the message object
-    def update_goals(self, message: Message, goals_text: str) -> "AgentElement":
-        message.set_var(self.goals_var_name, goals_text)
-        return self
-    
-    def get_current_goals(self, message: Message) -> str:
-        return message.get_var(self.goals_var_name)
     
     def generate_plan(self, message: Message) -> str:
         return self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
@@ -184,7 +148,7 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
-        self.append_to_agent_log(f"  Agent called MCP tool '{tool_name}' from service '{service_name}' with arguments {arguments} and received result: {result}")
+        self.append_to_agent_log(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
         print(f"[AGENT] I received a result and wrote it to my log.")
         print("")
 
@@ -195,9 +159,8 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I received user input and wrote it to my log.")
         return user_input
     
-    def handle_modify_plan(self, new_plan: str) -> "AgentElement":
+    def handle_modify_plan(self, new_plan: str, message: Message) -> "AgentElement":
         self.plan_text = new_plan
-        self.update_plan(message=None, plan_text=new_plan)
         self.append_to_agent_log(f"[AGENT] I modified the plan based on new information.")
         print(f"[AGENT] I modified the plan based on new information.")
         return self
