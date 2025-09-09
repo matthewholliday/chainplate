@@ -77,6 +77,11 @@ class AgentElement(BaseElement):
         return [f"AgentElement(\n",name_str, goals_str, max_iter_str, ")\n"]
     
     def run_agent(self, message: Message) -> Message:
+        # clear the log file
+        log_file = open("logs/agent.log", "w")
+        log_file.write(f"===================== Agent Log Start ====================\n")
+        log_file.close()
+
         goals_are_accomplished = False
         iteration_count = 0
 
@@ -87,7 +92,7 @@ class AgentElement(BaseElement):
             user_input = input("action: ").strip().lower()
             if user_input == "stop":
                 break
-            elif user_input == "continue":
+            elif user_input == "continue" or user_input == "":
                 print("Continuing to the next iteration of the agent's process...")
                 continue
             elif user_input == "plan":
@@ -180,12 +185,14 @@ class AgentElement(BaseElement):
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.append_to_agent_log(f"  Agent called MCP tool '{tool_name}' from service '{service_name}' with arguments {arguments} and received result: {result}")
+        print(f"[AGENT] I received a result and wrote it to my log.")
         print("")
 
     def handle_get_user_input(self, question: str) -> str:
         print("")
         user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
         self.append_to_agent_log(f"  Agent asked question '{question}' and received user answer: {user_input}")
+        print(f"[AGENT] I received user input and wrote it to my log.")
         return user_input
     
     def handle_modify_plan(self, new_plan: str) -> "AgentElement":
@@ -197,6 +204,11 @@ class AgentElement(BaseElement):
 
     def append_to_agent_log(self, log_entry: str) -> "AgentElement":
         self.agent_log_text += f"\n{log_entry}"
+
+        log_file = open("logs/agent.log", "a")
+        log_file.write(f"===================== Agent Log Entry ====================\n")
+        log_file.write(f"{log_entry}\n")
+        log_file.close()
         return self
 
 

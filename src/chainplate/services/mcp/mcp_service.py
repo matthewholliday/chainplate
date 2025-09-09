@@ -65,5 +65,6 @@ class MCPService:
             async with ClientSession(read, write) as session:
                 await session.initialize() 
                 result = await session.call_tool(tool_name, arguments)
-                result_text = result.content[0].text if result.content else "No content returned from tool call."
-                return f"Result from tool call '{tool_name}' was: \n\n {result_text}"
+                result_text = result.content[0].text if result.content else "{ 'message' : 'No content returned from tool call'}"
+                result_json = json.loads(result_text) if result_text else {}
+                return f"Result from tool call '{tool_name}' was: \n\n {json.dumps(result_json, indent=2)}"

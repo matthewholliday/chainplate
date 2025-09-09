@@ -6,6 +6,8 @@ There are three valid JSON structures that you can output depending on the appro
 1. MCP Tool Call - If you determine that a tool call is necessary to achieve the goals, output the following JSON structure:
 
 {
+  "chain_of_thought" : <your_explanation_of_why_this_tool_call_is_necessary_and_consistent_with_the_plan>,
+  "description" : <a_brief_description_of_the_tool_call_and_its_purpose>,
   "action": "mcp_tool_call",
   "service_name": "<name_of_the_mcp_service>",
     "tool_name": "<name_of_the_tool_to_call>",
