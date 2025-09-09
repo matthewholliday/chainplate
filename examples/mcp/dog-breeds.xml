@@ -1,0 +1,15 @@
+<pipeline name="mcp-workflow" description="Workflow for loading MCP tools and calling them">
+    <set-variable output_var="agent_goals">
+        Create an notion page for the following dog breed: {{ __payload__ }} under the "Dog Breeds" page.
+
+        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
+
+        1. History and Origin
+        2. Physical Characteristics and Appearance
+        3. Temperament and Behavior
+    </set-variable>
+    <debug>{{ agent_goals }}</debug>
+    <load-mcp-services mcp-services="notion">
+        <agent name="Test Agent" goals="agent_goals" plan="agent_plan"></agent>
+    </load-mcp-services>
+</pipeline>

@@ -177,7 +177,7 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I received a result and wrote it to my log.")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
-        user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
+        user_input = input(f"[AGENT] I have a question: {question}\n[USER] ")
         self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nI asked question to the user '{question}' and received user answer: {user_input}.")
         print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
         return user_input
@@ -191,7 +191,7 @@ class AgentElement(BaseElement):
         return self
     
     def handle_complete_task(self, chain_of_thought: str, description: str) -> "AgentElement":
-        print("[AGENT] I have determined that the task has been completed successfully.")
+        print("[AGENT] I have determined that the task has been completed successfully!")
         self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\n[AGENT] I have completed the task successfully.")
         print(f"[AGENT] The task completion has been logged in my memory.")
         return self
@@ -203,7 +203,6 @@ class AgentElement(BaseElement):
         log_file.write(f"{log_entry}\n")
         log_file.close()
         return self
-
 
     def get_next_action_text(self) -> str:
         prompt = ACTION_PLAN_SELCTION_PROMPT
