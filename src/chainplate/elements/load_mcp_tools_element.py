@@ -41,7 +41,7 @@ class LoadMCPToolsElement(BaseElement):
 
     @staticmethod
     def get_tag() -> str:
-        return "load-mcp-tools"
+        return "load-mcp-services"
     
     def get_label(self) -> str:
         return f"LoadMCPToolsElement(services={list(self.mcp_services.keys())})"

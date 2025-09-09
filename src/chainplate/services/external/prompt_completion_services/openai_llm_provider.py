@@ -26,3 +26,4 @@ class OpenAIPromptService(PromptCompletionService):
         ]
         response_text = self.get_completion(chat_history)
         return response_text
+    

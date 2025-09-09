@@ -1,32 +1,40 @@
-[2025-09-07 15:49:32]
-Entering: PipelineElement(name=Send Prompt Example)
+[2025-09-09 11:36:42]
+Entering: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:32]
-Entering: ContextElement(content=Reply to everything in the silliest way possible.)
+[2025-09-09 11:36:42]
+Entering: SetVariableElement(output_var=agent_goals, content=Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools.")
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:32]
-Entering: SendPromptElement(output_var=response, content=What is the capital of France?)
+[2025-09-09 11:36:42]
+Exiting: SetVariableElement(output_var=agent_goals, content=Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools.")
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: SendPromptElement(output_var=response, content=What is the capital of France?)
+[2025-09-09 11:36:42]
+Entering: DebugElement(content={{ agent_goals }})
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: ContextElement(content=Reply to everything in the silliest way possible.)
+[2025-09-09 11:36:42]
+Exiting: DebugElement(content={{ agent_goals }})
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Entering: DebugElement(content=The response is: {{response}})
+[2025-09-09 11:36:42]
+Entering: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: DebugElement(content=The response is: {{response}})
+[2025-09-09 11:36:42]
+Entering: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: PipelineElement(name=Send Prompt Example)
+[2025-09-09 11:37:44]
+Exiting: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
+===============END LOG ENTRY================
+
+[2025-09-09 11:37:44]
+Exiting: LoadMCPToolsElement(services=['notion'])
+===============END LOG ENTRY================
+
+[2025-09-09 11:37:44]
+Exiting: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 

@@ -130,6 +130,9 @@ class Message:
     def clear_agent(self):
         self.agent = None
         return self
+    
+    def get_mcp_services(self) -> dict:
+        return self.mcp_services
 
     
 
