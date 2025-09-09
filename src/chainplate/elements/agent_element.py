@@ -59,12 +59,7 @@ class AgentElement(BaseElement):
         self.tools_overview_text = self.get_master_tool_overview_text(message)
         self.goals_text = message.get_var(self.goals_var_name) or "none"
         self.plan_text = self.generate_plan(message)
-        self.next_action_text = self.get_next_action_text(message)
-        print("--------------------------------------------------------------------------")
-        print(f"Agent '{self.name}' has determined the next action to take based on the current plan and goals.")
-        print(f"Next action text: {self.next_action_text}")
-        next_action_object = self.convert_action_text_to_object(self.next_action_text)
-        self.process_action_object(next_action_object)
+        self.run_agent(message)
         return message
 
     def exit(self, message) -> Message:
@@ -84,11 +79,37 @@ class AgentElement(BaseElement):
     def run_agent(self, message: Message) -> Message:
         goals_are_accomplished = False
         iteration_count = 0
+
         while not goals_are_accomplished and iteration_count < self.max_iterations:
             message = self.run_agent_iteration(message)
             iteration_count += 1
+
+            user_input = input("action: ").strip().lower()
+            if user_input == "stop":
+                break
+            elif user_input == "continue":
+                print("Continuing to the next iteration of the agent's process...")
+                continue
+            elif user_input == "plan":
+                print(f"Current plan text: {self.plan_text}")
+                continue
+            elif user_input == "goals":
+                print(f"Current goals text: {self.goals_text}")
+                continue
+            elif user_input == "logs":
+                print(f"Current agent log text: {self.agent_log_text}")
+                continue
+            else:
+                print("Unrecognized input. Please enter 'stop', 'continue', or 'plan'.")
+                continue
+
         
     def run_agent_iteration(self, message: Message) -> Message:
+        self.next_action_text = self.get_next_action_text(message)
+        print(f"Agent '{self.name}' has determined the next action to take based on the current plan and goals.")
+        print(f"Next action text: {self.next_action_text}")
+        next_action_object = self.convert_action_text_to_object(self.next_action_text)
+        self.process_action_object(next_action_object)
         pass
 
     # Methods to update and retrieve plan from the message object
@@ -139,10 +160,7 @@ class AgentElement(BaseElement):
         return json.loads(action_text)
     
     def process_action_object(self, action_object: dict):
-        print("Processing action object: ", action_object)
         action = action_object.get("action", "ERROR_MISSING_ACTION")
-        
-        print("action from obj: ", action)
 
         if(action == "mcp_tool_call"):
             service_name = action_object.get("service_name", "ERROR_MISSING_SERVICE_NAME")
@@ -157,28 +175,24 @@ class AgentElement(BaseElement):
             self.handle_modify_plan(new_plan)
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict) -> str:
-        print("HANDLING-MCP-TOOL-CALL")
-        print(f"Agent is calling MCP tool '{tool_name}' from service '{service_name}' with arguments: {arguments}...")
-        result = self.mcp_services[service_name].call_tool(tool_name, arguments)
-        print(f"Result from MCP tool call: {result}")
-        print("to be implemented...")
+        print("")
+        print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
+        lowercase_service_name = service_name.lower()
+        result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
+        self.append_to_agent_log(f"  Agent called MCP tool '{tool_name}' from service '{service_name}' with arguments {arguments} and received result: {result}")
+        print("")
 
     def handle_get_user_input(self, question: str) -> str:
-        print("HANDLING-GET-USER-INPUT")
-        user_input = input(f"Agent asked a question: {question}\nPlease provide your answer: ")
-        self.append_to_agent_log(f"Agent asked question '{question}' and received user answer: {user_input}")
+        print("")
+        user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
+        self.append_to_agent_log(f"  Agent asked question '{question}' and received user answer: {user_input}")
         return user_input
     
     def handle_modify_plan(self, new_plan: str) -> "AgentElement":
-        print("HANDLING-MODIFY-PLAN")
         self.plan_text = new_plan
-        self.append_to_agent_log(f"The agent modified the plan based on new information or insights.")
-        self.override_plan(new_plan)
-        return self
-
-    def override_plan(self, new_plan: str) -> "AgentElement":
-        self.plan_text = new_plan
-        self.append_to_agent_log(f"The agent's plan was overridden with a new plan.")
+        self.update_plan(message=None, plan_text=new_plan)
+        self.append_to_agent_log(f"[AGENT] I modified the plan based on new information.")
+        print(f"[AGENT] I modified the plan based on new information.")
         return self
 
     def append_to_agent_log(self, log_entry: str) -> "AgentElement":

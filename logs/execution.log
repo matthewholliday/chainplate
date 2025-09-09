@@ -1,40 +1,40 @@
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Entering: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Entering: SetVariableElement(output_var=agent_goals, content=GOAL: Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools.")
 ===============END LOG ENTRY================
 
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Exiting: SetVariableElement(output_var=agent_goals, content=GOAL: Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools.")
 ===============END LOG ENTRY================
 
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Entering: DebugElement(content={{ agent_goals }})
 ===============END LOG ENTRY================
 
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Exiting: DebugElement(content={{ agent_goals }})
 ===============END LOG ENTRY================
 
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Entering: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-09 14:34:22]
+[2025-09-09 15:00:56]
 Entering: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-09 14:35:01]
+[2025-09-09 15:03:53]
 Exiting: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-09 14:35:01]
+[2025-09-09 15:03:53]
 Exiting: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-09 14:35:01]
+[2025-09-09 15:03:53]
 Exiting: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 

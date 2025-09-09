@@ -15,6 +15,8 @@ There are three valid JSON structures that you can output depending on the appro
     }
 }
 
+Valid services are the names of the corresponding platform, e.g. "notion", "jira", "slack", etc. Valid tool names are the names of the tools that are available in the MCP service.
+
 2. Ask Question To User - If you need more information from the user to proceed, output the following JSON structure:
 {
   "action": "ask_question_to_user",
