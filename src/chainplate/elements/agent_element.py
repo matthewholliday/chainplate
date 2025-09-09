@@ -2,7 +2,9 @@ from .base_element import BaseElement
 from ..message import Message
 from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
 from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
+from ..services.mcp.mcp_service import MCPService
 import json
+from ..services.cli_animation_service import run_with_spinner
 
 class ToolCall:
     def initialize(self, tool_call_str: str):
@@ -146,19 +148,19 @@ class AgentElement(BaseElement):
             service_name = action_object.get("service_name", "ERROR_MISSING_SERVICE_NAME")
             tool_name = action_object.get("tool_name", "ERROR_MISSING_TOOL_NAME")
             arguments = action_object.get("arguments", {})
-            # print("service name from obj: ", service_name)
-            # print("tool name from obj: ", tool_name)
-            #print("arguments from obj: ", arguments)
+            self.handle_mcp_tool_call(service_name, tool_name, arguments)
         elif(action == "ask_question_to_user"):
             question = action_object.get("question", "ERROR_MISSING_QUESTION")
             self.handle_get_user_input(question)
-            # print("question from obj: ", question)
         elif(action == "modify_plan"):
             new_plan = action_object.get("new_plan", "ERROR_MISSING_NEW_PLAN")
-            # print("new plan from obj: ", new_plan)
+            self.handle_modify_plan(new_plan)
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict) -> str:
         print("HANDLING-MCP-TOOL-CALL")
+        print(f"Agent is calling MCP tool '{tool_name}' from service '{service_name}' with arguments: {arguments}...")
+        result = self.mcp_services[service_name].call_tool(tool_name, arguments)
+        print(f"Result from MCP tool call: {result}")
         print("to be implemented...")
 
     def handle_get_user_input(self, question: str) -> str:
