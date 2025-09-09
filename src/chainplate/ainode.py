@@ -19,6 +19,7 @@ from .elements.store_memory import StoreMemory
 from .elements.get_context_element import GetContextElement
 from .elements.with_memory import WithMemoryElement
 from .elements.read_file_element import ReadFileElement
+from .elements.load_mcp_tools_element import LoadMCPToolsElement
 
 
 @dataclass
@@ -185,7 +186,10 @@ class AiNode:
                     return DebugElement(
                         content=content or "Debug Message"
                     )
-
+                elif cls is LoadMCPToolsElement:
+                    return LoadMCPToolsElement(
+                        mcp_services_string=attributes.get("mcp_services", "")
+                    )
         raise ValueError(f"Unknown tag: {tag}")
     
     @staticmethod

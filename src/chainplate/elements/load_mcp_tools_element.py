@@ -38,3 +38,9 @@ class LoadMCPToolsElement(BaseElement):
     def exit(self, message: Message):
         message.clear_mcp_services()
         return message
+
+    def get_tag(self) -> str:
+        return "load-mcp-tools"
+    
+    def get_label(self) -> str:
+        return f"LoadMCPToolsElement(services={list(self.mcp_services.keys())})"
