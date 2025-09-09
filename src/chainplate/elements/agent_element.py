@@ -177,7 +177,6 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I received a result and wrote it to my log.")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
-        print("")
         user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
         self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nI asked question to the user '{question}' and received user answer: {user_input}.")
         print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
