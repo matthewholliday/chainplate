@@ -1,0 +1,5 @@
+<pipeline name="mcp-workflow" description="Workflow for loading MCP tools and calling them">
+    <load-mcp-tools services="notion">
+        
+    </load-mcp-tools>
+</pipeline>
