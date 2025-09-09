@@ -162,15 +162,14 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
-        self.remember(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
-        self.remember(f"The chain of thought leading to this tool call was: {chain_of_thought}. \n\nThe description of the tool call was: {description}.")
+        self.remember(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n DESCRIPTION: {description}\n CHAIN OF THOUGHT: {chain_of_thought}\n RESPONSE: \n{result}")
         print(f"[AGENT] I received a result and wrote it to my log.")
         print("")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
         print("")
         user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
-        self.remember(f"I asked question to the user '{question}' and received user answer: {user_input}. \n\nThe chain of thought leading to this question was: {chain_of_thought}. \n\nThe description of the question was: {description}.")
+        self.remember(f"I asked question to the user '{question}' and received user answer: {user_input}. \n DESCRIPTION: {description}\n CHAIN OF THOUGHT: {chain_of_thought}")
         print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
         return user_input
     
@@ -178,7 +177,7 @@ class AgentElement(BaseElement):
         print("[AGENT] I am modifying my plan based on new information received.")
         self.overwrite_plan_file(new_plan)
         self.plan_text = new_plan
-        self.remember(f"[AGENT] I modified the plan based on new information. The new plan is as follows:\n{new_plan}. \n\nThe chain of thought leading to this modification was: {chain_of_thought}. \n\nThe description of the modification was: {description}.")
+        self.remember(f"[AGENT] I modified the plan based on new information. The new plan is as follows:\n{new_plan}. \n DESCRIPTION: {description}\n CHAIN OF THOUGHT: {chain_of_thought}")
         print(f"[AGENT] The plan is now up-to-date.")
         return self
 
