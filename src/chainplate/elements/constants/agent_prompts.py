@@ -21,12 +21,16 @@ Valid services are the names of the corresponding platform, e.g. "notion", "jira
 
 2. Ask Question To User - If you need more information from the user to proceed, output the following JSON structure:
 {
+  "chain_of_thought" : <your_explanation_of_why_this_question_is_necessary_and_consistent_with_the_plan>,
+  "description" : <a_brief_description_of_the_question_and_its_purpose>,
   "action": "ask_question_to_user",
   "question": "<your_question_here>"
 }
 
 3. Modify Plan - If you need to modify the existing plan based on new information or insights, output the following JSON structure:
 {
+  "chain_of_thought" : <your_explanation_of_why_this_plan_modification_is_necessary_and_consistent_with_the_goals>,
+  "description" : <a_brief_description_of_the_plan_modification_and_its_purpose>,
   "action": "modify_plan",
   "new_plan": "<your_modified_plan_here>"
 }

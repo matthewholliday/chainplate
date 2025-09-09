@@ -77,9 +77,9 @@ class AgentElement(BaseElement):
         return [f"AgentElement(\n",name_str, goals_str, max_iter_str, ")\n"]
     
     def run_agent(self, message: Message) -> Message:
-        # clear the log file
-        log_file = open("logs/agent.log", "w")
-        log_file.write(f"===================== Agent Log Start ====================\n")
+        # clear the memory file
+        log_file = open("agent/memory.log", "w")
+        log_file.write(f"===================== Agent Memory Start ====================\n")
         log_file.close()
 
         goals_are_accomplished = False
@@ -109,13 +109,25 @@ class AgentElement(BaseElement):
     def create_context_string(self, message: Message) -> str:
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
-            f"Log of what has been done so far: {self.agent_log_text}\n",
+            f"Log of what has been done so far: {self.get_agent_memory_from_file()}\n",
             f"Your current goals are: {self.goals_text}\n",
-            f"Your current plan (if any) is: {self.plan_text}\n",
+            f"Your current plan (if any) is: {self.get_agent_plan_from_file()}\n",
             f"Your available tools and their descriptions are as follows: {self.tools_overview_text}\n",
             "Based on the above information, please with your instructions(see below):\n"
         ]
         return "\n".join(context_parts)
+    
+    def get_agent_memory_from_file(self) -> str:
+        memory_file = open("agent/memory.log", "r")
+        memory_text = memory_file.read()
+        memory_file.close()
+        return memory_text.strip()
+    
+    def get_agent_plan_from_file(self) -> str:
+        plan_file = open("agent/plan.txt", "r")
+        plan_text = plan_file.read()
+        plan_file.close()
+        return plan_text.strip()
     
     def get_master_tool_overview_text(self, message: Message) -> str:
         mcp_services = message.get_mcp_services()
@@ -130,40 +142,43 @@ class AgentElement(BaseElement):
     
     def process_action_object(self, action_object: dict):
         action = action_object.get("action", "ERROR_MISSING_ACTION")
+        chain_of_thought = action_object.get("chain_of_thought", "ERROR_MISSING_CHAIN_OF_THOUGHT")
+        description = action_object.get("description", "ERROR_MISSING_DESCRIPTION")
 
         if(action == "mcp_tool_call"):
             service_name = action_object.get("service_name", "ERROR_MISSING_SERVICE_NAME")
             tool_name = action_object.get("tool_name", "ERROR_MISSING_TOOL_NAME")
             arguments = action_object.get("arguments", {})
-            self.handle_mcp_tool_call(service_name, tool_name, arguments)
+            self.handle_mcp_tool_call(service_name, tool_name, arguments, chain_of_thought, description)
         elif(action == "ask_question_to_user"):
             question = action_object.get("question", "ERROR_MISSING_QUESTION")
-            self.handle_get_user_input(question)
+            self.handle_get_user_input(question, chain_of_thought, description)
         elif(action == "modify_plan"):
             new_plan = action_object.get("new_plan", "ERROR_MISSING_NEW_PLAN")
-            self.handle_modify_plan(new_plan)
+            self.handle_modify_plan(new_plan, chain_of_thought, description)
 
-    def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict) -> str:
+    def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
         print("")
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.remember(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
+        self.remember(f"The chain of thought leading to this tool call was: {chain_of_thought}. \n\nThe description of the tool call was: {description}.")
         print(f"[AGENT] I received a result and wrote it to my log.")
         print("")
 
-    def handle_get_user_input(self, question: str) -> str:
+    def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
         print("")
         user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
-        self.remember(f"Agent asked question '{question}' and received user answer: {user_input}")
+        self.remember(f"I asked question to the user '{question}' and received user answer: {user_input}. \n\nThe chain of thought leading to this question was: {chain_of_thought}. \n\nThe description of the question was: {description}.")
         print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
         return user_input
     
-    def handle_modify_plan(self, new_plan: str) -> "AgentElement":
+    def handle_modify_plan(self, new_plan: str, chain_of_thought: str, description: str) -> "AgentElement":
         print("[AGENT] I am modifying my plan based on new information received.")
         self.overwrite_plan_file(new_plan)
         self.plan_text = new_plan
-        self.remember(f"[AGENT] I modified the plan based on new information.")
+        self.remember(f"[AGENT] I modified the plan based on new information. The new plan is as follows:\n{new_plan}. \n\nThe chain of thought leading to this modification was: {chain_of_thought}. \n\nThe description of the modification was: {description}.")
         print(f"[AGENT] The plan is now up-to-date.")
         return self
 
