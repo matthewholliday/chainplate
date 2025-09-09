@@ -58,7 +58,7 @@ class AgentElement(BaseElement):
         self.mcp_services = message.mcp_services
         self.tools_overview_text = self.get_master_tool_overview_text(message)
         self.goals_text = message.get_var(self.goals_var_name) or "none"
-        self.plan_text = self.generate_plan(message)
+        self.plan_text = self.generate_plan()
         self.run_agent(message)
         return message
 
@@ -79,6 +79,10 @@ class AgentElement(BaseElement):
     def run_agent(self, message: Message) -> Message:
         # clear the memory file
         log_file = open("agent/memory.log", "w")
+        
+        # clear the plan file
+        plan_file = open("agent/plan.txt", "w")
+
         log_file.write(f"===================== Agent Memory Start ====================\n")
         log_file.close()
 
@@ -86,27 +90,31 @@ class AgentElement(BaseElement):
         iteration_count = 0
 
         while not goals_are_accomplished and iteration_count < self.max_iterations:
-            message = self.run_agent_iteration(message)
+            goals_are_accomplished = self.run_agent_iteration()
             iteration_count += 1
+            if goals_are_accomplished:
+                print(f"[AGENT] The goals have been accomplished after {iteration_count} iterations.")
         
-    def run_agent_iteration(self, message: Message) -> Message:
+        if not goals_are_accomplished:
+            print(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
+        
+    def run_agent_iteration(self) -> Message:
         print("[AGENT] Give me one moment to think about what my next action should be...")
-        self.next_action_text = self.get_next_action_text(message)
+        self.next_action_text = self.get_next_action_text()
         print("[AGENT] I thought about my next action.")
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
-        self.process_action_object(next_action_object)
-        pass
+        return self.process_action_object(next_action_object)
     
-    def generate_plan(self, message: Message) -> str:
-        return self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
+    def generate_plan(self) -> str:
+        return self.send_llm_request(prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
     
-    def send_llm_request(self, message: Message, prompt: str) -> str:
-        context_string = self.create_context_string(message)
+    def send_llm_request(self, prompt: str) -> str:
+        context_string = self.create_context_string()
         full_prompt = f"{context_string}\n\n{prompt}"
         response = self.llm_provider.ask_question(system="You are an intelligent agent tasked with assisting in the completion of goals based on the provided context and instructions.", question=full_prompt)
         return response
     
-    def create_context_string(self, message: Message) -> str:
+    def create_context_string(self) -> str:
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
             f"Log of what has been done so far: {self.get_agent_memory_from_file()}\n",
@@ -144,6 +152,7 @@ class AgentElement(BaseElement):
         action = action_object.get("action", "ERROR_MISSING_ACTION")
         chain_of_thought = action_object.get("chain_of_thought", "ERROR_MISSING_CHAIN_OF_THOUGHT")
         description = action_object.get("description", "ERROR_MISSING_DESCRIPTION")
+        task_is_complete = False
 
         if(action == "mcp_tool_call"):
             service_name = action_object.get("service_name", "ERROR_MISSING_SERVICE_NAME")
@@ -156,20 +165,24 @@ class AgentElement(BaseElement):
         elif(action == "modify_plan"):
             new_plan = action_object.get("new_plan", "ERROR_MISSING_NEW_PLAN")
             self.handle_modify_plan(new_plan, chain_of_thought, description)
+        elif(action == "complete_task"):
+            self.handle_complete_task(chain_of_thought, description)
+            task_is_complete = True
+        return task_is_complete
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
         print("")
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
-        self.remember(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n DESCRIPTION: {description}\n CHAIN OF THOUGHT: {chain_of_thought}\n RESPONSE: \n{result}")
+        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nAgent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
         print(f"[AGENT] I received a result and wrote it to my log.")
         print("")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
         print("")
         user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
-        self.remember(f"I asked question to the user '{question}' and received user answer: {user_input}. \n DESCRIPTION: {description}\n CHAIN OF THOUGHT: {chain_of_thought}")
+        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nI asked question to the user '{question}' and received user answer: {user_input}.")
         print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
         return user_input
     
@@ -177,8 +190,14 @@ class AgentElement(BaseElement):
         print("[AGENT] I am modifying my plan based on new information received.")
         self.overwrite_plan_file(new_plan)
         self.plan_text = new_plan
-        self.remember(f"[AGENT] I modified the plan based on new information. The new plan is as follows:\n{new_plan}. \n DESCRIPTION: {description}\n CHAIN OF THOUGHT: {chain_of_thought}")
+        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\n[AGENT] I modified the plan based on new information. The new plan is as follows:\n{new_plan}.")
         print(f"[AGENT] The plan is now up-to-date.")
+        return self
+    
+    def handle_complete_task(self, chain_of_thought: str, description: str) -> "AgentElement":
+        print("[AGENT] I have determined that the task has been completed successfully.")
+        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\n[AGENT] I have completed the task successfully.")
+        print(f"[AGENT] The task completion has been logged in my memory.")
         return self
 
     def remember(self, log_entry: str) -> "AgentElement":
@@ -190,10 +209,10 @@ class AgentElement(BaseElement):
         return self
 
 
-    def get_next_action_text(self, message: Message) -> str:
+    def get_next_action_text(self) -> str:
         prompt = ACTION_PLAN_SELCTION_PROMPT
         system_prompt = ACTION_PLAN_SELCTION_SYSTEM
-        context_string = self.create_context_string(message)
+        context_string = self.create_context_string()
         full_prompt = f"{system_prompt}\n\n{context_string}\n\n{prompt}"
         response = self.llm_provider.ask_question(system=system_prompt, question=full_prompt)
         return response

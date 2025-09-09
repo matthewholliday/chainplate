@@ -1,7 +1,7 @@
 ACTION_PLAN_SELCTION_PROMPT = """
 Provide a valid output based on the context already provided to you.
 
-There are three valid JSON structures that you can output depending on the appropriate course of action for the NEXT step in the plan. Please ensure that your output strictly adheres to one of the following structures:
+There are four valid JSON structures that you can output depending on the appropriate course of action for the NEXT step in the plan. Please ensure that your output strictly adheres to one of the following structures:
 
 1. MCP Tool Call - If you determine that a tool call is necessary to achieve the goals, output the following JSON structure:
 
@@ -33,6 +33,13 @@ Valid services are the names of the corresponding platform, e.g. "notion", "jira
   "description" : <a_brief_description_of_the_plan_modification_and_its_purpose>,
   "action": "modify_plan",
   "new_plan": "<your_modified_plan_here>"
+}
+
+4. Complete Task - If you determine that the task has been completed successfully and no further actions are necessary, output the following JSON structure:
+{
+  "chain_of_thought" : <your_explanation_of_why_the_task_is_complete_and_consistent_with_the_goals>,
+  "description" : <a_brief_description_of_the_completion_and_its_purpose>,
+  "action": "complete_task"
 }
 
 Assumptions you should make:
