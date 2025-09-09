@@ -1,6 +1,7 @@
 from .base_element import BaseElement
 from ..message import Message
 from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
+from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
 import json
 
 class ToolCall:
@@ -32,6 +33,8 @@ class AgentElement(BaseElement):
     def __init__(self, name="Unnamed Agent", goals="default_goal_var", max_iterations=1):
         super().__init__()
 
+        self.next_action_text = "No action has been determined yet."
+
         self.llm_provider = OpenAIPromptService()
 
         #set the name of the agent for identification purposes
@@ -54,12 +57,15 @@ class AgentElement(BaseElement):
         self.tools_overview_text = self.get_master_tool_overview_text(message)
         self.goals_text = message.get_var(self.goals_var_name) or "none"
         self.plan_text = self.generate_plan(message)
+        self.next_action_text = self.get_next_action_text(message)
         return message
 
     def exit(self, message) -> Message:
+        print("--------------------------------------------------------------------------")
         print(f"Exiting AgentElement '{self.name}' with the following state:")
-        print(f"  Goals: {self.goals_text}")
-        print(f"  Plan: {self.plan_text}")
+        print("")
+        print(f"  Goals:\n  {self.goals_text}\n\n")
+        print(f"  Action:\n  {self.next_action_text}")
         return message
     
     @staticmethod
@@ -99,7 +105,7 @@ class AgentElement(BaseElement):
         return message.get_var(self.goals_var_name)
     
     def generate_plan(self, message: Message) -> str:
-        return self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available.")
+        return self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
     
     def send_llm_request(self, message: Message, prompt: str) -> str:
         context_string = self.create_context_string(message)
@@ -110,7 +116,7 @@ class AgentElement(BaseElement):
     def create_context_string(self, message: Message) -> str:
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
-            f"Log of actions taken by you so far: {self.agent_log_text}\n",
+            f"Log of what has been done so far: {self.agent_log_text}\n",
             f"Your current goals are: {self.goals_text}\n",
             f"Your current plan (if any) is: {self.plan_text}\n",
             "Based on the above information, please with your instructions(see below):\n"
@@ -124,6 +130,14 @@ class AgentElement(BaseElement):
             for tool_name, tool_data in mcp_service.tools.items():
                 tools_text += f"{tool_name} ({tool_data['description']})\n"
         return tools_text.strip()
+    
+    def get_next_action_text(self, message: Message) -> str:
+        prompt = ACTION_PLAN_SELCTION_PROMPT
+        system_prompt = ACTION_PLAN_SELCTION_SYSTEM
+        context_string = self.create_context_string(message)
+        full_prompt = f"{system_prompt}\n\n{context_string}\n\n{prompt}"
+        response = self.llm_provider.ask_question(system=system_prompt, question=full_prompt)
+        return response
     
 
 
