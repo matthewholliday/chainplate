@@ -1,6 +1,32 @@
 from .base_element import BaseElement
 from ..message import Message
 from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
+import json
+
+class ToolCall:
+    def initialize(self, tool_call_str: str):
+        try:
+            tool_call_json = json.loads(tool_call_str)
+            self.service_name = tool_call_json["service_name"]
+            self.tool_name = tool_call_json["tool_name"]
+            self.arguments = tool_call_json["arguments"]
+            self.is_valid = True
+        except json.JSONDecodeError:
+            self.tool_call_json = None
+            self.is_valid = False
+
+    def is_valid(self):
+        return self.is_valid
+
+    def get_service_name(self):
+        return self.service_name
+    
+    def get_tool_name(self):
+        return self.tool_name
+    
+    def get_arguments(self):
+        return self.arguments
+
 
 class AgentElement(BaseElement):
     def __init__(self, name="Unnamed Agent", goals="default_goal_var", max_iterations=1):
@@ -98,5 +124,7 @@ class AgentElement(BaseElement):
             for tool_name, tool_data in mcp_service.tools.items():
                 tools_text += f"{tool_name} ({tool_data['description']})\n"
         return tools_text.strip()
+    
+
 
     
