@@ -90,9 +90,9 @@ class AgentElement(BaseElement):
             iteration_count += 1
         
     def run_agent_iteration(self, message: Message) -> Message:
-        print(f"[AGENT] Give me one moment to think about what my next action should be...")
+        print("[AGENT] Give me one moment to think about what my next action should be...")
         self.next_action_text = self.get_next_action_text(message)
-        print(f"[AGENT] I thought about my next action.")
+        print("[AGENT] I thought about my next action.")
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
         self.process_action_object(next_action_object)
         pass
@@ -148,27 +148,28 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
-        self.append_to_agent_log(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
+        self.remember(f"Agent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
         print(f"[AGENT] I received a result and wrote it to my log.")
         print("")
 
     def handle_get_user_input(self, question: str) -> str:
         print("")
         user_input = input(f"[AGENT] I have a question: {question}\nPlease provide your answer: ")
-        self.append_to_agent_log(f"  Agent asked question '{question}' and received user answer: {user_input}")
-        print(f"[AGENT] I received user input and wrote it to my log.")
+        self.remember(f"Agent asked question '{question}' and received user answer: {user_input}")
+        print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
         return user_input
     
-    def handle_modify_plan(self, new_plan: str, message: Message) -> "AgentElement":
+    def handle_modify_plan(self, new_plan: str) -> "AgentElement":
+        print("[AGENT] I am modifying my plan based on new information received.")
+        self.overwrite_plan_file(new_plan)
         self.plan_text = new_plan
-        self.append_to_agent_log(f"[AGENT] I modified the plan based on new information.")
-        print(f"[AGENT] I modified the plan based on new information.")
+        self.remember(f"[AGENT] I modified the plan based on new information.")
+        print(f"[AGENT] The plan is now up-to-date.")
         return self
 
-    def append_to_agent_log(self, log_entry: str) -> "AgentElement":
+    def remember(self, log_entry: str) -> "AgentElement":
         self.agent_log_text += f"\n{log_entry}"
-
-        log_file = open("logs/agent.log", "a")
+        log_file = open("agent/memory.log", "a")
         log_file.write(f"===================== Agent Log Entry ====================\n")
         log_file.write(f"{log_entry}\n")
         log_file.close()
@@ -183,6 +184,12 @@ class AgentElement(BaseElement):
         response = self.llm_provider.ask_question(system=system_prompt, question=full_prompt)
         return response
     
+    def overwrite_plan_file(self, new_plan_text: str) -> "AgentElement":
+        self.plan_text = new_plan_text
+        plan_file = open("agent/plan.txt", "w")
+        plan_file.write(f"{new_plan_text}\n")
+        plan_file.close()
+        return self
 
 
     
