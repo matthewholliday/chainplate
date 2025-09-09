@@ -1,40 +1,40 @@
-[2025-09-09 16:25:30]
+[2025-09-09 16:29:04]
 Entering: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 
-[2025-09-09 16:25:30]
-Entering: SetVariableElement(output_var=agent_goals, content=GOAL: Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools.")
+[2025-09-09 16:29:04]
+Entering: SetVariableElement(output_var=agent_goals, content=GOAL: Create a notion page with the title "What the bork???" and content "me a doggo")
 ===============END LOG ENTRY================
 
-[2025-09-09 16:25:30]
-Exiting: SetVariableElement(output_var=agent_goals, content=GOAL: Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools.")
+[2025-09-09 16:29:04]
+Exiting: SetVariableElement(output_var=agent_goals, content=GOAL: Create a notion page with the title "What the bork???" and content "me a doggo")
 ===============END LOG ENTRY================
 
-[2025-09-09 16:25:30]
+[2025-09-09 16:29:04]
 Entering: DebugElement(content={{ agent_goals }})
 ===============END LOG ENTRY================
 
-[2025-09-09 16:25:30]
+[2025-09-09 16:29:04]
 Exiting: DebugElement(content={{ agent_goals }})
 ===============END LOG ENTRY================
 
-[2025-09-09 16:25:30]
+[2025-09-09 16:29:04]
 Entering: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-09 16:25:30]
+[2025-09-09 16:29:04]
 Entering: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-09 16:26:12]
+[2025-09-09 16:30:52]
 Exiting: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-09 16:26:12]
+[2025-09-09 16:30:52]
 Exiting: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-09 16:26:12]
+[2025-09-09 16:30:52]
 Exiting: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 

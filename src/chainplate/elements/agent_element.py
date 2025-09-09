@@ -99,9 +99,8 @@ class AgentElement(BaseElement):
             print(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
         
     def run_agent_iteration(self) -> Message:
-        print("[AGENT] Give me one moment to think about what my next action should be...")
+        print("[AGENT] Thinking...")
         self.next_action_text = self.get_next_action_text()
-        print("[AGENT] I thought about my next action.")
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
         return self.process_action_object(next_action_object)
     
@@ -171,13 +170,11 @@ class AgentElement(BaseElement):
         return task_is_complete
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
-        print("")
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nAgent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
         print(f"[AGENT] I received a result and wrote it to my log.")
-        print("")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
         print("")
