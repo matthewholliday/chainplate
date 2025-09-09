@@ -1,6 +1,7 @@
 from .helpers.template_helper import TemplateHelper
 import os
 from .services.cli_service import CLIService
+from .agent.agent import Agent
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
@@ -99,6 +100,9 @@ class Message:
         return self
     
     def add_mcp_services(self, services: dict):
+        if self.mcp_services:
+            raise ValueError("Only one mcp service collection can be active at a time. Make sure you don't have nested <load-mcp-tools/> elements in your workflow.")
+
         for service_name, mcp_service in services.items():
             self.add_mcp_service(service_name, mcp_service)
         return self
@@ -116,4 +120,16 @@ class Message:
                 print(f"    Input Schema: {tool_data['inputSchema']}")
                 print(f"    Output Schema: {tool_data['outputSchema']}")
                 print(f"    Annotations: {tool_data['annotations']}")
+
+    def add_agent(self, agent: Agent):
+        if hasattr(self, "agent") and self.agent is not None:
+            raise ValueError("Only one agent can be active at a time. Make sure you don't have nested <agent/> elements in your workflow.")
+        self.agent = agent
+        return self
+    
+    def clear_agent(self):
+        self.agent = None
+        return self
+
+    
 

@@ -1,5 +1,10 @@
 <pipeline name="mcp-workflow" description="Workflow for loading MCP tools and calling them">
+    <set-variable name="agent_goals">
+        Create a notion page with the title "Test Page" and content "This is a test page created by MCP tools."
+    </set-variable>
     <load-mcp-tools services="notion">
-        
+        <agent name="Test Agent" goals="agent_goals" plan="agent_plan">
+
+        </agent>
     </load-mcp-tools>
 </pipeline>

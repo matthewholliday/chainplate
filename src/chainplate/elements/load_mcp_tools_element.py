@@ -39,7 +39,8 @@ class LoadMCPToolsElement(BaseElement):
         message.clear_mcp_services()
         return message
 
-    def get_tag(self) -> str:
+    @staticmethod
+    def get_tag() -> str:
         return "load-mcp-tools"
     
     def get_label(self) -> str:
