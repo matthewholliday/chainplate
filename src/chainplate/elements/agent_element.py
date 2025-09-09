@@ -58,14 +58,15 @@ class AgentElement(BaseElement):
         self.goals_text = message.get_var(self.goals_var_name) or "none"
         self.plan_text = self.generate_plan(message)
         self.next_action_text = self.get_next_action_text(message)
+        print("--------------------------------------------------------------------------")
+        print(f"Agent '{self.name}' has determined the next action to take based on the current plan and goals.")
+        print(f"Next action text: {self.next_action_text}")
+        next_action_object = self.convert_action_text_to_object(self.next_action_text)
+        self.process_action_object(next_action_object)
         return message
 
     def exit(self, message) -> Message:
         print("--------------------------------------------------------------------------")
-        print(f"Exiting AgentElement '{self.name}' with the following state:")
-        print("")
-        print(f"  Goals:\n  {self.goals_text}\n\n")
-        print(f"  Action:\n  {self.next_action_text}")
         return message
     
     @staticmethod
@@ -119,6 +120,7 @@ class AgentElement(BaseElement):
             f"Log of what has been done so far: {self.agent_log_text}\n",
             f"Your current goals are: {self.goals_text}\n",
             f"Your current plan (if any) is: {self.plan_text}\n",
+            f"Your available tools and their descriptions are as follows: {self.tools_overview_text}\n",
             "Based on the above information, please with your instructions(see below):\n"
         ]
         return "\n".join(context_parts)
@@ -128,9 +130,60 @@ class AgentElement(BaseElement):
         tools_text = ""
         for mcp_service in mcp_services.values():
             for tool_name, tool_data in mcp_service.tools.items():
-                tools_text += f"{tool_name} ({tool_data['description']})\n"
+                tools_text += f"{tool_name} (description={tool_data['description']}) (inputSchema={json.dumps(tool_data['inputSchema'], indent=2)})\n"
         return tools_text.strip()
     
+    def convert_action_text_to_object(self, action_text: str) -> ToolCall:
+        return json.loads(action_text)
+    
+    def process_action_object(self, action_object: dict):
+        print("Processing action object: ", action_object)
+        action = action_object.get("action", "ERROR_MISSING_ACTION")
+        
+        print("action from obj: ", action)
+
+        if(action == "mcp_tool_call"):
+            service_name = action_object.get("service_name", "ERROR_MISSING_SERVICE_NAME")
+            tool_name = action_object.get("tool_name", "ERROR_MISSING_TOOL_NAME")
+            arguments = action_object.get("arguments", {})
+            # print("service name from obj: ", service_name)
+            # print("tool name from obj: ", tool_name)
+            #print("arguments from obj: ", arguments)
+        elif(action == "ask_question_to_user"):
+            question = action_object.get("question", "ERROR_MISSING_QUESTION")
+            self.handle_get_user_input(question)
+            # print("question from obj: ", question)
+        elif(action == "modify_plan"):
+            new_plan = action_object.get("new_plan", "ERROR_MISSING_NEW_PLAN")
+            # print("new plan from obj: ", new_plan)
+
+    def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict) -> str:
+        print("HANDLING-MCP-TOOL-CALL")
+        print("to be implemented...")
+
+    def handle_get_user_input(self, question: str) -> str:
+        print("HANDLING-GET-USER-INPUT")
+        user_input = input(f"Agent asked a question: {question}\nPlease provide your answer: ")
+        self.append_to_agent_log(f"Agent asked question '{question}' and received user answer: {user_input}")
+        return user_input
+    
+    def handle_modify_plan(self, new_plan: str) -> "AgentElement":
+        print("HANDLING-MODIFY-PLAN")
+        self.plan_text = new_plan
+        self.append_to_agent_log(f"The agent modified the plan based on new information or insights.")
+        self.override_plan(new_plan)
+        return self
+
+    def override_plan(self, new_plan: str) -> "AgentElement":
+        self.plan_text = new_plan
+        self.append_to_agent_log(f"The agent's plan was overridden with a new plan.")
+        return self
+
+    def append_to_agent_log(self, log_entry: str) -> "AgentElement":
+        self.agent_log_text += f"\n{log_entry}"
+        return self
+
+
     def get_next_action_text(self, message: Message) -> str:
         prompt = ACTION_PLAN_SELCTION_PROMPT
         system_prompt = ACTION_PLAN_SELCTION_SYSTEM

@@ -31,7 +31,6 @@ Assumptions you should make:
 -The user's intention is for you to perform as much of the work as possible without needing to ask for additional information unless absolutely necessary.
 -You should only ask questions when you are unable to proceed with the current information and context provided to you.
 -Authentication and authorization for MCP tool calls are handled outside of your scope, so you can assume that any tool call you make will be authorized.
--Do not ask the user if you can call a tool, just call it if you believe it is necessary to achieve the goals.
 -Do not ask the user if they want you to provide step-by-step manual UI instructions. Assume that you should carry out the actions yourself unless you are explicitly instructed otherwise.
 
 """
