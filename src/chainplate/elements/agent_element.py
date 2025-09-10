@@ -1,38 +1,12 @@
-from .base_element import BaseElement
-from ..message import Message
-from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
-from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
-from ..services.mcp.mcp_service import MCPService
 import json
-from ..services.cli_animation_service import run_with_spinner
-
-class ToolCall:
-    def initialize(self, tool_call_str: str):
-        try:
-            tool_call_json = json.loads(tool_call_str)
-            self.service_name = tool_call_json["service_name"]
-            self.tool_name = tool_call_json["tool_name"]
-            self.arguments = tool_call_json["arguments"]
-            self.is_valid = True
-        except json.JSONDecodeError:
-            self.tool_call_json = None
-            self.is_valid = False
-
-    def is_valid(self):
-        return self.is_valid
-
-    def get_service_name(self):
-        return self.service_name
-    
-    def get_tool_name(self):
-        return self.tool_name
-    
-    def get_arguments(self):
-        return self.arguments
-
+from ..message import Message
+from ..services.cli_service import CLIService as CliIService
+from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
+from .base_element import BaseElement
+from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
 
 class AgentElement(BaseElement):
-    def __init__(self, name="Unnamed Agent", goals="default_goal_var", max_iterations=1):
+    def __init__(self, name="Unnamed Agent", goals="default_goal_var", max_iterations=1,ux_service=CliIService()):
         super().__init__()
 
         self.next_action_text = "No action has been determined yet."
@@ -51,6 +25,8 @@ class AgentElement(BaseElement):
         #initialize default texts for conversation history, working memory, and planner to ensure they have initial values
         self.conversation_history_text = "The conversation history is currently empty."
         self.working_memory_text = "No working memory has been recorded so far."
+
+        self.ux_service = ux_service
 
     def enter(self, message: Message) -> Message:
         self.mcp_services = message.mcp_services
@@ -148,7 +124,7 @@ class AgentElement(BaseElement):
                 tools_text += f"{tool_name} (inputSchema={json.dumps(tool_data['inputSchema'], indent=2)})\n"
         return tools_text.strip()
     
-    def convert_action_text_to_object(self, action_text: str) -> ToolCall:
+    def convert_action_text_to_object(self, action_text: str):
         return json.loads(action_text)
     
     def process_action_object(self, action_object: dict):
@@ -182,23 +158,24 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I received a result and wrote it to my log.")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
-        user_input = input(f"[AGENT] I have a question: {question}\n[USER] ")
+        self.print_agent_output("I have a question:")
+        user_input = self.get_user_input(question)
         self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI asked question to the user '{question}' and received user answer: {user_input}.")
-        print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
+        self.print_agent_output("Thanks! I received your answer and added it to my memory.")
         return user_input
     
     def handle_modify_plan(self, new_plan: str, chain_of_thought: str, description: str) -> "AgentElement":
-        print("[AGENT] I am modifying my plan based on new information received.")
+        self.print_agent_output("I am modifying my plan based on new information received.")
         self.overwrite_plan_file(new_plan)
         self.remember(f"DESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI modified the plan based on new information. The new plan is as follows:\n{new_plan}.")
-        print(f"[AGENT] The plan is now up-to-date.")
+        self.print_agent_output("The plan is now up-to-date.")
         return self
     
     def handle_complete_task(self, chain_of_thought: str, description: str, result: str) -> "AgentElement":
-        print("[AGENT] I have determined that the task has been completed successfully!")
-        print("[AGENT] Here is the result: " + result)
+        self.print_agent_output("I have determined that the task has been completed successfully!")
+        self.print_agent_output("Here is the result: " + result)
         self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI have completed the task successfully.")
-        print(f"[AGENT] The task completion has been logged in my memory.")
+        print("The task completion has been logged in my memory.")
         return self
 
     def remember(self, log_entry: str) -> "AgentElement":
@@ -243,4 +220,9 @@ class AgentElement(BaseElement):
         log_file.close()
         return None
 
+    def print_agent_output(self, text: str) -> None:
+        self.ux_service.show_output_to_user(f"[{self.name}] {text}")
+
+    def get_user_input(self, prompt: str) -> str:
+        return self.ux_service.get_input_from_user(f"[USER] {prompt}")
     
