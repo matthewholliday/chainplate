@@ -47,18 +47,15 @@ class AgentElement(BaseElement):
         #set the maximum number of iterations for the agent to perform its tasks
         self.max_iterations = max_iterations
         self.agent_log_text = "The agent log is currently empty."
-        self.plan_text = "No plan has been created yet."
 
         #initialize default texts for conversation history, working memory, and planner to ensure they have initial values
         self.conversation_history_text = "The conversation history is currently empty."
         self.working_memory_text = "No working memory has been recorded so far."
-        self.planner_text = "No plan has been created yet."
 
     def enter(self, message: Message) -> Message:
         self.mcp_services = message.mcp_services
         self.tools_overview_text = self.get_master_tool_overview_text(message)
         self.goals_text = message.get_var(self.goals_var_name) or "none"
-        self.plan_text = self.generate_plan()
         self.run_agent(message)
         return message
 
@@ -79,12 +76,13 @@ class AgentElement(BaseElement):
     def run_agent(self, message: Message) -> Message:
         # clear the memory file
         log_file = open("agent/memory.log", "w")
+        log_file.write(f"===================== Agent Memory Start ====================\n")
+        log_file.close()
         
         # clear the plan file
         plan_file = open("agent/plan.txt", "w")
-
-        log_file.write(f"===================== Agent Memory Start ====================\n")
-        log_file.close()
+        plan_file.write(f"===================== Agent Plan Start ====================\n")
+        plan_file.close()
 
         goals_are_accomplished = False
         iteration_count = 0
@@ -173,26 +171,25 @@ class AgentElement(BaseElement):
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
-        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nAgent called MCP tool:\n TOOL: '{tool_name}'\n SERVICE: '{service_name}'\n ARGUMENTS: {arguments}\n RESPONSE: \n{result}")
+        self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nAgent called MCP tool:\n\n  TOOL: '{tool_name}'\n\n  SERVICE: '{service_name}'\n\n  ARGUMENTS: {arguments}\n\n  RESPONSE: \n{result}")
         print(f"[AGENT] I received a result and wrote it to my log.")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
         user_input = input(f"[AGENT] I have a question: {question}\n[USER] ")
-        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\nI asked question to the user '{question}' and received user answer: {user_input}.")
+        self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI asked question to the user '{question}' and received user answer: {user_input}.")
         print(f"[AGENT] Thanks! I received your answer and added it to my memory.")
         return user_input
     
     def handle_modify_plan(self, new_plan: str, chain_of_thought: str, description: str) -> "AgentElement":
         print("[AGENT] I am modifying my plan based on new information received.")
         self.overwrite_plan_file(new_plan)
-        self.plan_text = new_plan
-        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\n[AGENT] I modified the plan based on new information. The new plan is as follows:\n{new_plan}.")
+        self.remember(f"DESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI modified the plan based on new information. The new plan is as follows:\n{new_plan}.")
         print(f"[AGENT] The plan is now up-to-date.")
         return self
     
     def handle_complete_task(self, chain_of_thought: str, description: str) -> "AgentElement":
         print("[AGENT] I have determined that the task has been completed successfully!")
-        self.remember(f"DESCRIPTION: {description}\nCHAIN OF THOUGHT: {chain_of_thought}\n[AGENT] I have completed the task successfully.")
+        self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI have completed the task successfully.")
         print(f"[AGENT] The task completion has been logged in my memory.")
         return self
 
@@ -213,7 +210,6 @@ class AgentElement(BaseElement):
         return response
     
     def overwrite_plan_file(self, new_plan_text: str) -> "AgentElement":
-        self.plan_text = new_plan_text
         plan_file = open("agent/plan.txt", "w")
         plan_file.write(f"{new_plan_text}\n")
         plan_file.close()

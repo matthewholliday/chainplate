@@ -7,8 +7,12 @@
         1. History and Origin
         2. Physical Characteristics and Appearance
         3. Temperament and Behavior
+
+        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
+        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
+        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
     </set-variable>
-    <debug>{{ agent_goals }}</debug>
+    <debug>[AGENT] I'm cookin' up some fancy AI! Yeeehawww!</debug>
     <load-mcp-services mcp-services="notion">
         <agent name="Test Agent" goals="agent_goals" plan="agent_plan"></agent>
     </load-mcp-services>
