@@ -169,7 +169,8 @@ class AgentElement(BaseElement):
             new_plan = action_object.get("new_plan", "ERROR_MISSING_NEW_PLAN")
             self.handle_modify_plan(new_plan, chain_of_thought, description)
         elif(action == "complete_task"):
-            self.handle_complete_task(chain_of_thought, description)
+            result = action_object.get("result", "ERROR_MISSING_RESULT")
+            self.handle_complete_task(chain_of_thought, description, result)
             task_is_complete = True
         return task_is_complete
 
@@ -194,8 +195,9 @@ class AgentElement(BaseElement):
         print(f"[AGENT] The plan is now up-to-date.")
         return self
     
-    def handle_complete_task(self, chain_of_thought: str, description: str) -> "AgentElement":
+    def handle_complete_task(self, chain_of_thought: str, description: str, result: str) -> "AgentElement":
         print("[AGENT] I have determined that the task has been completed successfully!")
+        print("[AGENT] Here is the result: " + result)
         self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI have completed the task successfully.")
         print(f"[AGENT] The task completion has been logged in my memory.")
         return self

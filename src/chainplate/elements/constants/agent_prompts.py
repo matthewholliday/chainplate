@@ -39,7 +39,8 @@ Valid services are the names of the corresponding platform, e.g. "notion", "jira
 {
   "chain_of_thought" : <your_explanation_of_why_the_task_is_complete_and_consistent_with_the_goals>,
   "description" : <a_brief_description_of_the_completion_and_its_purpose>,
-  "action": "complete_task"
+  "action": "complete_task",
+  "result" : <a_message_to_the_user_providing_the_final_result_of_the_task>
 }
 
 Assumptions you should make:

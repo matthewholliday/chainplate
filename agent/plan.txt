@@ -1,66 +1,51 @@
-Step-by-step plan to fetch the latest CNN news and produce brief summaries of the top 5 headlines
+Plan to determine the current temperature in Chandler, Arizona
 
-1. Choose the primary source URL
-   - Primary: https://www.cnn.com (CNN homepage).
-   - Fallback: CNN top stories RSS: https://rss.cnn.com/rss/edition.rss or https://rss.cnn.com/rss/edition_topstories.rss (easier/cleaner parsing if homepage is dynamic).
+1. Confirm method and units
+   - Decide which source/API to use (primary = Open-Meteo API; fallback = wttr.in or another public endpoint).
+   - Default to Fahrenheit (ask user later if they prefer Celsius).
 
-2. Fetch the homepage (or RSS if using fallback)
-   - Use the fetch tool with raw=true to retrieve full HTML (or XML for RSS).
-   - Set max_length sufficiently large (e.g., 100000) to avoid truncation on first attempt.
-   - Record the fetch attempt and timestamp in the log.
+2. Resolve location coordinates
+   - Use Chandler, Arizona coordinates: latitude 33.3062, longitude -111.8413.
+   - (If needed, fetch a geocoding service to verify the coordinates.)
 
-3. Extract candidate headlines and article URLs
-   - Parse the returned HTML (or RSS items) to identify headline elements and article links.
-   - Heuristics: look for the main/top-stories area; common elements include headline tags/classes or RSS <item> entries. Keep items in page order to reflect prominence.
-   - Filter links to CNN domain (cnn.com) to avoid external content.
-   - If too many duplicates or topic clusters, deduplicate and preserve most prominent/recent.
-   - Choose the top 5 by order/prominence on the page (or top 5 RSS items if using RSS).
+3. Build the primary API request
+   - Construct Open-Meteo URL with current weather and Fahrenheit units, e.g.:
+     https://api.open-meteo.com/v1/forecast?latitude=33.3062&longitude=-111.8413&current_weather=true&temperature_unit=fahrenheit
+   - Plan to call fetch with that URL (max_length sufficient for JSON; raw=false is fine).
 
-4. For each of the selected 5 articles, fetch the article page
-   - Use fetch with raw=true and a generous max_length (e.g., 100000). If the article is truncated, re-fetch with start_index to retrieve remaining content.
-   - Record each fetch in the log (URL, timestamp, bytes/characters returned).
+4. Call the primary source using fetch
+   - Execute fetch(url).
+   - If the response is truncated, re-fetch with a larger max_length or use start_index to retrieve remainder.
 
-5. Extract article metadata and main text
-   - From the article HTML, extract:
-     - Headline (page title / h1)
-     - Short summary or meta description (og:description / meta[name="description"]) as a quick summary fallback
-     - Publication time (if available)
-     - Main article paragraphs (inside main/article tags, or selectors used by CNN)
-   - If main text is hard to extract due to site structure, fall back to meta description or first N paragraphs.
+5. Parse the response
+   - Parse JSON and extract current_weather.temperature and current_weather.time.
+   - Record units from the request (Fahrenheit) and note the timestamp (likely in ISO/UTC).
 
-6. Summarize each article
-   - Produce a concise brief description (~2–3 sentences) per article that captures:
-     - What happened (key facts)
-     - Where and when (if available)
-     - Why/impact (if evident)
-   - Keep summaries factual and non-infringing (avoid long verbatim excerpts).
-   - Include headline and link with each summary (and timestamp if available).
+6. Convert/timestamp handling
+   - Convert the returned time to local Chandler time (MST/MDT) for clarity, if necessary.
+   - Optionally convert temperature to Celsius if the user prefers.
 
-7. Assemble final output
-   - Order the 5 summaries by prominence (homepage order) or by publication time if user prefers latest-by-time.
-   - Include for each item:
-     - Rank (1–5)
-     - Headline (linked to article)
-     - One-line source/time (e.g., "CNN — 2h ago" if available)
-     - 2–3 sentence summary
+7. Validate and format the result
+   - Verify the temperature value is reasonable (e.g., between -100 and 150 °F).
+   - Prepare a concise, human-readable message stating temperature, units, timestamp, and data source.
 
-8. Error handling and retries
-   - If homepage fetch fails or is heavily dynamic/blocked, switch to RSS fallback.
-   - If an article fetch is truncated (tool returns partial HTML), re-fetch using start_index to get the rest.
-   - If any article is paywalled/unavailable, skip it and pick the next-most-prominent article.
+8. Fallback steps if primary fails
+   - If Open-Meteo is unavailable or returns malformed data, call wttr.in JSON endpoint:
+     https://wttr.in/Chandler?format=j1
+   - Parse wttr.in JSON for current_condition[0].temp_F (or temp_C) and time.
+   - If that fails, try another public source or report inability to retrieve data and ask user how to proceed (e.g., provide API key).
 
-9. Logging and state updates
-   - Update the log after each completed step (homepage fetch, each article fetch, parsing, summarization).
-   - If the user later requests follow-ups, this log will be used to resume/trace actions.
+9. Error handling and retries
+   - Implement up to 2 retries on transient fetch/network errors with short backoff.
+   - If persistent error, surface a clear error message explaining the failure and next steps.
 
-10. Final verification and delivery
-   - Quick quality check: ensure summaries are accurate to the content fetched, non-misleading, and concise.
-   - Deliver the compiled list of top 5 headlines with brief descriptions to the user.
-   - Offer to: (a) expand any summary into a longer summary, (b) fetch more articles, or (c) focus on a specific CNN section (World, US, Politics, Business, etc.).
+10. Deliver the answer and follow-up
+   - Respond with the current temperature in Chandler, AZ (value, units, local timestamp, source).
+   - Ask if the user wants Celsius instead, more detail (humidity/wind), or a continual update schedule.
 
-Notes about tool usage and parameters
-- Use fetch with raw=true for full HTML/XML.
-- Default max_length is 5000; set explicitly to a larger value (e.g., 100000) to reduce need for follow-up fetches. If content still truncated, use start_index to continue.
-- Prefer RSS if homepage parsing is unreliable.
+Notes on tool usage
+- Use the provided fetch tool for all HTTP requests.
+- Use max_length large enough to capture JSON (default 5000 should be sufficient).
+- Use raw=false unless the endpoint returns HTML that must be inspected raw.
 
-If you want, I can now execute this plan and fetch and summarize the top 5 CNN headlines. Would you like me to proceed?
+I will now proceed to fetch the temperature using the primary plan (Open-Meteo) unless you want a different source or units. Do you prefer Fahrenheit or Celsius?

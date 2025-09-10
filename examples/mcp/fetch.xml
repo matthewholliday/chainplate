@@ -1,6 +1,6 @@
 <pipeline name="fetch-example">
     <set-variable output_var="agent_goals">
-        Fetch the latest news from CNN and summarize the top 5 headlines with brief descriptions for each article.
+        Tell me what the temperature is in Chandler, Arizona. 
     </set-variable>
     <load-mcp-services mcp-services="fetch">
         <agent name="Web Browsing Agent" goals="agent_goals" plan="agent_plan"></agent>
