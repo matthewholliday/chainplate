@@ -7,10 +7,14 @@ class LoadMCPToolsElement(BaseElement):
 
     def __init__(self, mcp_services_string: str = ""):
         super().__init__()
-        self.mcp_services = self.create_services(self.parse_services(mcp_services_string))
+        services_list = self.parse_services(mcp_services_string)
+        self.mcp_services = self.create_services(services_list)
+        print("[LOAD MCP TOOLS ELEMENT] Loaded MCP services: " + ", " + mcp_services_string)
+        print("[PARSED MCP SERVICES] Parsed MCP services list: " + str(services_list))
+        print("[MCP SERVICES DICTIONARY] MCP services dictionary: " + str(self.mcp_services))
 
     def parse_services(self, services_string: str = ""):
-        return [services_string.strip() for service in services_string.split(",")]
+        return services_string.split(",") if services_string else []
 
     def create_mcp_service(self, command: str, args: list, env: dict):
         mcp_service = MCPService(command, args, env)

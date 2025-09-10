@@ -176,7 +176,6 @@ class AgentElement(BaseElement):
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
-        print("input arguments: " + json.dumps(arguments, indent=2))
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nAgent called MCP tool:\n\n  TOOL: '{tool_name}'\n\n  SERVICE: '{service_name}'\n\n  ARGUMENTS: {arguments}\n\n  RESPONSE: \n{result}")

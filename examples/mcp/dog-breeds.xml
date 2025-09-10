@@ -1,4 +1,4 @@
-<pipeline name="mcp-workflow" description="Workflow for loading MCP tools and calling them">
+<pipeline name="mcp-workflow" description="A pipeline to generate some info pages about dogs.">
     <set-variable output_var="agent_goals">
         Create an notion page for the following dog breed: {{ __payload__ }} under the "Dog Breeds" page.
 

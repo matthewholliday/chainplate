@@ -1,32 +1,32 @@
-[2025-09-09 19:56:39]
+[2025-09-09 20:26:18]
 Entering: PipelineElement(name=fetch-example)
 ===============END LOG ENTRY================
 
-[2025-09-09 19:56:39]
-Entering: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
+[2025-09-09 20:26:18]
+Entering: SetVariableElement(output_var=agent_goals, content=Obtain the current temperature in Chandler, Arizona and record it in a Notion page called "Chandler Weather." The parent page is "Sandbox Parent Page.")
 ===============END LOG ENTRY================
 
-[2025-09-09 19:56:39]
-Exiting: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
+[2025-09-09 20:26:18]
+Exiting: SetVariableElement(output_var=agent_goals, content=Obtain the current temperature in Chandler, Arizona and record it in a Notion page called "Chandler Weather." The parent page is "Sandbox Parent Page.")
 ===============END LOG ENTRY================
 
-[2025-09-09 19:56:39]
-Entering: LoadMCPToolsElement(services=['fetch'])
+[2025-09-09 20:26:18]
+Entering: LoadMCPToolsElement(services=['fetch', 'notion'])
 ===============END LOG ENTRY================
 
-[2025-09-09 19:56:39]
+[2025-09-09 20:26:18]
 Entering: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-09 19:57:31]
+[2025-09-09 20:29:27]
 Exiting: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-09 19:57:31]
-Exiting: LoadMCPToolsElement(services=['fetch'])
+[2025-09-09 20:29:27]
+Exiting: LoadMCPToolsElement(services=['fetch', 'notion'])
 ===============END LOG ENTRY================
 
-[2025-09-09 19:57:31]
+[2025-09-09 20:29:27]
 Exiting: PipelineElement(name=fetch-example)
 ===============END LOG ENTRY================
 

@@ -1,51 +1,66 @@
-Plan to determine the current temperature in Chandler, Arizona
+Plan to obtain current temperature in Chandler, AZ and record it in Notion page "Chandler Weather" (parent: "Sandbox Parent Page")
 
-1. Confirm method and units
-   - Decide which source/API to use (primary = Open-Meteo API; fallback = wttr.in or another public endpoint).
-   - Default to Fahrenheit (ask user later if they prefer Celsius).
+High-level approach
+1. Fetch current temperature for Chandler, AZ from a public endpoint (no API key).
+2. Find the Notion page ID of the parent "Sandbox Parent Page".
+3. Find whether a page named "Chandler Weather" already exists and is a child of that parent.
+4. If the page exists, append a new paragraph block with the temperature and timestamp. If it does not exist, create the page under the parent and include the temperature as content.
+5. Log errors and success.
 
-2. Resolve location coordinates
-   - Use Chandler, Arizona coordinates: latitude 33.3062, longitude -111.8413.
-   - (If needed, fetch a geocoding service to verify the coordinates.)
+Detailed step-by-step plan (including exact requests to perform)
 
-3. Build the primary API request
-   - Construct Open-Meteo URL with current weather and Fahrenheit units, e.g.:
-     https://api.open-meteo.com/v1/forecast?latitude=33.3062&longitude=-111.8413&current_weather=true&temperature_unit=fahrenheit
-   - Plan to call fetch with that URL (max_length sufficient for JSON; raw=false is fine).
+Step 1 — Fetch the current temperature
+- Use fetch to GET a JSON weather response that requires no API key:
+  - URL: https://wttr.in/Chandler?format=j1
+  - Parse the returned JSON. The current temperature in Fahrenheit is at current_condition[0].temp_F (or FeelsLikeF if you prefer feels-like).
+- Error handling:
+  - If fetch fails or response not JSON, retry once.
+  - If still failing, fall back to a secondary source (e.g., https://wttr.in/Chandler?format=%t for a short text temperature, or a public page like the Chandler, AZ result from weather.com) and extract text via regex.
 
-4. Call the primary source using fetch
-   - Execute fetch(url).
-   - If the response is truncated, re-fetch with a larger max_length or use start_index to retrieve remainder.
+Step 2 — Locate the Notion parent page "Sandbox Parent Page"
+- Use notion API-post-search with query = "Sandbox Parent Page".
+- From the search results, find a result whose title exactly matches "Sandbox Parent Page" and whose object is "page".
+- If none found:
+  - Report error / ask user for the parent page id (cannot create a child page without a parent id).
+- If found, record parent_page_id for subsequent steps.
 
-5. Parse the response
-   - Parse JSON and extract current_weather.temperature and current_weather.time.
-   - Record units from the request (Fahrenheit) and note the timestamp (likely in ISO/UTC).
+Step 3 — Check whether "Chandler Weather" page already exists under that parent
+- Use notion API-post-search with query = "Chandler Weather".
+- For each matching page result:
+  - Retrieve the page via API-retrieve-a-page (page_id) and inspect its parent (the page's parent contains page_id). Confirm whether parent.page_id equals the found parent_page_id.
+  - If a match is found, set target_page_id to that page_id and proceed to Step 4 (update).
+- If no matching child page is found, proceed to create a new page in Step 4 (create).
 
-6. Convert/timestamp handling
-   - Convert the returned time to local Chandler time (MST/MDT) for clarity, if necessary.
-   - Optionally convert temperature to Celsius if the user prefers.
+Step 4 — Create the page or append the temperature entry
+- Prepare content string: e.g., "Current temperature in Chandler, AZ: {temp}°F — {ISO timestamp}" (use UTC or local time; include timezone if available).
+- If target_page_id exists (page already exists):
+  - Use notion API-patch-block-children to append a paragraph block to the page with:
+    - block_id: target_page_id
+    - children: [{ "paragraph": { "rich_text":[ { "text": { "content": "<content string>" } } ] } , "type":"paragraph" }]
+- If target_page_id does not exist (create new page):
+  - Use notion API-post-page with:
+    - parent: { "page_id": parent_page_id }
+    - properties: { "title": [ { "text": { "content": "Chandler Weather" } } ] }
+    - Optionally include children array (or create page then call patch-block-children):
+      - children: an array with one paragraph block containing the content string (same structure as above).
+- Confirm the API response succeeded and record the created/updated page_id.
 
-7. Validate and format the result
-   - Verify the temperature value is reasonable (e.g., between -100 and 150 °F).
-   - Prepare a concise, human-readable message stating temperature, units, timestamp, and data source.
+Step 5 — Verify and record status
+- Retrieve the updated page children or the page to ensure the new paragraph exists (API-get-block-children with block_id = page_id).
+- Log success: note temperature, timestamp, page id, and whether page was created or updated.
+- If any step failed, capture error details and retry or surface the error for manual handling.
 
-8. Fallback steps if primary fails
-   - If Open-Meteo is unavailable or returns malformed data, call wttr.in JSON endpoint:
-     https://wttr.in/Chandler?format=j1
-   - Parse wttr.in JSON for current_condition[0].temp_F (or temp_C) and time.
-   - If that fails, try another public source or report inability to retrieve data and ask user how to proceed (e.g., provide API key).
+Additional operational details and error recovery
+- Rate limits: ensure not to exceed Notion API rate limits; if rate-limited, back off and retry after a pause.
+- Timeouts: set reasonable fetch timeouts; if fetch times out, retry once.
+- Idempotency: when appending, each run will add a new paragraph (expected). If you prefer to keep only the latest reading, instead update or replace the first block (requires retrieving block IDs and using API-update-a-block or deleting old blocks).
+- Permissions: ensure the Notion integration has access to the parent page. If receiving permission errors, report them and request the appropriate share invite or parent page id.
 
-9. Error handling and retries
-   - Implement up to 2 retries on transient fetch/network errors with short backoff.
-   - If persistent error, surface a clear error message explaining the failure and next steps.
+What I will do next (if executing)
+1. Call fetch with URL https://wttr.in/Chandler?format=j1 and parse temp_F.
+2. Call notion API-post-search for "Sandbox Parent Page" to get parent_page_id.
+3. Call notion API-post-search for "Chandler Weather" and verify parent-child relationship; set target_page_id or plan creation.
+4. Create or append the temperature entry using API-post-page or API-patch-block-children.
+5. Verify addition with API-get-block-children and log the result.
 
-10. Deliver the answer and follow-up
-   - Respond with the current temperature in Chandler, AZ (value, units, local timestamp, source).
-   - Ask if the user wants Celsius instead, more detail (humidity/wind), or a continual update schedule.
-
-Notes on tool usage
-- Use the provided fetch tool for all HTTP requests.
-- Use max_length large enough to capture JSON (default 5000 should be sufficient).
-- Use raw=false unless the endpoint returns HTML that must be inspected raw.
-
-I will now proceed to fetch the temperature using the primary plan (Open-Meteo) unless you want a different source or units. Do you prefer Fahrenheit or Celsius?
+If you want, I can proceed and run these steps now. Which behavior do you prefer if "Chandler Weather" already exists: append a new timestamped reading (default) or overwrite the previous reading (replace)?
