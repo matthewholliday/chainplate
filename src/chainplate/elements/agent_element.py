@@ -55,6 +55,7 @@ class AgentElement(BaseElement):
     def enter(self, message: Message) -> Message:
         self.mcp_services = message.mcp_services
         self.tools_overview_text = self.get_master_tool_overview_text(message)
+        self.log_tools("tools overview: " + self.tools_overview_text)
         self.goals_text = message.get_var(self.goals_var_name) or "none"
         self.run_agent(message)
         return message
@@ -75,20 +76,22 @@ class AgentElement(BaseElement):
     
     def run_agent(self, message: Message) -> Message:
         # clear the memory file
-        log_file = open("agent/memory.log", "w")
-        log_file.write(f"===================== Agent Memory Start ====================\n")
+        log_file = open("agent/memory.log", "w", encoding="utf-8")
+        log_file.write(f"\nNo memories have been recorded so far.\n")
         log_file.close()
         
         # clear the plan file
-        plan_file = open("agent/plan.txt", "w")
-        plan_file.write(f"===================== Agent Plan Start ====================\n")
+        plan_file = open("agent/plan.txt", "w", encoding="utf-8")
+        plan_file.write(f"\nNo plan has been recorded so far.\n")
         plan_file.close()
 
         goals_are_accomplished = False
         iteration_count = 0
 
+        self.generate_plan(message=message)
+
         while not goals_are_accomplished and iteration_count < self.max_iterations:
-            goals_are_accomplished = self.run_agent_iteration()
+            goals_are_accomplished = self.run_agent_iteration(message=message)
             iteration_count += 1
             if goals_are_accomplished:
                 print(f"[AGENT] The goals have been accomplished after {iteration_count} iterations.")
@@ -96,40 +99,43 @@ class AgentElement(BaseElement):
         if not goals_are_accomplished:
             print(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
         
-    def run_agent_iteration(self) -> Message:
+    def run_agent_iteration(self, message: Message) -> Message:
         print("[AGENT] Thinking...")
-        self.next_action_text = self.get_next_action_text()
+        self.next_action_text = self.get_next_action_text(message)
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
         return self.process_action_object(next_action_object)
     
-    def generate_plan(self) -> str:
-        return self.send_llm_request(prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
+    def generate_plan(self, message: Message) -> str:
+        print("[AGENT] Generating a new plan...")
+        plan = self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
+        self.overwrite_plan_file(plan)
     
-    def send_llm_request(self, prompt: str) -> str:
-        context_string = self.create_context_string()
+    def send_llm_request(self, prompt: str, message: Message) -> str:
+        context_string = self.create_context_string(message)
         full_prompt = f"{context_string}\n\n{prompt}"
         response = self.llm_provider.ask_question(system="You are an intelligent agent tasked with assisting in the completion of goals based on the provided context and instructions.", question=full_prompt)
         return response
     
-    def create_context_string(self) -> str:
+    def create_context_string(self, message: Message) -> str:
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
             f"Log of what has been done so far: {self.get_agent_memory_from_file()}\n",
             f"Your current goals are: {self.goals_text}\n",
             f"Your current plan (if any) is: {self.get_agent_plan_from_file()}\n",
-            f"Your available tools and their descriptions are as follows: {self.tools_overview_text}\n",
+            f"Your current service names are: {self.get_services_overview()}\n",
+            f"Your available tools and their descriptions are as follows: {self.get_master_tool_overview_text(message)}\n",
             "Based on the above information, please with your instructions(see below):\n"
         ]
         return "\n".join(context_parts)
     
     def get_agent_memory_from_file(self) -> str:
-        memory_file = open("agent/memory.log", "r")
+        memory_file = open("agent/memory.log", "r", encoding="utf-8")
         memory_text = memory_file.read()
         memory_file.close()
         return memory_text.strip()
     
     def get_agent_plan_from_file(self) -> str:
-        plan_file = open("agent/plan.txt", "r")
+        plan_file = open("agent/plan.txt", "r", encoding="utf-8")
         plan_text = plan_file.read()
         plan_file.close()
         return plan_text.strip()
@@ -139,7 +145,7 @@ class AgentElement(BaseElement):
         tools_text = ""
         for mcp_service in mcp_services.values():
             for tool_name, tool_data in mcp_service.tools.items():
-                tools_text += f"{tool_name} (description={tool_data['description']}) (inputSchema={json.dumps(tool_data['inputSchema'], indent=2)})\n"
+                tools_text += f"{tool_name} (inputSchema={json.dumps(tool_data['inputSchema'], indent=2)})\n"
         return tools_text.strip()
     
     def convert_action_text_to_object(self, action_text: str) -> ToolCall:
@@ -169,6 +175,7 @@ class AgentElement(BaseElement):
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
         print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
+        print("input arguments: " + json.dumps(arguments, indent=2))
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.remember(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nAgent called MCP tool:\n\n  TOOL: '{tool_name}'\n\n  SERVICE: '{service_name}'\n\n  ARGUMENTS: {arguments}\n\n  RESPONSE: \n{result}")
@@ -195,25 +202,44 @@ class AgentElement(BaseElement):
 
     def remember(self, log_entry: str) -> "AgentElement":
         self.agent_log_text += f"\n{log_entry}"
-        log_file = open("agent/memory.log", "a")
-        log_file.write(f"===================== Agent Log Entry ====================\n")
+        log_file = open("agent/memory.log", "a", encoding="utf-8")
         log_file.write(f"{log_entry}\n")
         log_file.close()
         return self
 
-    def get_next_action_text(self) -> str:
+    def get_next_action_text(self, message: Message) -> str:
         prompt = ACTION_PLAN_SELCTION_PROMPT
         system_prompt = ACTION_PLAN_SELCTION_SYSTEM
-        context_string = self.create_context_string()
+        context_string = self.create_context_string(message)
+        self.log_context(message)
         full_prompt = f"{system_prompt}\n\n{context_string}\n\n{prompt}"
         response = self.llm_provider.ask_question(system=system_prompt, question=full_prompt)
         return response
     
     def overwrite_plan_file(self, new_plan_text: str) -> "AgentElement":
-        plan_file = open("agent/plan.txt", "w")
+        plan_file = open("agent/plan.txt", "w", encoding="utf-8")
         plan_file.write(f"{new_plan_text}\n")
         plan_file.close()
         return self
+    
+    def log_tools(self, tools_text: str) -> None:
+        log_file = open("agent/tools.log", "w", encoding="utf-8")
+        log_file.write(f"{tools_text}\n")
+        log_file.close()
+        return None
+    
+    def get_services_overview(self) -> str:
+        services_overview = ""
+        for service_name in self.mcp_services.keys():
+            services_overview += f"\nAvailable Service Name: {service_name}\n"
+        return services_overview.strip()
 
+    def log_context(self, message: Message) -> None:
+        context_string = self.create_context_string(message)
+        log_file = open("agent/context.log", "w", encoding="utf-8")
+        log_file.write(f"===================== Agent Context Overview ====================\n")
+        log_file.write(f"{context_string}\n")
+        log_file.close()
+        return None
 
     

@@ -98,6 +98,12 @@ class Agent:
             self.get_master_tool_overview_text()
         ]
         return "\n\n".join(context_parts)
+    
+    def log_tools(self,tools_text: str) -> None:
+        with open("agent/tools.txt", "w") as log_file:
+            log_file.write("\n\nTOOLS OVERVIEW:\n")
+            log_file.write(tools_text)
+            log_file.write("\n\n===================== Agent Memory End ====================\n")
 
             
 
