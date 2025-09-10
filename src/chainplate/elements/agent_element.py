@@ -66,19 +66,19 @@ class AgentElement(BaseElement):
             goals_are_accomplished = self.run_agent_iteration(message=message)
             iteration_count += 1
             if goals_are_accomplished:
-                print(f"[AGENT] The goals have been accomplished after {iteration_count} iterations.")
+                self.print_agent_output(f"The goals have been accomplished after {iteration_count} iterations.")
         
         if not goals_are_accomplished:
             print(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
         
     def run_agent_iteration(self, message: Message) -> Message:
-        print("[AGENT] Thinking...")
+        self.print_agent_output("Thinking...")
         self.next_action_text = self.get_next_action_text(message)
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
         return self.process_action_object(next_action_object)
     
     def generate_plan(self, message: Message) -> str:
-        print("[AGENT] Generating a new plan...")
+        self.print_agent_output(f"Generating a new plan...")
         plan = self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
         self.data_service.save_plan(plan)
     
@@ -96,19 +96,19 @@ class AgentElement(BaseElement):
         tools = self.data_service.get_tools(message)
 
         if(not working_memory):
-            print("[AGENT] Note: The working memory is currently empty.")
+            self.print_agent_output(f"Note: The working memory is currently empty.")
 
         if(not current_goals):
-            print("[AGENT] Note: The current goals empty.")
+            self.print_agent_output(f"Note: The current goals empty.")
 
         if(not current_plan):
-            print("[AGENT] Note: The current plan is empty.")
+            self.print_agent_output(f"Note: The current plan is empty.")
         
         if(not services):
-            print("[AGENT] Note: There are no services available.")
+            self.print_agent_output(f"Note: There are no services available.")
 
         if(not tools):
-            print("[AGENT] Note: There are no tools available.")
+            self.print_agent_output(f"Note: There are no tools available.")
 
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
@@ -160,11 +160,11 @@ class AgentElement(BaseElement):
         return task_is_complete
 
     def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
-        print(f"[AGENT] I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
+        self.print_agent_output(f"I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.data_service.append_working_memory(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nAgent called MCP tool:\n\n  TOOL: '{tool_name}'\n\n  SERVICE: '{service_name}'\n\n  ARGUMENTS: {arguments}\n\n  RESPONSE: \n{result}")
-        print(f"[AGENT] I received a result and wrote it to my log.")
+        self.print_agent_output(f"I received a result and wrote it to my log.")
 
     def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
         self.print_agent_output("I have a question:")
@@ -197,7 +197,7 @@ class AgentElement(BaseElement):
         return response
 
     def print_agent_output(self, text: str) -> None:
-        self.ux_service.show_output_to_user(f"[{self.name}] {text}")
+        self.ux_service.show_output_to_user(f"[AGENT: {self.name}] {text}")
 
     def get_user_input(self, prompt: str) -> str:
         return self.ux_service.get_input_from_user(f"[USER] {prompt}")
