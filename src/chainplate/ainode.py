@@ -197,6 +197,7 @@ class AiNode:
                     return AgentElement(
                         name=attributes.get("name", "Unnamed Agent"),
                         goals=attributes.get("goals", "Unnamed Goals"),
+                        output_var=attributes.get("output_var", "__payload__"),
                         max_iterations=int(attributes.get("max-iterations", 10))
                     )
         raise ValueError(f"Unknown tag: {tag}")

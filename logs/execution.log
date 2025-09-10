@@ -1,40 +1,60 @@
-[2025-09-10 15:07:06]
-Entering: PipelineElement(name=fetch-example)
+[2025-09-10 15:43:28]
+Entering: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 
-[2025-09-10 15:07:06]
-Entering: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
+[2025-09-10 15:43:28]
+Entering: SetVariableElement(output_var=agent_goals, content=Create an notion page for the following dog breed: {{ __payload__ }} under the "Dog Breeds" page.
+
+        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
+
+        1. History and Origin
+        2. Physical Characteristics and Appearance
+        3. Temperament and Behavior
+
+        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
+        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
+        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.)
 ===============END LOG ENTRY================
 
-[2025-09-10 15:07:06]
-Exiting: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
+[2025-09-10 15:43:28]
+Exiting: SetVariableElement(output_var=agent_goals, content=Create an notion page for the following dog breed: {{ __payload__ }} under the "Dog Breeds" page.
+
+        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
+
+        1. History and Origin
+        2. Physical Characteristics and Appearance
+        3. Temperament and Behavior
+
+        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
+        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
+        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.)
 ===============END LOG ENTRY================
 
-[2025-09-10 15:07:06]
+[2025-09-10 15:43:28]
 Entering: ContextElement(content=All outputs to notion should be in pirate speak, alright matey?)
 ===============END LOG ENTRY================
 
-[2025-09-10 15:07:06]
-Entering: LoadMCPToolsElement(services=['fetch'])
+[2025-09-10 15:43:28]
+Entering: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-10 15:07:06]
-Entering: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
+[2025-09-10 15:43:28]
+Entering: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-10 15:08:20]
-Exiting: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
+[2025-09-10 15:46:28]
+Exiting: ['AgentElement(\n', 'name=Test Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-10 15:08:20]
-Exiting: LoadMCPToolsElement(services=['fetch'])
+[2025-09-10 15:46:28]
+Exiting: LoadMCPToolsElement(services=['notion'])
 ===============END LOG ENTRY================
 
-[2025-09-10 15:08:20]
+[2025-09-10 15:46:28]
 Exiting: ContextElement(content=All outputs to notion should be in pirate speak, alright matey?)
 ===============END LOG ENTRY================
 
-[2025-09-10 15:08:20]
-Exiting: PipelineElement(name=fetch-example)
+[2025-09-10 15:46:28]
+Exiting: PipelineElement(name=mcp-workflow)
 ===============END LOG ENTRY================
 

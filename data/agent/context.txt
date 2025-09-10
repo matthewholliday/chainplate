@@ -2,306 +2,1118 @@ Consider the following when carrying out your tasks:
 
 Log of what has been done so far: 
 
-DESCRIPTION: Call the fetch tool to retrieve current weather from Open-Meteo for Chandler, AZ (latitude=33.3062, longitude=-111.8413) with temperature in °F and timezone America/Phoenix.
+DESCRIPTION: Call the Notion API search endpoint to find a page titled "Dog Breeds" (limit results to pages). This will return candidate pages so we can pick the correct parent or determine that the page must be created.
 
-CHAIN OF THOUGHT: Per the existing plan, the next necessary action is to fetch current weather data from the primary data source (Open-Meteo) for Chandler, AZ using the specified coordinates and query parameters. This will return a JSON containing current_weather which we can parse for temperature and timestamp. If this fetch fails or returns unexpected data, the plan calls for using the wttr.in fallback. Therefore a fetch tool call is appropriate now.
-
-Agent called MCP tool:
-
-  TOOL: 'fetch'
-
-  SERVICE: 'fetch'
-
-  ARGUMENTS: {'url': 'https://api.open-meteo.com/v1/forecast?latitude=33.3062&longitude=-111.8413&current_weather=true&temperature_unit=fahrenheit&timezone=America/Phoenix', 'raw': False}
-
-  RESPONSE: 
-The sites robots.txt (https://api.open-meteo.com/robots.txt), specifies that autonomous fetching of this page is not allowed, <useragent>ModelContextProtocol/1.0 (Autonomous; +https://github.com/modelcontextprotocol/servers)</useragent>
-<url>https://api.open-meteo.com/v1/forecast?latitude=33.3062&longitude=-111.8413&current_weather=true&temperature_unit=fahrenheit&timezone=America/Phoenix</url><robots>
-User-agent: *
-Disallow: /
-</robots>
-The assistant must let the user know that it failed to view the page. The assistant may provide further guidance based on the above information.
-The assistant can tell the user that they can try manually fetching the page by using the fetch prompt within their UI.
-
-
-DESCRIPTION: Call fetch on the wttr.in JSON endpoint for Chandler as a fallback data source to obtain current temperature and timestamp.
-
-CHAIN OF THOUGHT: The Open-Meteo fetch was blocked by the site's robots.txt, so the primary data source is unavailable. The plan specifies using wttr.in as a fallback to obtain current temperature for Chandler, AZ. Therefore, calling the fetch tool on the wttr.in JSON endpoint is the next appropriate action to retrieve the current weather.
+CHAIN OF THOUGHT: Per the plan, the very first actionable step is to locate the existing "Dog Breeds" page so I can create the Chihuahua page as a child. I must search the workspace for a page titled "Dog Breeds" and prefer an exact title match; if none exists I'll create it next. Calling the Notion search API is necessary and consistent with the plan because it yields the DOG_BREEDS_PAGE_ID required for all subsequent page-creation calls.
 
 Agent called MCP tool:
 
-  TOOL: 'fetch'
+  TOOL: 'API-post-search'
 
-  SERVICE: 'fetch'
+  SERVICE: 'notion'
 
-  ARGUMENTS: {'url': 'https://wttr.in/Chandler?format=j1', 'raw': False}
+  ARGUMENTS: {'query': 'Dog Breeds', 'filter': {'property': 'object', 'value': 'page'}, 'page_size': 20}
 
   RESPONSE: 
-Content type application/json cannot be simplified to markdown, but here is the raw content:
-Contents of https://wttr.in/Chandler?format=j1:
-{
-    "current_condition": [
-        {
-            "FeelsLikeC": "39",
-            "FeelsLikeF": "102",
-            "cloudcover": "0",
-            "humidity": "24",
-            "localObsDateTime": "2025-09-10 12:56 PM",
-            "observation_time": "07:56 PM",
-            "precipInches": "0.0",
-            "precipMM": "0.0",
-            "pressure": "1011",
-            "pressureInches": "30",
-            "temp_C": "38",
-            "temp_F": "101",
-            "uvIndex": "9",
-            "visibility": "16",
-            "visibilityMiles": "9",
-            "weatherCode": "113",
-            "weatherDesc": [
-                {
-                    "value": "Sunny"
-                }
-            ],
-            "weatherIconUrl": [
-                {
-                    "value": ""
-                }
-            ],
-            "winddir16Point": "S",
-            "winddirDegree": "186",
-            "windspeedKmph": "19",
-            "windspeedMiles": "12"
-        }
-    ],
-    "nearest_area": [
-        {
-            "areaName": [
-                {
-                    "value": "Chandler"
-                }
-            ],
-            "country": [
-                {
-                    "value": "United States of America"
-                }
-            ],
-            "latitude": "33.306",
-            "longitude": "-111.841",
-            "population": "234297",
-            "region": [
-                {
-                    "value": "Arizona"
-                }
-            ],
-            "weatherUrl": [
-                {
-                    "value": ""
-                }
-            ]
-        }
-    ],
-    "request": [
-        {
-            "query": "Lat 33.31 and Lon -111.84",
-            "type": "LatLon"
-        }
-    ],
-    "weather": [
-        {
-            "astronomy": [
-                {
-                    "moon_illumination": "93",
-                    "moon_phase": "Waning Gibbous",
-                    "moonrise": "08:24 PM",
-                    "moonset": "09:22 AM",
-                    "sunrise": "06:08 AM",
-                    "sunset": "06:40 PM"
-                }
-            ],
-            "avgtempC": "34",
-            "avgtempF": "94",
-            "date": "2025-09-10",
-            "hourly": [
-                {
-                    "DewPointC": "14",
-                    "DewPointF": "58",
-                    "FeelsLikeC": "34",
-                    "FeelsLikeF": "92",
-                    "HeatIndexC": "34",
-                    "HeatIndexF": "92",
-                    "WindChillC": "34",
-                    "WindChillF": "92",
-                    "WindGustKmph": "22",
-                    "WindGustMiles": "14",
-                    "chanceoffog": "0",
-                    "chanceoffrost": "0",
-                    "chanceofhightemp": "98",
-                    "chanceofovercast": "0",
-                    "chanceofrain": "0",
-                    "chanceofremdry": "80",
-                    "chanceofsnow": "0",
-                    "chanceofsunshine": "86",
-                    "chanceofthunder": "0",
-                    "chanceofwindy": "0",
-                    "cloudcover": "0",
-                    "diffRad": "0.0",
-                    "humidity": "31",
-                    "precipInches": "0.0",
-                    "precipMM": "0.0",
-                    "pressure": "1006",
-                    "pressureInches": "30",
-                    "shortRad": "0.0",
-                    "tempC": "34",
-                    "tempF": "92",
-                    "time": "0",
-                    "uvIndex": "0",
-                    "visibility": "10",
-                    "visibilityMiles": "6",
-                    "weatherCode": "113",
-                    "weatherDesc": [
-                        {
-                            "value": "Clear "
-                        }
-                    ],
-                    "weatherIconUrl": [
-                        {
-                            "value": ""
-                        }
-                    ],
-                    "winddir16Point": "WSW",
-                    "winddirDegree": "251",
-                    "windspeedKmph": "13",
-                    "windspeedMiles": "8"
-                },
-                {
-                    "DewPointC": "14",
-                    "DewPointF": "56",
-                    "FeelsLikeC": "30",
-                    "FeelsLikeF": "86",
-                    "HeatIndexC": "30",
-                    "HeatIndexF": "86",
-                    "WindChillC": "30",
-                    "WindChillF": "86",
-                    "WindGustKmph": "11",
-                    "WindGustMiles": "7",
-                    "chanceoffog": "0",
-                    "chanceoffrost": "0",
-                    "chanceofhightemp": "99",
-                    "chanceofovercast": "0",
-                    "chanceofrain": "0",
-                    "chanceofremdry": "80",
-                    "chanceofsnow": "0",
-                    "chanceofsunshine": "90",
-                    "chanceofthunder": "0",
-                    "chanceo
-
-<error>Content truncated. Call the fetch tool with a start_index of 5000 to get more content.</error>
+{"object":"list","results":[{"object":"page","id":"2692177e-9a4d-800c-8a4b-e28721e5cbd1","created_time":"2025-09-09T23:39:00.000Z","last_edited_time":"2025-09-10T21:44:00.000Z","created_by":{"object":"user","id":"8ea7052e-3ef3-4fc7-ad81-01eb53ba773c"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"2652177e-9a4d-8045-a0c9-f6f58a3b73ff"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Dog Breeds","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Dog Breeds","href":null}]}},"url":"https://www.notion.so/Dog-Breeds-2692177e9a4d800c8a4be28721e5cbd1","public_url":null}],"next_cursor":null,"has_more":false,"type":"page_or_database","page_or_database":{},"request_id":"9f959e02-9473-4870-8e3f-c1d4e849408b"}
 
 
- >>> Chat history summary: - No text provided; please paste the content to summarize.
-- Awaiting input to extract key facts, decisions, and critical information.
-- Will produce a concise 3–5 bullet summary once content is provided.
+DESCRIPTION: Create a new Notion page titled 'Chihuahua' under the found 'Dog Breeds' page (will add intro and sub-pages after creation).
+
+CHAIN OF THOUGHT: The search returned an exact match for the 'Dog Breeds' page and provided its page_id. Per the plan, the next actionable step is to create the main 'Chihuahua' page as a child of that parent so we can then append the pirate-speak intro and create the three sub-pages. Creating the parent Chihuahua page now is necessary to obtain its page_id for subsequent API calls (adding intro paragraph and creating sub-pages).
+
+Agent called MCP tool:
+
+  TOOL: 'API-post-page'
+
+  SERVICE: 'notion'
+
+  ARGUMENTS: {'parent': {'page_id': '2692177e-9a4d-800c-8a4b-e28721e5cbd1'}, 'properties': {'title': [{'text': {'content': 'Chihuahua'}}]}, 'icon': '{"emoji":"🐶"}'}
+
+  RESPONSE: 
+{"status":400,"object":"error","code":"validation_error","message":"body failed validation: body.icon should be an object, `null`, or `undefined`, instead was `\"{\\\"emoji\\\":\\\"🐶\\\"}\"`.","request_id":"87020ea7-9f46-4936-ba58-50d94467c59f"}
+
+
+DESCRIPTION: Create a new Notion page titled 'Chihuahua' as a child of the found 'Dog Breeds' page (omit icon to avoid previous validation error).
+
+CHAIN OF THOUGHT: The search already returned the exact 'Dog Breeds' page_id. A previous attempt to create the 'Chihuahua' page failed due to an invalid icon field (it was passed as a string rather than an object). To proceed with the plan we must create the parent 'Chihuahua' page so we can obtain its page_id for adding intro content and sub-pages. To avoid the prior validation error, I'll create the page without an icon (icon is optional) and only include the required parent and title properties. This API call is necessary and consistent with the plan's next actionable step.
+
+Agent called MCP tool:
+
+  TOOL: 'API-post-page'
+
+  SERVICE: 'notion'
+
+  ARGUMENTS: {'parent': {'page_id': '2692177e-9a4d-800c-8a4b-e28721e5cbd1'}, 'properties': {'title': [{'text': {'content': 'Chihuahua'}}]}}
+
+  RESPONSE: 
+{"object":"page","id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d","created_time":"2025-09-10T22:44:00.000Z","last_edited_time":"2025-09-10T22:44:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"2692177e-9a4d-800c-8a4b-e28721e5cbd1"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua","href":null}]}},"url":"https://www.notion.so/Chihuahua-26a2177e9a4d81c9b1e7e8ade1a6962d","public_url":null,"request_id":"877bfb3f-c280-4b25-b776-fac00d02d527"}
+
+
+DESCRIPTION: Append a pirate-speak introductory paragraph to the newly created 'Chihuahua' page so the main page has its opening content before sub-pages are created.
+
+CHAIN OF THOUGHT: The Chihuahua page was just created and we now need to add the required pirate-speak intro paragraph to that page before creating the three sub-pages. Appending the intro as a child block of the newly created page is the next actionable step in the plan and is necessary to populate the main page with content. Using the notion API-patch-block-children call with the Chihuahua page ID will add the paragraph block in pirate speak and keep progress consistent with the planned sequence (create parent page -> add intro -> create sub-pages).
+
+Agent called MCP tool:
+
+  TOOL: 'API-patch-block-children'
+
+  SERVICE: 'notion'
+
+  ARGUMENTS: {'block_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d', 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map t' learn the breed o' Chihuahua: its past, how it looks, an' the temper o' the beast, matey."}}]}, 'type': 'paragraph'}]}
+
+  RESPONSE: 
+{"object":"list","results":[{"object":"block","id":"26a2177e-9a4d-81e0-be1f-c19adfd04012","parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"created_time":"2025-09-10T22:45:00.000Z","last_edited_time":"2025-09-10T22:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"has_children":false,"archived":false,"in_trash":false,"type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map t' learn the breed o' Chihuahua: its past, how it looks, an' the temper o' the beast, matey.","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map t' learn the breed o' Chihuahua: its past, how it looks, an' the temper o' the beast, matey.","href":null}],"color":"default"}}],"next_cursor":null,"has_more":false,"type":"block","block":{},"request_id":"f58c0890-7a30-467b-bb46-1ae663697c56"}
+
+
+DESCRIPTION: Create the 'Chihuahua — History and Origin' sub-page under the existing Chihuahua page and add a pirate-speak summary paragraph as the page content.
+
+CHAIN OF THOUGHT: The Chihuahua page has been created and the intro paragraph appended. The next actionable step in the plan is to create the three required sub-pages under the Chihuahua page. To make incremental progress and avoid a long multi-step batch call, I'll create the first sub-page, 'Chihuahua — History and Origin', and include its pirate-speak summary as the page content in the same API call. This is necessary and consistent with the plan because it yields the HISTORY_PAGE_ID immediately and ensures the content is added in pirate speak before proceeding to create the remaining two sub-pages.
+
+Agent called MCP tool:
+
+  TOOL: 'API-post-page'
+
+  SERVICE: 'notion'
+
+  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d'}, 'properties': {'title': [{'text': {'content': 'Chihuahua — History and Origin'}}]}, 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! The Chihuahua be a descendant o' ancient small dogs kept by the peoples o' Mexico. Tales say she traces back t' the Techichi o' the Toltec an' was prized by the Aztecs. The modern Chihuahua rose t' fame in Mexico an' then crossed the seas in the 19th century, findin' favor with many a landlubber, savvy?"}}]}, 'type': 'paragraph'}]}
+
+  RESPONSE: 
+{"object":"page","id":"26a2177e-9a4d-8175-a303-e597d9957c81","created_time":"2025-09-10T22:45:00.000Z","last_edited_time":"2025-09-10T22:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua — History and Origin","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua — History and Origin","href":null}]}},"url":"https://www.notion.so/Chihuahua-History-and-Origin-26a2177e9a4d8175a303e597d9957c81","public_url":null,"request_id":"94659dd0-bd05-4433-a038-924efc871ab8"}
+
+
+DESCRIPTION: Create the 'Chihuahua — Physical Characteristics and Appearance' sub-page under the Chihuahua page and add a pirate-speak detailed description of the breed's physical characteristics as the page content.
+
+CHAIN OF THOUGHT: The plan's next actionable step is to create the second sub-page under the already-created Chihuahua page: 'Chihuahua — Physical Characteristics and Appearance'. We have the Chihuahua page_id from the earlier successful creation (26a2177e-9a4d-81c9-b1e7-e8ade1a6962d). Creating this sub-page now is necessary to obtain its page_id so we can add the detailed pirate-speak content and then proceed to create the final Temperament page. This API-post-page call is consistent with the sequence already followed (create sub-page with children content in one call).
+
+Agent called MCP tool:
+
+  TOOL: 'API-post-page'
+
+  SERVICE: 'notion'
+
+  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d'}, 'properties': {'title': [{'text': {'content': 'Chihuahua — Physical Characteristics and Appearance'}}]}, 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! The Chihuahua be a tiny shipmate: standin' about 6–9 inches at the shoulder an' weighin' 2–6 pounds fer most landlubbers. Two coats ye may spy — the smooth coat that lies close t' the skin, an' the long coat that's soft an' feathered 'round the ears an' tail. Colors be plentiful: fawn, cream, black, chocolate, parti, merle, an' many mixes o' markings. Heads come in two fashions: the 'apple' dome, round as a cannonball, an' the 'deer' head, more tapered an' graceful. Eyes be large, round, an' bright, full o' mischief; ears be erect an' keen. The muzzle be short, body compact, an' the tail be carried up or curl'd o'er the back. Though wee, they be nimble an' quick in gait. Typical height be 'bout 6–9 inches; lifespan commonly 12–20 years. Mind yer vet fer dental woes, patellar luxation, an' tracheal collapse which can trouble some o' these tiny mates."}}]}, 'type': 'paragraph'}]}
+
+  RESPONSE: 
+{"object":"page","id":"26a2177e-9a4d-8190-9297-ce593acc1be5","created_time":"2025-09-10T22:45:00.000Z","last_edited_time":"2025-09-10T22:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua — Physical Characteristics and Appearance","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua — Physical Characteristics and Appearance","href":null}]}},"url":"https://www.notion.so/Chihuahua-Physical-Characteristics-and-Appearance-26a2177e9a4d81909297ce593acc1be5","public_url":null,"request_id":"92de5ca9-c56a-4d0c-b98f-c22612ddeaaa"}
+
+
+DESCRIPTION: Create the 'Chihuahua — Temperament and Behavior' sub-page under the existing Chihuahua page and add a pirate-speak detailed description of the breed's temperament and behavior as the page content.
+
+CHAIN OF THOUGHT: We have already created the Chihuahua page and two sub-pages (History and Physical Characteristics) and appended the intro paragraph. The next required step per the plan is to create the third sub-page, 'Chihuahua — Temperament and Behavior', as a child of the Chihuahua page and populate it with pirate-speak content. Making an API-post-page call now is necessary and consistent with the plan to complete all three sub-pages and obtain the Temperament page ID for verification.
+
+Agent called MCP tool:
+
+  TOOL: 'API-post-page'
+
+  SERVICE: 'notion'
+
+  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d'}, 'properties': {'title': [{'text': {'content': 'Chihuahua — Temperament and Behavior'}}]}, 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! Chihuahuas be fierce little mates — bold, loyal, an' oft clingy t' their chosen human. They be bright an' quick o' wit but may show stubborn streaks an' a mighty yap when warnin' o' strangers. Early socializin' an' gentle, consistent trainin' keeps 'em from growin' into scallywags around children an' other beasts. Short walks, lively play, an' puzzle toys keep their minds sharp; they don't need grand voyages o' exercise but do crave daily fun an' companionship. Train with patience, praise, an' tasty booty fer good behavior. Mind their tiny bones an' delicate bodies — handle 'em gentle-like an' supervise small children. With proper socializin', confident leadership, an' regular mental stimulation, a Chihuahua will be a devoted, watchful companion fer many a voyage."}}]}, 'type': 'paragraph'}]}
+
+  RESPONSE: 
+{"object":"page","id":"26a2177e-9a4d-8154-b5c5-fdf16d783a8c","created_time":"2025-09-10T22:46:00.000Z","last_edited_time":"2025-09-10T22:46:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua — Temperament and Behavior","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua — Temperament and Behavior","href":null}]}},"url":"https://www.notion.so/Chihuahua-Temperament-and-Behavior-26a2177e9a4d8154b5c5fdf16d783a8c","public_url":null,"request_id":"61651ed0-2f0e-4266-9532-242a4ae20485"}
+
+
+ >>> Chat history summary: - No source text provided — nothing to summarize.
+- No key facts, decisions, or critical information identified.
+- Awaiting input: provide text plus objectives and constraints for summarization.
 
  >>> The inherited context from previous stages of the process is as follows: All outputs to notion should be in pirate speak, alright matey?
 
- >>> Your current goals are: Tell me what the temperature is in Chandler, Arizona.
+ >>> Your current goals are: Create an notion page for the following dog breed: chihuahua under the "Dog Breeds" page.
 
- >>> Your current plan (if any) is: Plan to find the current temperature in Chandler, Arizona (steps the agent will follow)
+        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
 
-1) Choose primary and fallback data sources
-   - Primary: Open-Meteo current weather API (no API key): 
-     https://api.open-meteo.com/v1/forecast
-   - Fallback: wttr.in JSON endpoint: https://wttr.in/Chandler?format=j1
+        1. History and Origin
+        2. Physical Characteristics and Appearance
+        3. Temperament and Behavior
 
-2) Build the primary fetch request
-   - Chandler coordinates: latitude=33.3062, longitude=-111.8413
-   - Use Open-Meteo params: current_weather=true, temperature_unit=fahrenheit, timezone=America/Phoenix
-   - Full URL example:
-     https://api.open-meteo.com/v1/forecast?latitude=33.3062&longitude=-111.8413&current_weather=true&temperature_unit=fahrenheit&timezone=America/Phoenix
+        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
+        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
+        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
 
-3) Execute the fetch tool call
-   - Call fetch with:
-     - url: the Open-Meteo URL above
-     - max_length: leave default (5000) unless a longer response is expected
-     - raw: false (or true if you need the unmodified JSON)
-   - If fetch returns an error or non-JSON HTML, go to fallback.
+ >>> Your current plan (if any) is: Plan to create the "Chihuahua" Notion page and three sub-pages (with all content that will be sent to Notion written in pirate speak as required)
 
-4) Parse and validate the response
-   - Expect JSON with current_weather object. Extract:
-     - current_weather.temperature (in °F if using temperature_unit=fahrenheit)
-     - current_weather.time (timestamp; confirm timezone)
-   - Validate fields exist and temperature is numeric. If missing, use fallback.
+Summary: 
+- Find the "Dog Breeds" page (or create it if missing). 
+- Create a parent page "Chihuahua" under "Dog Breeds". 
+- Add an intro paragraph to the Chihuahua page (pirate speak). 
+- Create 3 sub-pages under the Chihuahua page with specified titles and content (pirate speak). 
+- Verify creations and return page IDs/titles.
 
-5) Fallback fetch (if primary fails)
-   - Call fetch with wttr.in JSON URL: https://wttr.in/Chandler?format=j1
-   - Parse JSON and extract current temperature (often under current_condition[0].temp_F or similar)
-   - Validate and note units.
+Step-by-step plan (actions, API calls, payload hints, and error handling)
 
-6) Post-process and format results
-   - Ensure temperature is labeled with units (°F or °C). Prefer °F for Chandler.
-   - Format a short user-friendly message including:
-     - Temperature value and unit
-     - Timestamp / “last updated” local time (America/Phoenix)
-     - Data source name (Open-Meteo or wttr.in)
-   - If multiple sources disagree, optionally note discrepancy.
+1) Locate the "Dog Breeds" parent page
+- Action: Search for a page titled "Dog Breeds".
+- API call: API-post-search
+  - Payload: { "query": "Dog Breeds", "filter": { "property": "object", "value": "page" }, "page_size": 20 }
+- If found:
+  - Choose the correct page result and record DOG_BREEDS_PAGE_ID.
+  - If multiple results, prefer exact title match; if ambiguous, prompt user to confirm or pick the most recently edited.
+- If not found:
+  - Create the "Dog Breeds" page.
+  - API call: API-post-page
+    - Payload parent: specify a top-level parent (user provided page_id or workspace root). If no workspace root permitted, ask user for where to create.
+    - Properties.title: [{"text":{"content":"Dog Breeds"}}]
+  - Record DOG_BREEDS_PAGE_ID.
+- Error handling: If search fails due to permissions, surface the error and request valid page_id or permission.
 
-7) Error handling and retries
-   - On network error or unexpected format: retry primary once after a short delay, then use fallback.
-   - If both fail, produce an error message telling the user the data is unavailable and list attempted sources.
+2) Create the main "Chihuahua" page under "Dog Breeds"
+- Action: Create the child page titled "Chihuahua" with a small intro title property.
+- API call: API-post-page
+  - Payload:
+    - parent: { "page_id": DOG_BREEDS_PAGE_ID }
+    - properties: { "title": [ { "text": { "content": "Chihuahua" } } ] }
+    - (optional) icon: emoji object e.g., {"emoji":"🐶"} encoded per API requirements.
+- Record CHIHUAHUA_PAGE_ID from the response.
+- Error handling: If creation fails (permissions or invalid parent id), return error and ask for correct parent.
 
-8) Output rules (from inherited context)
-   - If sending output to Notion, format the message in pirate speak (per inherited context).
-   - Otherwise, deliver a concise plain-English message to the user. (If you prefer, include an additional Notion-formatted pirate-speak version.)
+3) Add an intro paragraph to the Chihuahua page (pirate speak)
+- Content to add (pirate speak):
+  - "Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map to learn the breed o' Chihuahua: its past, how it looks, and the temper o' the beast, matey."
+- Action: Append child blocks to CHIHUAHUA_PAGE_ID
+- API call: API-patch-block-children
+  - block_id: CHIHUAHUA_PAGE_ID
+  - children: an array with one paragraph block containing the pirate-speak text
+    - Example child block structure: { "paragraph": { "rich_text": [ { "text": { "content": "<pirate text>" } } ] }, "type": "paragraph" }
+- Verify returned children or follow up with API-get-block-children to confirm.
 
-9) Logging and metadata
-   - Log which source was used, time of fetch, and any errors encountered for debugging.
+4) Create 3 sub-pages under the Chihuahua page
+For each sub-page: create the page, then add children content (detailed content required). All content to Notion must be in pirate speak.
 
-10) Example final messages (what the agent will produce)
-   - Plain English: "Current temperature in Chandler, AZ is 92°F (as of 15:10 America/Phoenix) — source: Open-Meteo."
-   - Notion / pirate speak: "Arrr! The air in Chandler, AZ be a scorchin' 92°F as o' 15:10 local time — fetched from Open-Meteo, ye landlubber!"
+A) History and Origin
+- Title requirement: include breed name and brief summary.
+- Title example: "Chihuahua — History and Origin"
+- Brief summary (pirate speak) example:
+  - "Arrr! The Chihuahua be a descendant o' ancient small dogs kept by peoples o' Mexico. Tales say it traces back t' the Techichi o' the Toltec and was later prized by Aztecs. The modern Chihuahua rose t' fame in Mexico and then across the seas by the 19th century, savvy?"
+- Steps:
+  1. API-post-page with parent: { "page_id": CHIHUAHUA_PAGE_ID }, properties.title: "Chihuahua — History and Origin".
+  2. Capture HISTORY_PAGE_ID.
+  3. API-patch-block-children on HISTORY_PAGE_ID to add the brief summary paragraph (pirate speak).
 
-Execution note: I’m ready to run the fetch for the Open-Meteo URL above. Shall I proceed to fetch the current temperature now?
+B) Physical Characteristics and Appearance
+- Title requirement: include breed name and detailed description.
+- Title example: "Chihuahua — Physical Characteristics & Appearance"
+- Detailed description (pirate speak) should cover:
+  - Size & weight (toy breed, tiny, typical weight range)
+  - Two coat types (smooth and long), coat colors and markings
+  - Head types (apple/head vs deer/head), ears, eyes, muzzle, tail
+  - Typical height, body, gait, lifespan note, and common physical health concerns (brief mention)
+- Example pirate-speak content (detailed):
+  - "Arrr! The Chihuahua be a tiny shipmate: standin' 'bout 6–9 inches at the shoulder and weighin' 2–6 pounds fer most landlubbers. Two coats ye may see — the smooth (short) coat that lies flat, and the long coat that's soft and feathered 'round the ears and tail. Colors be many: fawn, black, cream, chocolate, parti, merle, and mixes o' markings. Heads come in two fashions: the 'apple' dome head, round as a cannonball, and the 'deer' head, more tapered and graceful. Eyes be large an' round, full o' mischief; ears be erect an' alert. The tail be often carried up or curled o'er the back. Though small, they be nimble and quick in gait. Typical lifespan be 12–20 years; mind yer vet fer dental and patellar troubles, matey."
+- Steps:
+  1. API-post-page with parent CHIHUAHUA_PAGE_ID, properties.title as above.
+  2. Capture PHYSICAL_PAGE_ID.
+  3. API-patch-block-children on PHYSICAL_PAGE_ID adding multiple paragraph blocks or a single longer paragraph per the detail.
 
- >>> Your current service names are: Available Service Name: fetch
+C) Temperament and Behavior
+- Title requirement: include breed name and detailed description.
+- Title example: "Chihuahua — Temperament & Behavior"
+- Detailed description (pirate speak) should cover:
+  - Personality: bold, confident, loyal, sometimes bossy
+  - Socialization needs, suitability as companion, relationship with children and other pets
+  - Training tips, barking tendencies, exercise needs, mental stimulation
+  - Warnings about fragility and proper handling
+- Example pirate-speak content:
+  - "Arrr! Chihuahuas be fierce little mates — bold, loyal, an' oft clingy t' their chosen human. They be smart but may be stubborn an' can talk (yap) t' warn ye o' strangers. Early socializin' keeps 'em from turnin' into scallywags around kids or other beasts. Short walks, play, an' mental puzzles keep their minds sharp. Train with patience and plunder treats for good behavior. Mind their tiny bones — handle gentle-like, and supervise small children. With proper socializin' and trainin', they be a faithful, watchful companion fer many a voyage."
+- Steps:
+  1. API-post-page with parent CHIHUAHUA_PAGE_ID, properties.title as above.
+  2. Capture TEMPERAMENT_PAGE_ID.
+  3. API-patch-block-children on TEMPERAMENT_PAGE_ID adding detailed paragraphs and optional bullet list tips.
 
- >>> Your available tools and their descriptions are as follows: fetch (inputSchema={
-  "description": "Parameters for fetching a URL.",
+5) Verify pages and content
+- For each created page (CHIHUAHUA_PAGE_ID, HISTORY_PAGE_ID, PHYSICAL_PAGE_ID, TEMPERAMENT_PAGE_ID):
+  - Call API-retrieve-a-page to confirm existence and basic properties (title).
+  - Call API-get-block-children for each page to confirm children blocks contain the pirate-speak content.
+- Return a summary with page titles and their page IDs (so the user can open them).
+
+6) Error handling and retries
+- If any API call fails due to rate limit or transient error: retry up to 2 times with exponential backoff.
+- If permission errors occur: surface the error and ask the user to provide a page_id for "Dog Breeds" or grant the necessary permissions.
+- If content is too long for a single block: split into multiple paragraph blocks via API-patch-block-children.
+
+7) Post-creation checks & polish
+- Optionally set page icons and covers (emoji or image URL) using API-patch-page with icon or cover fields.
+- Optionally add properties/tags to the Chihuahua page (e.g., Size: Toy, Lifespan, Temperament) if the "Dog Breeds" page uses a database schema. If "Dog Breeds" is a database rather than a page, adapt: create a new database item row instead of a page — confirm structure first by retrieving the "Dog Breeds" object type (database vs page) using API-post-search or API-retrieve-a-database.
+- Ask user whether they'd like the pages to include images or references/links; if yes, request the image URLs or sources.
+
+8) Output to user / final deliverable
+- Provide the user with:
+  - Confirmation that pages were created (or will be created) and the IDs/links.
+  - The pirate-speak content used for each page (so they can review).
+  - Any follow-up actions needed (e.g., permission, parent page id).
+
+Notes / important constraints
+- All content sent to Notion (page content/children) will be in pirate speak per inherited context.
+- If "Dog Breeds" is actually a Notion database rather than a regular page, creation workflow differs — we must create a new database entry (API-post-page with parent.database_id or API-post-database?); confirm object type first.
+- For creating page children (content), use API-patch-block-children for reliable block structure.
+- Keep each paragraph block under typical Notion limits (if needed, break into multiple paragraph blocks).
+
+If you want, I can now:
+- (A) Execute the above plan (I will search for "Dog Breeds" and create the pages and content), or
+- (B) Produce the exact JSON payloads for each API call (including the pirate-speak text) so you can run them, or
+- (C) Ask for the Dog Breeds page_id and permission details so I skip the search step and create pages directly.
+
+Which next step do ye want me to take, matey?
+
+ >>> Your current service names are: Available Service Name: notion
+
+ >>> Your available tools and their descriptions are as follows: API-get-user (inputSchema={
+  "$defs": {},
+  "type": "object",
   "properties": {
-    "url": {
-      "description": "URL to fetch",
-      "format": "uri",
-      "minLength": 1,
-      "title": "Url",
-      "type": "string"
+    "user_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+})
+API-get-users (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "start_cursor": {
+      "type": "string",
+      "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
     },
-    "max_length": {
-      "default": 5000,
-      "description": "Maximum number of characters to return.",
-      "exclusiveMaximum": 1000000,
-      "exclusiveMinimum": 0,
-      "title": "Max Length",
-      "type": "integer"
+    "page_size": {
+      "type": "integer",
+      "default": 100,
+      "description": "The number of items from the full list desired in the response. Maximum: 100"
+    }
+  },
+  "required": []
+})
+API-get-self (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {},
+  "required": []
+})
+API-post-database-query (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "database_id": {
+      "type": "string",
+      "description": "Identifier for a Notion database."
     },
-    "start_index": {
-      "default": 0,
-      "description": "On return output starting at this character index, useful if a previous fetch was truncated and more context is required.",
-      "minimum": 0,
-      "title": "Start Index",
-      "type": "integer"
+    "filter_properties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "A list of page property value IDs associated with the database. Use this param to limit the response to a specific page property value or values for pages that meet the `filter` criteria."
     },
-    "raw": {
-      "default": false,
-      "description": "Get the actual HTML content of the requested page, without simplification.",
-      "title": "Raw",
+    "filter": {
+      "type": "object",
+      "description": "When supplied, limits which pages are returned based on the [filter conditions](ref:post-database-query-filter).",
+      "additionalProperties": true
+    },
+    "sorts": {
+      "type": "array",
+      "description": "When supplied, orders the results based on the provided [sort criteria](ref:post-database-query-sort).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "ascending",
+              "descending"
+            ]
+          }
+        },
+        "required": [
+          "property",
+          "direction"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "start_cursor": {
+      "type": "string",
+      "description": "When supplied, returns a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+    },
+    "page_size": {
+      "type": "integer",
+      "description": "The number of items from the full list desired in the response. Maximum: 100",
+      "default": 100
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "in_trash": {
       "type": "boolean"
     }
   },
   "required": [
-    "url"
-  ],
-  "title": "Fetch",
-  "type": "object"
+    "database_id"
+  ]
+})
+API-post-search (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "The text that the API compares page and database titles against."
+    },
+    "sort": {
+      "type": "object",
+      "description": "A set of criteria, `direction` and `timestamp` keys, that orders the results. The **only** supported timestamp value is `\"last_edited_time\"`. Supported `direction` values are `\"ascending\"` and `\"descending\"`. If `sort` is not provided, then the most recently edited results are returned first.",
+      "properties": {
+        "direction": {
+          "type": "string",
+          "description": "The direction to sort. Possible values include `ascending` and `descending`."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The name of the timestamp to sort against. Possible values include `last_edited_time`."
+        }
+      },
+      "additionalProperties": true
+    },
+    "filter": {
+      "type": "object",
+      "description": "A set of criteria, `value` and `property` keys, that limits the results to either only pages or only databases. Possible `value` values are `\"page\"` or `\"database\"`. The only supported `property` value is `\"object\"`.",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The value of the property to filter the results by.  Possible values for object type include `page` or `database`.  **Limitation**: Currently the only filter allowed is `object` which will filter by type of object (either `page` or `database`)"
+        },
+        "property": {
+          "type": "string",
+          "description": "The name of the property to filter by. Currently the only property you can filter by is the object type.  Possible values include `object`.   Limitation: Currently the only filter allowed is `object` which will filter by type of object (either `page` or `database`)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "start_cursor": {
+      "type": "string",
+      "description": "A `cursor` value returned in a previous response that If supplied, limits the response to results starting after the `cursor`. If not supplied, then the first page of results is returned. Refer to [pagination](https://developers.notion.com/reference/intro#pagination) for more details."
+    },
+    "page_size": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The number of items from the full list to include in the response. Maximum: `100`.",
+      "default": 100
+    }
+  },
+  "required": []
+})
+API-get-block-children (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Identifier for a [block](ref:block)"
+    },
+    "start_cursor": {
+      "type": "string",
+      "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+    },
+    "page_size": {
+      "type": "integer",
+      "format": "int32",
+      "default": 100,
+      "description": "The number of items from the full list desired in the response. Maximum: 100"
+    }
+  },
+  "required": [
+    "block_id"
+  ]
+})
+API-patch-block-children (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Identifier for a [block](ref:block). Also accepts a [page](ref:page) ID."
+    },
+    "children": {
+      "type": "array",
+      "description": "Child content to append to a container block as an array of [block objects](ref:block)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "paragraph": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "object",
+                      "properties": {
+                        "content": {
+                          "type": "string"
+                        },
+                        "link": {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "text"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "rich_text"
+            ],
+            "additionalProperties": false
+          },
+          "bulleted_list_item": {
+            "type": "object",
+            "properties": {
+              "rich_text": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "object",
+                      "properties": {
+                        "content": {
+                          "type": "string"
+                        },
+                        "link": {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "content"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "text"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "rich_text"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "paragraph",
+              "bulleted_list_item"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "after": {
+      "type": "string",
+      "description": "The ID of the existing block that the new block should be appended after."
+    }
+  },
+  "required": [
+    "block_id",
+    "children"
+  ]
+})
+API-retrieve-a-block (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Identifier for a Notion block"
+    }
+  },
+  "required": [
+    "block_id"
+  ]
+})
+API-update-a-block (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Identifier for a Notion block"
+    },
+    "type": {
+      "type": "object",
+      "description": "The [block object `type`](ref:block#block-object-keys) value with the properties to be updated. Currently only `text` (for supported block types) and `checked` (for `to_do` blocks) fields can be updated.",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "archived": {
+      "type": "boolean",
+      "description": "Set to true to archive (delete) a block. Set to false to un-archive (restore) a block.",
+      "default": true
+    }
+  },
+  "required": [
+    "block_id"
+  ]
+})
+API-delete-a-block (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Identifier for a Notion block"
+    }
+  },
+  "required": [
+    "block_id"
+  ]
+})
+API-retrieve-a-page (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "page_id": {
+      "type": "string",
+      "description": "Identifier for a Notion page"
+    },
+    "filter_properties": {
+      "type": "string",
+      "description": "A list of page property value IDs associated with the page. Use this param to limit the response to a specific page property value or values. To retrieve multiple properties, specify each page property ID. For example: `?filter_properties=iAk8&filter_properties=b7dh`."
+    }
+  },
+  "required": [
+    "page_id"
+  ]
+})
+API-patch-page (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "page_id": {
+      "type": "string",
+      "description": "The identifier for the Notion page to be updated."
+    },
+    "properties": {
+      "type": "object",
+      "description": "The property values to update for the page. The keys are the names or IDs of the property and the values are property values. If a page property ID is not included, then it is not changed.",
+      "properties": {
+        "title": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  },
+                  "link": {
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "content"
+                ],
+                "additionalProperties": false
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "text"
+                ]
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "title"
+          ]
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "in_trash": {
+      "type": "boolean",
+      "description": "Set to true to delete a block. Set to false to restore a block.",
+      "default": false
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "icon": {
+      "type": "object",
+      "description": "A page icon for the page. Supported types are [external file object](https://developers.notion.com/reference/file-object) or [emoji object](https://developers.notion.com/reference/emoji-object).",
+      "properties": {
+        "emoji": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "emoji"
+      ],
+      "additionalProperties": false
+    },
+    "cover": {
+      "type": "object",
+      "description": "A cover image for the page. Only [external file objects](https://developers.notion.com/reference/file-object) are supported.",
+      "properties": {
+        "external": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "additionalProperties": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "external"
+          ]
+        }
+      },
+      "required": [
+        "external"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "page_id"
+  ]
+})
+API-post-page (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "parent": {
+      "type": "object",
+      "properties": {
+        "page_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "page_id"
+      ],
+      "additionalProperties": true
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "content"
+                ],
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "title"
+          ]
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "children": {
+      "type": "array",
+      "description": "The content to be rendered on the new page, represented as an array of [block objects](https://developers.notion.com/reference/block).",
+      "items": {
+        "type": "string"
+      }
+    },
+    "icon": {
+      "type": "string",
+      "format": "json",
+      "description": "The icon of the new page. Either an [emoji object](https://developers.notion.com/reference/emoji-object) or an [external file object](https://developers.notion.com/reference/file-object).."
+    },
+    "cover": {
+      "type": "string",
+      "format": "json",
+      "description": "The cover image of the new page, represented as a [file object](https://developers.notion.com/reference/file-object)."
+    }
+  },
+  "required": [
+    "parent",
+    "properties"
+  ]
+})
+API-create-a-database (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "parent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "page_id"
+          ]
+        },
+        "page_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "type",
+        "page_id"
+      ],
+      "additionalProperties": true
+    },
+    "properties": {
+      "type": "object",
+      "description": "Property schema of database. The keys are the names of properties as they appear in Notion and the values are [property schema objects](https://developers.notion.com/reference/property-schema-object).",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "title": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "link": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "parent",
+    "properties"
+  ]
+})
+API-update-a-database (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "database_id": {
+      "type": "string",
+      "description": "identifier for a Notion database"
+    },
+    "title": {
+      "type": "array",
+      "description": "An array of [rich text objects](https://developers.notion.com/reference/rich-text) that represents the title of the database that is displayed in the Notion UI. If omitted, then the database title remains unchanged.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "link": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "description": {
+      "type": "array",
+      "description": "An array of [rich text objects](https://developers.notion.com/reference/rich-text) that represents the description of the database that is displayed in the Notion UI. If omitted, then the database description remains unchanged.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              },
+              "link": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "additionalProperties": false
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "properties": {
+      "type": "object",
+      "description": "Property schema of database. The keys are the names of properties as they appear in Notion and the values are [property schema objects](https://developers.notion.com/reference/property-schema-object).",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "database_id"
+  ]
+})
+API-retrieve-a-database (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "database_id": {
+      "type": "string",
+      "description": "An identifier for the Notion database."
+    }
+  },
+  "required": [
+    "database_id"
+  ]
+})
+API-retrieve-a-page-property (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "page_id": {
+      "type": "string",
+      "description": "Identifier for a Notion page"
+    },
+    "property_id": {
+      "type": "string",
+      "description": "Identifier for a page [property](https://developers.notion.com/reference/page#all-property-values)"
+    },
+    "page_size": {
+      "type": "integer",
+      "format": "int32",
+      "description": "For paginated properties. The max number of property item objects on a page. The default size is 100"
+    },
+    "start_cursor": {
+      "type": "string",
+      "description": "For paginated properties."
+    }
+  },
+  "required": [
+    "page_id",
+    "property_id"
+  ]
+})
+API-retrieve-a-comment (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "block_id": {
+      "type": "string",
+      "description": "Identifier for a Notion block or page"
+    },
+    "start_cursor": {
+      "type": "string",
+      "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+    },
+    "page_size": {
+      "type": "integer",
+      "format": "int32",
+      "description": "The number of items from the full list desired in the response. Maximum: 100"
+    }
+  },
+  "required": [
+    "block_id"
+  ]
+})
+API-create-a-comment (inputSchema={
+  "$defs": {},
+  "type": "object",
+  "properties": {
+    "parent": {
+      "type": "object",
+      "description": "The page that contains the comment",
+      "properties": {
+        "page_id": {
+          "type": "string",
+          "description": "the page ID"
+        }
+      },
+      "required": [
+        "page_id"
+      ],
+      "additionalProperties": true
+    },
+    "rich_text": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "description": "The content of the comment"
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": [
+    "parent",
+    "rich_text"
+  ]
 })
 
 Based on the above information, please with your instructions(see below):

@@ -7,7 +7,7 @@ from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SE
 from ..services.data.file_system_data_service import FileSystemDataService
 
 class AgentElement(BaseElement):
-    def __init__(self, name="Unnamed Agent", goals="default_goal_var", max_iterations=1,ux_service=CliIService(), data_service=FileSystemDataService(base_path="data/agent")):
+    def __init__(self, name="Unnamed Agent", goals="default_goal_var", output_var="__payload__", max_iterations=1, ux_service=CliIService(), data_service=FileSystemDataService(base_path="data/agent")):
         super().__init__()
 
         self.next_action_text = "No action has been determined yet."
@@ -18,6 +18,8 @@ class AgentElement(BaseElement):
         self.name = name
 
         self.goals_var_name = goals
+
+        self.payload_var_name = output_var
 
         #set the maximum number of iterations for the agent to perform its tasks
         self.max_iterations = max_iterations
@@ -40,7 +42,7 @@ class AgentElement(BaseElement):
 
         goals_value = message.get_var(self.goals_var_name)
         self.data_service.save_goals(content=goals_value)
-        self.run_agent(message)
+        message = self.run_agent(message)
         return message
 
     def exit(self, message) -> Message:
@@ -64,19 +66,22 @@ class AgentElement(BaseElement):
         self.generate_plan(message=message)
 
         while not goals_are_accomplished and iteration_count < self.max_iterations:
-            goals_are_accomplished = self.run_agent_iteration(message=message)
+            goals_are_accomplished, message = self.run_agent_iteration(message=message)
             iteration_count += 1
             if goals_are_accomplished:
-                self.print_agent_output(f"The goals have been accomplished after {iteration_count} iterations.")
+                self.print_agent_output(f"iteration count: {iteration_count}")
         
         if not goals_are_accomplished:
-            self.print_agent_output(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
+            self.print_agent_output(f"I reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
         
-    def run_agent_iteration(self, message: Message) -> Message:
+        return message
+        
+    def run_agent_iteration(self, message: Message) -> tuple[bool, Message]:
         self.print_agent_output("Thinking...")
         self.next_action_text = self.get_next_action_text(message)
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
-        return self.process_action_object(next_action_object)
+        is_complete, message = self.process_action_object(next_action_object, message)
+        return (is_complete, message)
     
     def generate_plan(self, message: Message) -> str:
         self.print_agent_output(f"Generating a new plan...")
@@ -143,7 +148,7 @@ class AgentElement(BaseElement):
     def convert_action_text_to_object(self, action_text: str):
         return json.loads(action_text)
     
-    def process_action_object(self, action_object: dict):
+    def process_action_object(self, action_object: dict, message: Message) -> tuple[bool, Message]:
         action = action_object.get("action", "ERROR_MISSING_ACTION")
         chain_of_thought = action_object.get("chain_of_thought", "ERROR_MISSING_CHAIN_OF_THOUGHT")
         description = action_object.get("description", "ERROR_MISSING_DESCRIPTION")
@@ -162,37 +167,37 @@ class AgentElement(BaseElement):
             self.handle_modify_plan(new_plan, chain_of_thought, description)
         elif(action == "complete_task"):
             result = action_object.get("result", "ERROR_MISSING_RESULT")
-            self.handle_complete_task(chain_of_thought, description, result)
+            message = self.handle_complete_task(chain_of_thought, description, result, message)
             task_is_complete = True
-        return task_is_complete
+        return (task_is_complete, message)
 
-    def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str) -> str:
+    def handle_mcp_tool_call(self, service_name: str, tool_name: str, arguments: dict, chain_of_thought: str, description: str):
         self.print_agent_output(f"I'm calling MCP tool '{tool_name}' from service '{service_name}'.")
         lowercase_service_name = service_name.lower()
         result = self.mcp_services[lowercase_service_name].call_tool(tool_name, arguments)
         self.data_service.append_working_memory(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nAgent called MCP tool:\n\n  TOOL: '{tool_name}'\n\n  SERVICE: '{service_name}'\n\n  ARGUMENTS: {arguments}\n\n  RESPONSE: \n{result}")
         self.print_agent_output(f"I received a result and wrote it to my log.")
 
-    def handle_get_user_input(self, question: str, chain_of_thought: str, description: str) -> str:
+    def handle_get_user_input(self, question: str, chain_of_thought: str, description: str):
         self.print_agent_output("I have a question:")
         user_input = self.get_user_input(question)
         self.data_service.append_working_memory(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI asked question to the user '{question}' and received user answer: {user_input}.")
         self.print_agent_output("Thanks! I received your answer and added it to my memory.")
         return user_input
     
-    def handle_modify_plan(self, new_plan: str, chain_of_thought: str, description: str) -> "AgentElement":
+    def handle_modify_plan(self, new_plan: str, chain_of_thought: str, description: str):
         self.print_agent_output("I am modifying my plan based on new information received.")
         self.data_service.save_plan(new_plan)
         self.data_service.append_working_memory(f"DESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI modified the plan based on new information. The new plan is as follows:\n{new_plan}.")
         self.print_agent_output("The plan is now up-to-date.")
-        return self
     
-    def handle_complete_task(self, chain_of_thought: str, description: str, result: str) -> "AgentElement":
+    def handle_complete_task(self, chain_of_thought: str, description: str, result: str, message: Message) -> Message:
         self.print_agent_output("I have determined that the task has been completed successfully!")
         self.print_agent_output("Here is the result: " + result)
         self.data_service.append_working_memory(f"\n\nDESCRIPTION: {description}\n\nCHAIN OF THOUGHT: {chain_of_thought}\n\nI have completed the task successfully.")
         self.print_agent_output("The task completion has been logged in my memory.")
-        return self
+        message.set_var(self.payload_var_name, result)
+        return message
 
     def get_next_action_text(self, message: Message) -> str:
         prompt = ACTION_PLAN_SELCTION_PROMPT

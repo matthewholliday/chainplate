@@ -4,8 +4,9 @@
     </set-variable>
     <context>
         All outputs to notion should be in pirate speak, alright matey?
-        <load-mcp-services mcp-services="fetch">
+        <load-mcp-services mcp-services="fetch" output_var="agent_result">
             <agent name="Web Browsing Agent" goals="agent_goals" plan="agent_plan"></agent>
         </load-mcp-services>
     </context>
+    <set-variable output_var="__payload__">{{ agent_result }}</set-variable>
 </pipeline>
