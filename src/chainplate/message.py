@@ -123,5 +123,7 @@ class Message:
     def get_mcp_services(self) -> dict:
         return self.mcp_services
 
+    def is_debug_mode(self) -> bool:
+        return False
     
 

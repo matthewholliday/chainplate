@@ -52,9 +52,7 @@ class FileSystemDataService(AgentDataService):
             return ""
         
     def save_goals(self, content: str):
-        print("Saving goals to file system data service:", content)
         goals_path = f"{self.base_path}/{GOALS_FILE_NAME}"
-        print("Goals path:", goals_path)
         with open(goals_path, "w", encoding="utf-8") as f:
             f.write(content)
 

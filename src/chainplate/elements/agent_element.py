@@ -29,20 +29,20 @@ class AgentElement(BaseElement):
 
         self.data_service = data_service
 
+        self.inherited_context = ""
+
     def enter(self, message: Message) -> Message:
+        self.inherited_context = message.read_context()
         self.data_service.clear_data()
 
         self.mcp_services = message.mcp_services
 
         goals_value = message.get_var(self.goals_var_name)
-        print("goals: ", goals_value)
-
         self.data_service.save_goals(content=goals_value)
         self.run_agent(message)
         return message
 
     def exit(self, message) -> Message:
-        print("--------------------------------------------------------------------------")
         return message
     
     @staticmethod
@@ -69,7 +69,7 @@ class AgentElement(BaseElement):
                 self.print_agent_output(f"The goals have been accomplished after {iteration_count} iterations.")
         
         if not goals_are_accomplished:
-            print(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
+            self.print_agent_output(f"[AGENT] The agent reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
         
     def run_agent_iteration(self, message: Message) -> Message:
         self.print_agent_output("Thinking...")
@@ -94,25 +94,30 @@ class AgentElement(BaseElement):
         current_plan = self.data_service.get_plan()
         services = self.data_service.get_services(message)
         tools = self.data_service.get_tools(message)
-
-        if(not working_memory):
-            self.print_agent_output(f"Note: The working memory is currently empty.")
-
-        if(not current_goals):
-            self.print_agent_output(f"Note: The current goals empty.")
-
-        if(not current_plan):
-            self.print_agent_output(f"Note: The current plan is empty.")
         
-        if(not services):
-            self.print_agent_output(f"Note: There are no services available.")
+        if(message.is_debug_mode()):
+            if(not self.inherited_context):
+                self.print_agent_output(f"Note: There is no inherited context from previous elements.")
 
-        if(not tools):
-            self.print_agent_output(f"Note: There are no tools available.")
+            if(not working_memory):
+                self.print_agent_output(f"Note: The working memory is currently empty.")
+
+            if(not current_goals):
+                self.print_agent_output(f"Note: The current goals empty.")
+
+            if(not current_plan):
+                self.print_agent_output(f"Note: The current plan is empty.")
+            
+            if(not services):
+                self.print_agent_output(f"Note: There are no services available.")
+
+            if(not tools):
+                self.print_agent_output(f"Note: There are no tools available.")
 
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
             f"Log of what has been done so far: {self.data_service.get_working_memory()}\n",
+            f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n",
             f" >>> Your current goals are: {self.data_service.get_goals()}\n",
             f" >>> Your current plan (if any) is: {self.data_service.get_plan()}\n",
             f" >>> Your current service names are: {self.data_service.get_services(message)}\n",
