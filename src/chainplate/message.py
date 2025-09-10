@@ -1,7 +1,6 @@
 from .helpers.template_helper import TemplateHelper
 import os
 from .services.cli_service import CLIService
-from .agent.agent import Agent
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
@@ -121,16 +120,6 @@ class Message:
                 print(f"    Output Schema: {tool_data['outputSchema']}")
                 print(f"    Annotations: {tool_data['annotations']}")
 
-    def add_agent(self, agent: Agent):
-        if hasattr(self, "agent") and self.agent is not None:
-            raise ValueError("Only one agent can be active at a time. Make sure you don't have nested <agent/> elements in your workflow.")
-        self.agent = agent
-        return self
-    
-    def clear_agent(self):
-        self.agent = None
-        return self
-    
     def get_mcp_services(self) -> dict:
         return self.mcp_services
 

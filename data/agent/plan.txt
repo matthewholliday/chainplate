@@ -1,0 +1,58 @@
+Plan to determine the current temperature in Chandler, Arizona (step‑by‑step, including fetch actions, parsing, fallback and error handling)
+
+1. Confirm desired units and precision
+   - Action: If I should ask you, prompt whether you want temperature in Fahrenheit or Celsius (default to Fahrenheit for Chandler, AZ if no preference).
+   - Why: Some users prefer °C; many U.S. contexts use °F.
+
+2. Choose a primary data source
+   - Preferred: wttr.in (simple plaintext response suitable for quick scraping).
+   - Example primary URL: https://wttr.in/Chandler?format=3
+     - Returns a short one-line status like "Chandler: +105°F" (easy to parse).
+   - Alternate primary/formatted URL if you want ISO fields: https://wttr.in/Chandler?format=%l:+%t
+
+3. Fetch primary URL
+   - Tool call: fetch with
+     - url = "https://wttr.in/Chandler?format=3"
+     - max_length = 1000
+     - raw = true (to get the exact response)
+   - Parse result: extract temperature value and units from returned text using a simple regex (e.g., look for a number with optional +/− and then °F or °C or trailing F/C).
+
+4. Validate parsed temperature
+   - Check that the parsed value is numeric and includes units.
+   - Sanity-check range (e.g., −60 to +140 °F for Chandler; −50 to +60 °C) to avoid parsing garbage.
+   - If valid, proceed to step 6.
+
+5. If primary source fails or parsing is invalid, try fallbacks (in order)
+   - Fallback A: National Weather Service / weather.gov — fetch by city not direct, so use a more direct site:
+     - Example: https://wttr.in/Chandler?m (metric) or https://wttr.in/Chandler?u (US units) — alternative wttr queries.
+   - Fallback B: Weather.com (needs HTML parsing; less stable), e.g. https://weather.com/weather/today/l/Chandler+AZ? (HTML heavy)
+     - Fetch with raw=true and parse the HTML for the temperature element (harder).
+   - Fallback C: Open-Meteo public endpoints or another simple API (if available without API key), or use a different which returns concise JSON (e.g., https://api.weather.gov/points/{lat,lon} then forecast — more steps).
+   - For each fallback:
+     - Use fetch with appropriate max_length and raw settings.
+     - Parse for numeric temperature and units.
+     - Sanity-check as in step 4.
+
+6. Cross-check (optional)
+   - If multiple sources return values, compare them.
+   - If discrepancies > a threshold (e.g., 3–5 °F), note both values and the sources to the user.
+
+7. Compose final answer
+   - Include:
+     - The temperature value and unit (e.g., "Current temperature in Chandler, AZ is 105°F").
+     - The source(s) used (e.g., wttr.in).
+     - A timestamp (local time or UTC) indicating when the data was fetched.
+     - If multiple sources: show each source and its value.
+     - If parsing/fetch failed: explain the failure and offer to try another source or allow user to provide preferred source.
+
+8. Error handling and retries
+   - If fetch returns HTTP error or times out, retry once after a short pause.
+   - If all sources fail, inform the user and offer to try a specific site or allow them to provide a ZIP code or coordinates to improve accuracy.
+
+9. Privacy and rate-limit note
+   - Mention (if relevant) that public endpoints may have rate limits; no personal data required to fetch weather for a city name.
+
+10. Execute
+   - Use the fetch tool to request the primary URL from step 3, parse and return the result to the user (or ask for unit preference first, if not pre-specified).
+
+If you want, I can proceed now and fetch the current temperature for Chandler, AZ (tell me whether you prefer °F or °C).

@@ -9,9 +9,6 @@ class LoadMCPToolsElement(BaseElement):
         super().__init__()
         services_list = self.parse_services(mcp_services_string)
         self.mcp_services = self.create_services(services_list)
-        print("[LOAD MCP TOOLS ELEMENT] Loaded MCP services: " + ", " + mcp_services_string)
-        print("[PARSED MCP SERVICES] Parsed MCP services list: " + str(services_list))
-        print("[MCP SERVICES DICTIONARY] MCP services dictionary: " + str(self.mcp_services))
 
     def parse_services(self, services_string: str = ""):
         return services_string.split(",") if services_string else []

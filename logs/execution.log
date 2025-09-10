@@ -1,32 +1,32 @@
-[2025-09-10 09:19:29]
+[2025-09-10 14:19:04]
 Entering: PipelineElement(name=fetch-example)
 ===============END LOG ENTRY================
 
-[2025-09-10 09:19:29]
+[2025-09-10 14:19:04]
 Entering: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
 ===============END LOG ENTRY================
 
-[2025-09-10 09:19:29]
+[2025-09-10 14:19:04]
 Exiting: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
 ===============END LOG ENTRY================
 
-[2025-09-10 09:19:29]
+[2025-09-10 14:19:04]
 Entering: LoadMCPToolsElement(services=['fetch'])
 ===============END LOG ENTRY================
 
-[2025-09-10 09:19:29]
+[2025-09-10 14:19:04]
 Entering: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-10 09:20:25]
+[2025-09-10 14:19:52]
 Exiting: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-10 09:20:25]
+[2025-09-10 14:19:52]
 Exiting: LoadMCPToolsElement(services=['fetch'])
 ===============END LOG ENTRY================
 
-[2025-09-10 09:20:25]
+[2025-09-10 14:19:52]
 Exiting: PipelineElement(name=fetch-example)
 ===============END LOG ENTRY================
 

@@ -48,7 +48,6 @@ class ChainplateChatSession:
                 message.set_payload(user_input_txt)
             
                 # temp testing
-
                 message.conversation_history = self.chat_history
                 message = self.create_workflow().run(message)
 
