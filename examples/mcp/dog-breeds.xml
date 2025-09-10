@@ -12,8 +12,10 @@
         For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
         For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
     </set-variable>
-    <debug>[AGENT] I'm cookin' up some fancy AI! Yeeehawww!</debug>
-    <load-mcp-services mcp-services="notion">
-        <agent name="Test Agent" goals="agent_goals" plan="agent_plan"></agent>
-    </load-mcp-services>
+    <context>
+        All outputs to notion should be in pirate speak, alright matey?
+        <load-mcp-services mcp-services="notion">
+            <agent name="Test Agent" goals="agent_goals" plan="agent_plan"></agent>
+        </load-mcp-services>
+    </context>
 </pipeline>

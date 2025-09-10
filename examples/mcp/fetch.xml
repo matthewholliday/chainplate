@@ -2,7 +2,10 @@
     <set-variable output_var="agent_goals">
         Tell me what the temperature is in Chandler, Arizona. 
     </set-variable>
-    <load-mcp-services mcp-services="fetch">
-        <agent name="Web Browsing Agent" goals="agent_goals" plan="agent_plan"></agent>
-    </load-mcp-services>
+    <context>
+        All outputs to notion should be in pirate speak, alright matey?
+        <load-mcp-services mcp-services="fetch">
+            <agent name="Web Browsing Agent" goals="agent_goals" plan="agent_plan"></agent>
+        </load-mcp-services>
+    </context>
 </pipeline>
