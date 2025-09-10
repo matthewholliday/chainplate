@@ -34,6 +34,7 @@ class AgentElement(BaseElement):
     def enter(self, message: Message) -> Message:
         self.inherited_context = message.read_context()
         self.data_service.clear_data()
+        self.data_service.save_chat_history_summary(message)
 
         self.mcp_services = message.mcp_services
 
@@ -117,6 +118,7 @@ class AgentElement(BaseElement):
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
             f"Log of what has been done so far: {self.data_service.get_working_memory()}\n",
+            f" >>> Chat history summary: {self.data_service.get_chat_history_summary(message)}\n",
             f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n",
             f" >>> Your current goals are: {self.data_service.get_goals()}\n",
             f" >>> Your current plan (if any) is: {self.data_service.get_plan()}\n",

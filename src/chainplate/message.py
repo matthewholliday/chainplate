@@ -86,7 +86,15 @@ class Message:
         self.conversation_history = chat_history
 
     def get_chat_history(self) -> list:
-        return self.conversation_history    
+        return self.conversation_history  
+
+    def read_chat_history(self) -> str:
+        history_text = ""
+        for message in self.conversation_history:
+            role = message.get("role", "unknown")
+            content = message.get("content", "")
+            history_text += f"{role.capitalize()}: {content}\n"
+        return history_text.strip()  
     
     def get_pipeline_input(self) -> str:
         return self.get_var("__pipeline_input__")

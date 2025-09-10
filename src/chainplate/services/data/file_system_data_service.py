@@ -6,6 +6,7 @@ WORKING_MEMORY_FILE_NAME = "working_memory.txt"
 PLAN_FILE_NAME = "plan.txt"
 GOALS_FILE_NAME = "goals.txt"
 CONTEXT_FILE_NAME = "context.txt"
+CHAT_HISTORY_SUMMARY_FILE_NAME = "chat_history_summary.txt"
 
 class FileSystemDataService(AgentDataService):
 
@@ -68,3 +69,17 @@ class FileSystemDataService(AgentDataService):
                 return f.read()
         except FileNotFoundError:
             return ""
+        
+    def get_chat_history_summary(self, message):
+        chat_history_path = f"{self.base_path}/{CHAT_HISTORY_SUMMARY_FILE_NAME}"
+        try:
+            with open(chat_history_path, "r", encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            return ""
+    
+    def save_chat_history_summary(self, message) -> None:
+        summary = AgentDataService.generate_chat_history_summary(message)
+        chat_history_path = f"{self.base_path}/{CHAT_HISTORY_SUMMARY_FILE_NAME}"
+        with open(chat_history_path, "w", encoding="utf-8") as f:
+            f.write(summary)
