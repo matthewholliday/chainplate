@@ -55,3 +55,4 @@ class BaseElement(ABC):
     
     def update_content(self, new_content: str) -> None:
         pass
+    

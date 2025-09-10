@@ -19,6 +19,8 @@ from .elements.store_memory import StoreMemory
 from .elements.get_context_element import GetContextElement
 from .elements.with_memory import WithMemoryElement
 from .elements.read_file_element import ReadFileElement
+from .elements.load_mcp_tools_element import LoadMCPToolsElement
+from .elements.agent_element import AgentElement
 
 
 @dataclass
@@ -86,6 +88,8 @@ class AiNode:
             WriteToFileElement,
             ContinueIfElement,
             DebugElement,
+            AgentElement,
+            LoadMCPToolsElement
         ]
 
         for cls in element_classes:
@@ -185,7 +189,16 @@ class AiNode:
                     return DebugElement(
                         content=content or "Debug Message"
                     )
-
+                elif cls is LoadMCPToolsElement:
+                    return LoadMCPToolsElement(
+                        mcp_services_string=attributes.get("mcp-services", "")
+                    )
+                elif cls is AgentElement:
+                    return AgentElement(
+                        name=attributes.get("name", "Unnamed Agent"),
+                        goals=attributes.get("goals", "Unnamed Goals"),
+                        max_iterations=int(attributes.get("max-iterations", 10))
+                    )
         raise ValueError(f"Unknown tag: {tag}")
     
     @staticmethod

@@ -14,7 +14,8 @@ class MCPService:
         return self
 
     def call_tool(self, tool_name: str, arguments: dict = dict()):
-        return MCPService.call_stdio_tool(self.server_params, tool_name, arguments)
+        tool_result =  asyncio.run(MCPService.call_stdio_tool(self.server_params, tool_name, arguments))
+        return tool_result
     
     def list_tools(self):
         return MCPService.get_stdio_tools(self.server_params)
@@ -64,5 +65,5 @@ class MCPService:
             async with ClientSession(read, write) as session:
                 await session.initialize() 
                 result = await session.call_tool(tool_name, arguments)
-                result_text = result.content[0].text if result.content else "No content returned from tool call."
-                return f"Result from tool call '{tool_name}' was: \n\n {result_text}"
+                result_text = result.content[0].text if result.content else "{ 'message' : 'No content returned from tool call'}"
+                return result_text.strip()

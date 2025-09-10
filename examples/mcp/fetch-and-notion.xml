@@ -1,0 +1,8 @@
+<pipeline name="fetch-example">
+    <set-variable output_var="agent_goals">
+        Obtain the current temperature in Chandler, Arizona and record it in a Notion page called "Chandler Weather." The parent page is "Sandbox Parent Page."
+    </set-variable>
+    <load-mcp-services mcp-services="fetch,notion">
+        <agent name="Web Browsing Agent" goals="agent_goals" plan="agent_plan"></agent>
+    </load-mcp-services>
+</pipeline>

@@ -1,0 +1,9 @@
+<pipeline name="mcp-workflow" description="Workflow for loading MCP tools and calling them">
+    <set-variable output_var="agent_goals">
+        Create a notion page with the title "United States Cities." The page should contain a list of the top 10 most populous cities in the United States.
+    </set-variable>
+    <debug>{{ agent_goals }}</debug>
+    <load-mcp-services mcp-services="notion">
+        <agent name="Test Agent" goals="agent_goals" plan="agent_plan"></agent>
+    </load-mcp-services>
+</pipeline>

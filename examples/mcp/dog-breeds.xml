@@ -1,0 +1,21 @@
+<pipeline name="mcp-workflow" description="A pipeline to generate some info pages about dogs.">
+    <set-variable output_var="agent_goals">
+        Create an notion page for the following dog breed: {{ __payload__ }} under the "Dog Breeds" page.
+
+        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
+
+        1. History and Origin
+        2. Physical Characteristics and Appearance
+        3. Temperament and Behavior
+
+        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
+        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
+        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
+    </set-variable>
+    <context>
+        All outputs to notion should be in pirate speak, alright matey?
+        <load-mcp-services mcp-services="notion">
+            <agent name="Test Agent" goals="agent_goals" plan="agent_plan"></agent>
+        </load-mcp-services>
+    </context>
+</pipeline>

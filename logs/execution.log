@@ -1,32 +1,32 @@
-[2025-09-07 15:49:32]
-Entering: PipelineElement(name=Send Prompt Example)
+[2025-09-10 14:38:44]
+Entering: PipelineElement(name=fetch-example)
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:32]
-Entering: ContextElement(content=Reply to everything in the silliest way possible.)
+[2025-09-10 14:38:44]
+Entering: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:32]
-Entering: SendPromptElement(output_var=response, content=What is the capital of France?)
+[2025-09-10 14:38:44]
+Exiting: SetVariableElement(output_var=agent_goals, content=Tell me what the temperature is in Chandler, Arizona.)
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: SendPromptElement(output_var=response, content=What is the capital of France?)
+[2025-09-10 14:38:44]
+Entering: LoadMCPToolsElement(services=['fetch'])
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: ContextElement(content=Reply to everything in the silliest way possible.)
+[2025-09-10 14:38:44]
+Entering: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Entering: DebugElement(content=The response is: {{response}})
+[2025-09-10 14:39:31]
+Exiting: ['AgentElement(\n', 'name=Web Browsing Agent\n\n', 'goals=agent_goals\n\n', 'max_iterations=10\n\n', ')\n']
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: DebugElement(content=The response is: {{response}})
+[2025-09-10 14:39:31]
+Exiting: LoadMCPToolsElement(services=['fetch'])
 ===============END LOG ENTRY================
 
-[2025-09-07 15:49:37]
-Exiting: PipelineElement(name=Send Prompt Example)
+[2025-09-10 14:39:31]
+Exiting: PipelineElement(name=fetch-example)
 ===============END LOG ENTRY================
 

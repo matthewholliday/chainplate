@@ -50,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--call-mcp-tool", type=str, help="Call a specific MCP tool by name")
     p.add_argument("--args", action="append", help="Key-value pairs for MCP tool arguments, e.g. --args key1=value1 --args key2=value2")
     p.add_argument("--agent", action="store_true", help="Run in agent mode to manage MCP services")
+    p.add_argument("--agent-request", type=str, help="Make a request to the agent for a specific action or information")
 
     args = p.parse_args(argv)
     
@@ -97,92 +98,6 @@ def main(argv: list[str] | None = None) -> int:
         chat_session.run_interactive()
     elif(args.server):
         run_server()
-        return 0
-    elif(args.list_mcp_services):
-        
-        from .services.mcp.mcp_config_service import MCPConfigService
-        from .services.mcp.mcp_service import MCPService
-        config_file_path = "mcp/config.json"
-        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
-
-        for server_name, server_info in mcp_servers.items():
-            print(f"Server Name: {server_name}")
-            print(f"Command: {server_info['command']}")
-            print(f"Arguments: {server_info.get('args', [])}")
-            print(f"Environment Variables: {server_info.get('env', {})}")
-            print("-" * 40)
-    elif(args.list_mcp_tools):
-        if not args.mcp_service:
-            print("Error: --mcp-service must be specified when using --list-mcp-tools", file=sys.stderr)
-            return 1
-        
-        from .services.mcp.mcp_config_service import MCPConfigService
-        from .services.mcp.mcp_service import MCPService
-
-        config_file_path = "mcp/config.json"
-        
-        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
-
-        if args.mcp_service not in mcp_servers:
-            print(f"Error: MCP service '{args.mcp_service}' not found in config file.", file=sys.stderr)
-            return 1
-
-        server_info = mcp_servers[args.mcp_service]
-
-        server_params = MCPService.get_stdio_params(
-            command=server_info['command'],
-            args=server_info.get('args', []),
-            env=server_info.get('env', {})
-        )
-
-        import asyncio
-        
-        tools_output = asyncio.run(MCPService.get_stdio_tools(server_params))
-        
-        print(tools_output)
-    elif(args.call_mcp_tool):
-        if not args.mcp_service:
-            print("Error: --mcp-service must be specified when using --call-mcp-tool", file=sys.stderr)
-            return 1
-
-        from .services.mcp.mcp_config_service import MCPConfigService
-        from .services.mcp.mcp_service import MCPService
-
-        config_file_path = "mcp/config.json"
-        mcp_servers = MCPConfigService.read_mcp_servers_config(config_file_path)
-
-        # Parse --args key=value pairs into a dictionary
-        tool_args_dict = {}
-        if args.args:
-            for arg in args.args:
-                if '=' in arg:
-                    k, v = arg.split('=', 1)
-                    tool_args_dict[k] = v
-                else:
-                    print(f"Warning: Argument '{arg}' is not in key=value format and will be ignored.", file=sys.stderr)
-
-        if args.mcp_service not in mcp_servers:
-            print(f"Error: MCP service '{args.mcp_service}' not found in config file.", file=sys.stderr)
-            return 1
-
-        server_info = mcp_servers[args.mcp_service]
-
-        server_params = MCPService.get_stdio_params(
-            command=server_info['command'],
-            args=server_info.get('args', []),
-            env=server_info.get('env', {})
-        )
-
-        import asyncio
-        call_output = asyncio.run(MCPService.call_stdio_tool(server_params, args.call_mcp_tool, tool_args_dict))
-        print(call_output)
-    elif(args.agent):
-        from .agent.agent import Agent
-        agent = Agent()
-        agent.load_mcp_services()
-        overview: str = agent.get_master_tool_overview_text()
-        print("MCP Services and their Tools Overview:")
-        print(overview)
         return 0
     elif(args.ask):
         prompt = args.ask  # Use the string directly

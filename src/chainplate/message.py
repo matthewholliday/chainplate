@@ -14,6 +14,7 @@ class Message:
         self.context_stack = []
         self.vars[CONTEXT_KEY] = self.read_context()
         self.conversation_history = []  # For chat mode
+        self.mcp_services = {}
 
     def update_context_var(self):
         self.vars[CONTEXT_KEY] = self.read_context()
@@ -92,4 +93,37 @@ class Message:
     
     def get_pipeline_output(self) -> str:
         return self.get_var("__pipeline_output__")
+    
+    def add_mcp_service(self, service_name: str, mcp_service):
+        self.mcp_services[service_name] = mcp_service
+        return self
+    
+    def add_mcp_services(self, services: dict):
+        if self.mcp_services:
+            raise ValueError("Only one mcp service collection can be active at a time. Make sure you don't have nested <load-mcp-tools/> elements in your workflow.")
+
+        for service_name, mcp_service in services.items():
+            self.add_mcp_service(service_name, mcp_service)
+        return self
+    
+    def clear_mcp_services(self):
+        self.mcp_services = {}
+        return self
+    
+    def print_mcp_services(self):
+        for service_name, mcp_service in self.mcp_services.items():
+            print(f"MCP Service: {service_name}")
+            for tool_name, tool_data in mcp_service.tools.items():
+                print(f"  Tool Name: {tool_name}")
+                print(f"    Description: {tool_data['description']}")
+                print(f"    Input Schema: {tool_data['inputSchema']}")
+                print(f"    Output Schema: {tool_data['outputSchema']}")
+                print(f"    Annotations: {tool_data['annotations']}")
+
+    def get_mcp_services(self) -> dict:
+        return self.mcp_services
+
+    def is_debug_mode(self) -> bool:
+        return False
+    
 

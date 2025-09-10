@@ -1,0 +1,80 @@
+Plan — step-by-step actions I'll follow to create the Notion pages for "Poodle" and the three sub-pages. Notes: I will ensure every piece of content written to Notion is in pirate speak (per inherited context). I assume I have a valid Notion API token and network access.
+
+Pre-flight
+1. Verify Notion API credentials and reachability.
+2. Confirm I have the ID of the Notion workspace or the "Dog Breeds" parent page location. If you don't provide a parent page ID, I'll attempt to find a page titled "Dog Breeds" in the workspace (step 3). If none is found I will ask whether to create a new "Dog Breeds" page and where to place it.
+
+Find the "Dog Breeds" parent page
+3. Search for a page titled "Dog Breeds" using API-post-search:
+   - query: "Dog Breeds"
+   - filter: { property: "object", value: "page" }
+   - If multiple matches, pick page whose title matches exactly (case-insensitive). If still ambiguous, pick the most recently edited and/or ask user to confirm.
+4. If "Dog Breeds" page is found, save its page_id as dogBreedsPageId and proceed. If not found, stop and request a parent page_id or permission to create a brand new "Dog Breeds" page (explain I need a page_id to create top-level page under).
+
+Create the main "Poodle" page
+5. Create the Poodle page under dogBreedsPageId with API-post-page:
+   - parent: { page_id: dogBreedsPageId }
+   - properties: { title: [ { text: { content: "Poodle" } } ] }
+   - optional: icon: emoji "🐩" (JSON string as required by API)
+   - children: a short opening paragraph in pirate speak introducing the Poodle (one paragraph).
+   - Save returned page_id as poodlePageId.
+   - Example children paragraph (in pirate speak): "Arrr! The Poodle be a clever an' elegant sea-dog o' the land, proud an' spry, loved fer smarts an' style." (I will generate the actual phrasing when executing.)
+
+Create the 3 sub-pages (each as a child page of the Poodle page)
+6. For each topic below I will create a sub-page with title including the breed name, and add content blocks (paragraphs and bullets) in pirate speak per the required detail level.
+
+   Subpage A — History and Origin
+   - Title: "Poodle — History and Origin"
+   - Content: short/brief summary paragraph(s) in pirate speak describing origin & historical role (e.g., water-retriever origins in Europe, standard/mini/toy distinctions origin, development as show dog and companion).
+   - API call: API-post-page with parent.page_id = poodlePageId, properties.title containing the above title, children with a brief pirate-speak paragraph.
+
+   Subpage B — Physical Characteristics and Appearance
+   - Title: "Poodle — Physical Characteristics and Appearance"
+   - Content: detailed description in pirate speak covering coat types (curly, dense), colors, sizes (standard/miniature/toy), typical height/weight ranges, build, grooming/pruning styles, typical lifespan, distinguishing features.
+   - Structure: multiple paragraphs and bulleted list items for clarity.
+   - API call: API-post-page with parent.page_id = poodlePageId, properties.title, and children blocks in pirate speak.
+
+   Subpage C — Temperament and Behavior
+   - Title: "Poodle — Temperament and Behavior"
+   - Content: detailed pirate-speak description covering intelligence, trainability, activity level, social needs, behavior with kids/other pets, exercise needs, common behavior traits, tips for owners.
+   - Structure: paragraphs + bullets where helpful.
+   - API call: API-post-page with parent.page_id = poodlePageId, properties.title, children blocks in pirate speak.
+
+Implementation details for creating pages and blocks
+7. Use API-post-page to create each page. Payloads will include:
+   - parent: { page_id: <parent> }
+   - properties: { title: [ { text: { content: "<Title>" } } ] }
+   - children: an array of block objects. For example, paragraph blocks:
+     { "object": "block", "type": "paragraph", "paragraph": { "rich_text": [ { "type": "text", "text": { "content": "Pirate-speak text here" } } ] } }
+   - Or bulleted list items:
+     { "object": "block", "type": "bulleted_list_item", "bulleted_list_item": { "rich_text": [ { "type":"text", "text":{ "content":"Bullet item in pirate-speak" } } ] } }
+
+Verification & retries
+8. For each create call, verify success and record returned page_id.
+9. Retrieve each page (API-retrieve-a-page) and its content blocks (API-get-block-children) to confirm children were added and text is correct and in pirate speak.
+10. If a page or block is missing or content needs correction, use API-patch-page to update the title or API-patch-block-children / API-update-a-block to alter text or append missing blocks. Retry on transient errors with exponential backoff.
+
+Error handling, logging, and user feedback
+11. Log every API request and response (IDs, timestamps, status).
+12. If I cannot find "Dog Breeds" and you do not provide a parent page_id, pause and ask for instructions.
+13. If permission errors (403/401) occur, stop and request corrected credentials.
+14. After successful creation and verification, return the page_ids (and human-readable Notion links if desired) for:
+    - Dog Breeds (parent) — if created or identified
+    - Poodle (main page)
+    - Poodle — History and Origin
+    - Poodle — Physical Characteristics and Appearance
+    - Poodle — Temperament and Behavior
+
+Content style requirements
+15. All content written into Notion blocks will be in pirate speak. Titles must include the breed name exactly as requested (e.g., "Poodle — History and Origin"). Summaries and descriptions will meet the requested brevity/detailedness:
+   - History & Origin: brief summary (one concise paragraph).
+   - Physical Characteristics: detailed description (multiple paragraphs and bullets).
+   - Temperament & Behavior: detailed description (multiple paragraphs and bullets).
+
+Optional polish (post-creation)
+16. Optionally set page icons/covers for the Poodle page and sub-pages (e.g., emoji 🐩) using API-post-page icon field or API-patch-page cover/icon updates.
+17. Optionally add a top-level table of contents or link list on the Poodle page linking to the three subpages (use the subpage URLs / page mentions) — also in pirate speak.
+
+If you want, I can now:
+- execute this plan (I will prompt you for dogBreedsPageId if I cannot find "Dog Breeds"),
+- or produce the pirate-speak content drafts for each page here so you can review before I write them to Notion. Which would you prefer?

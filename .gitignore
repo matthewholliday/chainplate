@@ -1,7 +1,8 @@
-scripts
-secrets
-output
-scratch.xml
 __pycache__
+data
 dist
 memory
+output
+scratch.xml
+scripts
+secrets
