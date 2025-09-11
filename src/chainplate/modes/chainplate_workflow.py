@@ -1,7 +1,7 @@
 from ..message import Message
 from ..ainode import AiNode
 from ..tree import TreeNode
-from ..services.cli_service import CLIService
+from ..services.ux.cli_ux_service import CLIService
 import json
 import os
 

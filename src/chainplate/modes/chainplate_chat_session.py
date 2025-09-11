@@ -1,7 +1,7 @@
 from .chainplate_workflow import ChainplateWorkflow
 from ..helpers.prompt_helper import create_user_message, create_assistant_message
 from ..message import Message
-from ..services.cli_service import CLIService
+from ..services.ux.cli_ux_service import CLIService
 
 def print_ascii_art():
     art = r"""

@@ -1,6 +1,6 @@
 from .helpers.template_helper import TemplateHelper
 import os
-from .services.cli_service import CLIService
+from .services.ux.cli_ux_service import CLIService
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"

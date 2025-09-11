@@ -1,10 +1,10 @@
 import json
 from ..message import Message
-from ..services.cli_service import CLIService as CliIService
+from ..services.ux.cli_ux_service import CLIService as CliIService
 from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
 from .base_element import BaseElement
 from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
-from ..services.data.file_system_data_service import FileSystemDataService
+from ..services.data.agent.file_system_data_service import FileSystemDataService
 
 class AgentElement(BaseElement):
     def __init__(self, name="Unnamed Agent", goals="default_goal_var", output_var="__payload__", max_iterations=1, ux_service=CliIService(), data_service=FileSystemDataService(base_path="data/agent")):

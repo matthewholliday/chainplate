@@ -1,0 +1,2 @@
+SYSTEM_DISPLAY_NAME = "ChainPlate"
+USER_DISPLAY_NAME = "User"
