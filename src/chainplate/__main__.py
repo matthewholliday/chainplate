@@ -7,6 +7,8 @@ from .modes.chainplate_chat_session import ChainplateChatSession
 from .modes.chainplate_server import run_server
 from .core import AIXMLCore  # your library function
 from .message import Message
+from .services.ux.rdb_ux_service import RelationalDatabaseUXService
+from .services.data.database.rdb_service import RDBService
 
 # TODO: Move most of this out of the __main__ file and into core.py or similar.
 
@@ -42,8 +44,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-q", "--quiet", action="store_true", help="Suppress non-error messages")
     p.add_argument("--payload", type=str, help="Payload to pass into the execution")
     p.add_argument("--chat",type=Path, help="Run in chat mode with the given XML file")
-    p.add_argument("--workflow", type=Path, help="TODO")
-    p.add_argument("--server", action="store_true", help="Run the Chainplate server mode")
+    p.add_argument("--workflow", type=Path, help="Run a workflow with the given XML file")
+    p.add_argument("--server",  action="store_true", help="Service the given chainplate pipeline over a REST API.")
     p.add_argument("--list-mcp-services", action="store_true", help="List available MCP services from the config file")
     p.add_argument("--list-mcp-tools", action="store_true", help="List available MCP tools from the specified MCP server")
     p.add_argument("--mcp-service", type=str, help="Specify the MCP service to connect to for tool listing or calling")

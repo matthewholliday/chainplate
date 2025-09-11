@@ -35,7 +35,7 @@ class ChainplateChatSession:
                 #Get input from the user...
                 user_input_txt = ux_service.get_input_from_user("[USER] ")
                 use_input_message = create_user_message(user_input_txt)
-                self.chat_history.append(use_input_message)     
+                self.chat_history.append(use_input_message)
 
                 #Check for special commands...
                 if user_input_txt.lower() == 'exit':

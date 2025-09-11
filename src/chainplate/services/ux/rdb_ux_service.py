@@ -4,8 +4,8 @@ from ...config import USER_DISPLAY_NAME, SYSTEM_DISPLAY_NAME
 
 class RelationalDatabaseUXService(UXService):
     def __init__(self, conversation_id: str):
+        self.connection = RDBService().create_connection()
         self.conversation_id = conversation_id
-        self.connection = RDBService().get_connection(conversation_id)
 
     def get_input_from_user(self, prompt):
         return input(prompt)
