@@ -1,3 +1,3 @@
 <pipeline name="chat echo">
-    <send-prompt template="chat_prompt" output_var="__chat_response__">{{ __payload__ }}</send-prompt>
+    <send-prompt output_var="__payload__">{{ __payload__ }}</send-prompt>
 </pipeline>

@@ -2,11 +2,11 @@ import argparse
 import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
-from .modes.chainplate_workflow import ChainplateWorkflow
-from .modes.chainplate_chat_session import ChainplateChatSession
-from .modes.chainplate_server import run_server
-from .core import AIXMLCore  # your library function
-from .message import Message
+from .worker.modes.chainplate_workflow import ChainplateWorkflow
+from .worker.modes.chainplate_chat_session import ChainplateChatSession
+from .worker.modes.chainplate_server import run_server
+from .worker.core import AIXMLCore  # your library function
+from .worker.message import Message
 
 # TODO: Move most of this out of the __main__ file and into core.py or similar.
 
