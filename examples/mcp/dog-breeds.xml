@@ -8,7 +8,6 @@
         1. A single dog breed name (e.g., "Labrador Retriever", "German Shepherd", "Bulldog", etc.)
         2. "None" if no specific dog breed is mentioned in the input.
     </send-prompt>
-    <debug>AI extracted: {{ dog_breed }}</debug>
     <set-variable output_var="agent_goals">
         Here's the dog breed from the user: {{ dog_breed }}
 
