@@ -1,90 +1,71 @@
-Plan to create a Notion page about Greyhounds (content in pirate-speak) — step-by-step
+I don’t see any explicit user goals listed — could ye please tell me the specific goals ye want me to accomplish (e.g., create a page, populate a database, search for pages, export blocks)? While ye provide that, here’s a practical, step-by-step agent plan I’ll follow to accomplish typical Notion tasks using the available tools. I’ll also note which API call I’ll use at each step and remind meself that any content I push into Notion must be written in pirate speak.
 
-Goal: Create a new page under the "Dog Breeds" parent page (page_id: 2692177e-9a4d-800c-8a4b-e28721e5cbd1) titled something like "Greyhounds — Swift Buccaneers o' the Doggo Seas", with structured sections in pirate-speak similar to the existing Chow Chows page.
+High-level plan (steps I’ll follow for any concrete goal)
+1) Clarify goal and scope
+   - Ask the user to confirm the exact objective(s), target Notion locations (page IDs or database IDs), and content requirements.
+   - Confirm whether we should perform a dry-run or actually modify Notion.
+   - Confirm any constraints (deadline, formatting, page property values).
+2) Gather credentials & identity (pre-flight checks)
+   - Ensure API token / integration permissions are available and valid (not a provided API call, but prerequisite).
+   - Use API-get-self to confirm the current integration/user identity and that integration has required scopes.
+3) Discover targets (find pages/databases/users)
+   - If target IDs unknown, use API-post-search with query text to locate pages/databases by title.
+   - If searching for owners or collaborators, use API-get-users or API-get-user for user info.
+4) Inspect target(s)
+   - For a database: call API-retrieve-a-database to get schema and properties.
+   - For a page: call API-retrieve-a-page to get page properties.
+   - For blocks inside a page: call API-get-block-children to read existing content.
+   - For paginated results, handle start_cursor and repeat as necessary.
+5) Plan content & mapping
+   - Map user content to Notion properties and block structure (title, text blocks, bulleted lists, properties).
+   - Convert all outgoing content destined for Notion into pirate speak (per inherited context).
+   - Validate required property fields for database pages (title, required selects, relation, etc.).
+6) Create / update in Notion
+   - To create a new page: API-post-page (parent.page_id plus properties and children). Ensure children text content is pirate speak.
+   - To create/append blocks inside an existing page: API-patch-block-children (supply block_id and children array). All rich_text content -> pirate speak.
+   - To update a page’s properties (title or others): API-patch-page with properties. Titles/rich text -> pirate speak.
+   - To create a database: API-create-a-database (if needed).
+   - To update a database schema/title: API-update-a-database (if needed).
+   - When querying a database for filtering/sorting: API-post-database-query with filter and sorts.
+7) Validate results
+   - Retrieve updated page/database with API-retrieve-a-page or API-retrieve-a-database to confirm changes.
+   - Read back block children (API-get-block-children) to ensure pirate-speak content appears correctly.
+8) Error handling & retries
+   - If API returns validation errors, capture and present to user, adjust payload, retry.
+   - If rate-limited or transient errors, implement retry with exponential backoff.
+   - If pagination required, loop using start_cursor until done.
+9) Logging & user confirmation
+   - Summarize actions taken for the user, including Notion IDs created/updated and links (if available).
+   - Ask user to confirm further edits or additional pages/databases to manage.
+10) Clean up & follow-ups
+   - If a dry-run was requested, do not perform create/update calls — present the payload that would be used (in pirate speak for content).
+   - Offer to localize or refine pirate-speak wording before committing.
+   - Provide an option to revert or archive created content if desired (use API-patch-page to set archived/in_trash where applicable, and API-delete-a-block to remove blocks).
 
-Preconditions / constraints
-- All content posted to Notion must be in pirate-speak.
-- Use available Notion API actions listed in the tools.
-- Avoid creating a duplicate page if one already exists.
+Mapping of plan steps to available API calls (quick reference)
+- Get integration identity: API-get-self
+- List/find users: API-get-users, API-get-user
+- Search pages/databases by title: API-post-search
+- Inspect a database: API-retrieve-a-database
+- Query database rows: API-post-database-query
+- Retrieve a page: API-retrieve-a-page
+- Retrieve page block children: API-get-block-children
+- Append blocks to page: API-patch-block-children
+- Update block text / checked: API-update-a-block
+- Delete a block: API-delete-a-block
+- Create a page: API-post-page
+- Update page properties (title, icon, cover): API-patch-page
+- Create a database: API-create-a-database
+- Update database title/description/properties: API-update-a-database
+- Manage comments: API-create-a-comment, API-retrieve-a-comment
+- Retrieve page property values: API-retrieve-a-page-property
 
-Steps
+Notes, constraints, and special considerations
+- All content that will be written into Notion (pages, block text, comments) must be converted to pirate speak before the create/update calls.
+- Validate required property types (e.g., title property structure) and supply proper rich_text arrays per the API schema.
+- Max page_size is typically 100; use pagination for larger result sets.
+- Confirm the user wants changes applied before making destructive updates (archiving/deleting).
+- If user asks me to perform actions now, provide the target IDs or allow me to search; otherwise I’ll present a dry-run payload in pirate speak.
 
-1) Confirm intent & final title
-- Decide final page title (suggestion: "Greyhounds — Swift Buccaneers o' the Doggo Seas").
-- If user wants a different title or tone (more/less piratey) or additional sections/images, prompt now — otherwise proceed with default.
-
-2) Check for existing Greyhound page to avoid duplicates
-- Call API-post-search with query = "Greyhounds" and filter.object = "page" (or "Greyhound" singular too).
-- If a page with the same or very similar title exists under the "Dog Breeds" parent, stop and prompt the user: offer to update that page or create a new one with a distinct title.
-- If no duplicates found, proceed.
-
-3) Draft pirate-speak content (compose locally before API call)
-- Compose blocks for these sections (keeps parity with Chow Chows page):
-  - Title (page property)
-  - Overview
-  - History
-  - Appearance
-  - Temperament
-  - Care & Grooming
-  - Health
-  - Fun Facts
-- For each section prepare 2–6 medium-detail paragraphs or bulleted points in pirate-speak (concise but informative). Example headings remain normal (Overview, History...) but block text must be pirate-speak.
-- Optionally prepare an introductory one-line summary near the top, and a short "quick facts" bulleted list (height, weight, lifespan).
-- If user previously preferred a "medium detail" level for Chow Chows, match that level.
-
-4) Prepare Notion page payload
-- Build payload for API-post-page:
-  - parent: { page_id: "2692177e-9a4d-800c-8a4b-e28721e5cbd1" }
-  - properties: title: [{ text: { content: "<Final Title>" } }]
-  - children: array of block objects representing each section:
-    - Use paragraph blocks for section headings and content, or heading blocks if desired.
-    - Use bulleted_list_item blocks for quick facts or lists.
-  - (Optional) include an icon emoji (e.g., 🐕‍🦺 or 🏴‍☠️ dog) or cover: include external cover image URL if user provided or we choose.
-
-5) Create the page
-- Call API-post-page with prepared payload.
-- Verify response: capture new page_id and URL (Notion returns id; URL can be inferred or returned).
-- If API returns an error (rate limit, validation, permission), handle:
-  - For permission errors, report to user and stop.
-  - For rate limit, back off and retry per Notion guidelines.
-  - For validation errors, log and adjust payload accordingly.
-
-6) Append additional content or media (optional)
-- If user supplied image URLs or wants images added:
-  - Use API-patch-page to add cover or icon, or API-patch-block-children to append image blocks (if supported).
-  - If Notion file objects required, use external image URL fields in cover/icon.
-- If user requested links to authoritative resources (breed club pages, vet resources), append as paragraph blocks with link objects.
-
-7) Verify page content
-- Call API-retrieve-a-page and/or API-get-block-children for the new page_id to confirm children were created and contain the intended pirate-speak content.
-- Validate that sections exist and formatting looks correct.
-
-8) Update logs & inform user
-- Save page_id and URL to the session log (include title).
-- Return a confirmation message to the user with:
-  - Page title
-  - Page ID
-  - URL
-  - Summary of sections added
-  - Offer next actions: change tone, add images/links, create another breed page, or edit content.
-
-9) Offer follow-ups / edits
-- Offer options the user can pick: more/less piratey, more detail, add photos, add breed-specific resources, or create additional pages.
-- If user requests edits, repeat appropriate steps: draft new content and call API-patch-block-children or API-patch-page as needed.
-
-Error handling and contingencies
-- Duplicate detected: ask user whether to update existing page or create a new one with a modified title.
-- Insufficient permissions: notify user and stop.
-- Rate limiting: implement exponential backoff and retry (up to 3 attempts), then surface error.
-- Content-length or block schema issues: fall back to splitting large sections into multiple blocks.
-
-Deliverables after execution
-- A new Notion page (pirate-speak) about Greyhounds under Dog Breeds with the agreed title and sections.
-- Page ID and URL recorded in the log.
-- A message to the user confirming creation and offering next edits.
-
-If you want, I can now:
-- (A) Draft the pirate-speak content for the Greyhounds page and show it here for approval, then create the page; or
-- (B) Immediately create the page with a default pirate-speak draft (medium detail) and return the page link.
-
-Which do ye prefer, matey?
+Next step for me
+- Please specify the concrete goal(s) ye want achieved (examples: "Create 5 meeting notes pages in database X with these titles", "Find pages containing 'Q3 roadmap' and append action items", "Create a project database under page Y"), and provide any target IDs or permission confirmation. Once ye do, I’ll produce a detailed action sequence and begin executing — and I’ll make sure all Notion-bound text be in proper pirate speak.

@@ -1,10 +1,10 @@
-Here's the dog breed from the user: Greyhound
+Here's the dog breed from the user: None
 
         If the dog breed is "None", respond with "No specific dog breed was requested. Please provide a dog breed name."
 
         Otherwise, your goal is to create a Notion page for the dog breed with the following structure:
 
-        Create an notion page for the following dog breed: Greyhound under the "Dog Breeds" page.
+        Create an notion page for the following dog breed: None under the "Dog Breeds" page.
 
         After this page is created, create 3 sub-pages for the following topics related to this dog breed:
 
