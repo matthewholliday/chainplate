@@ -1,123 +1,90 @@
-Plan to create the "Chihuahua" Notion page and three sub-pages (with all content that will be sent to Notion written in pirate speak as required)
+Plan to create a Notion page about Greyhounds (content in pirate-speak) — step-by-step
 
-Summary: 
-- Find the "Dog Breeds" page (or create it if missing). 
-- Create a parent page "Chihuahua" under "Dog Breeds". 
-- Add an intro paragraph to the Chihuahua page (pirate speak). 
-- Create 3 sub-pages under the Chihuahua page with specified titles and content (pirate speak). 
-- Verify creations and return page IDs/titles.
+Goal: Create a new page under the "Dog Breeds" parent page (page_id: 2692177e-9a4d-800c-8a4b-e28721e5cbd1) titled something like "Greyhounds — Swift Buccaneers o' the Doggo Seas", with structured sections in pirate-speak similar to the existing Chow Chows page.
 
-Step-by-step plan (actions, API calls, payload hints, and error handling)
+Preconditions / constraints
+- All content posted to Notion must be in pirate-speak.
+- Use available Notion API actions listed in the tools.
+- Avoid creating a duplicate page if one already exists.
 
-1) Locate the "Dog Breeds" parent page
-- Action: Search for a page titled "Dog Breeds".
-- API call: API-post-search
-  - Payload: { "query": "Dog Breeds", "filter": { "property": "object", "value": "page" }, "page_size": 20 }
-- If found:
-  - Choose the correct page result and record DOG_BREEDS_PAGE_ID.
-  - If multiple results, prefer exact title match; if ambiguous, prompt user to confirm or pick the most recently edited.
-- If not found:
-  - Create the "Dog Breeds" page.
-  - API call: API-post-page
-    - Payload parent: specify a top-level parent (user provided page_id or workspace root). If no workspace root permitted, ask user for where to create.
-    - Properties.title: [{"text":{"content":"Dog Breeds"}}]
-  - Record DOG_BREEDS_PAGE_ID.
-- Error handling: If search fails due to permissions, surface the error and request valid page_id or permission.
+Steps
 
-2) Create the main "Chihuahua" page under "Dog Breeds"
-- Action: Create the child page titled "Chihuahua" with a small intro title property.
-- API call: API-post-page
-  - Payload:
-    - parent: { "page_id": DOG_BREEDS_PAGE_ID }
-    - properties: { "title": [ { "text": { "content": "Chihuahua" } } ] }
-    - (optional) icon: emoji object e.g., {"emoji":"🐶"} encoded per API requirements.
-- Record CHIHUAHUA_PAGE_ID from the response.
-- Error handling: If creation fails (permissions or invalid parent id), return error and ask for correct parent.
+1) Confirm intent & final title
+- Decide final page title (suggestion: "Greyhounds — Swift Buccaneers o' the Doggo Seas").
+- If user wants a different title or tone (more/less piratey) or additional sections/images, prompt now — otherwise proceed with default.
 
-3) Add an intro paragraph to the Chihuahua page (pirate speak)
-- Content to add (pirate speak):
-  - "Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map to learn the breed o' Chihuahua: its past, how it looks, and the temper o' the beast, matey."
-- Action: Append child blocks to CHIHUAHUA_PAGE_ID
-- API call: API-patch-block-children
-  - block_id: CHIHUAHUA_PAGE_ID
-  - children: an array with one paragraph block containing the pirate-speak text
-    - Example child block structure: { "paragraph": { "rich_text": [ { "text": { "content": "<pirate text>" } } ] }, "type": "paragraph" }
-- Verify returned children or follow up with API-get-block-children to confirm.
+2) Check for existing Greyhound page to avoid duplicates
+- Call API-post-search with query = "Greyhounds" and filter.object = "page" (or "Greyhound" singular too).
+- If a page with the same or very similar title exists under the "Dog Breeds" parent, stop and prompt the user: offer to update that page or create a new one with a distinct title.
+- If no duplicates found, proceed.
 
-4) Create 3 sub-pages under the Chihuahua page
-For each sub-page: create the page, then add children content (detailed content required). All content to Notion must be in pirate speak.
+3) Draft pirate-speak content (compose locally before API call)
+- Compose blocks for these sections (keeps parity with Chow Chows page):
+  - Title (page property)
+  - Overview
+  - History
+  - Appearance
+  - Temperament
+  - Care & Grooming
+  - Health
+  - Fun Facts
+- For each section prepare 2–6 medium-detail paragraphs or bulleted points in pirate-speak (concise but informative). Example headings remain normal (Overview, History...) but block text must be pirate-speak.
+- Optionally prepare an introductory one-line summary near the top, and a short "quick facts" bulleted list (height, weight, lifespan).
+- If user previously preferred a "medium detail" level for Chow Chows, match that level.
 
-A) History and Origin
-- Title requirement: include breed name and brief summary.
-- Title example: "Chihuahua — History and Origin"
-- Brief summary (pirate speak) example:
-  - "Arrr! The Chihuahua be a descendant o' ancient small dogs kept by peoples o' Mexico. Tales say it traces back t' the Techichi o' the Toltec and was later prized by Aztecs. The modern Chihuahua rose t' fame in Mexico and then across the seas by the 19th century, savvy?"
-- Steps:
-  1. API-post-page with parent: { "page_id": CHIHUAHUA_PAGE_ID }, properties.title: "Chihuahua — History and Origin".
-  2. Capture HISTORY_PAGE_ID.
-  3. API-patch-block-children on HISTORY_PAGE_ID to add the brief summary paragraph (pirate speak).
+4) Prepare Notion page payload
+- Build payload for API-post-page:
+  - parent: { page_id: "2692177e-9a4d-800c-8a4b-e28721e5cbd1" }
+  - properties: title: [{ text: { content: "<Final Title>" } }]
+  - children: array of block objects representing each section:
+    - Use paragraph blocks for section headings and content, or heading blocks if desired.
+    - Use bulleted_list_item blocks for quick facts or lists.
+  - (Optional) include an icon emoji (e.g., 🐕‍🦺 or 🏴‍☠️ dog) or cover: include external cover image URL if user provided or we choose.
 
-B) Physical Characteristics and Appearance
-- Title requirement: include breed name and detailed description.
-- Title example: "Chihuahua — Physical Characteristics & Appearance"
-- Detailed description (pirate speak) should cover:
-  - Size & weight (toy breed, tiny, typical weight range)
-  - Two coat types (smooth and long), coat colors and markings
-  - Head types (apple/head vs deer/head), ears, eyes, muzzle, tail
-  - Typical height, body, gait, lifespan note, and common physical health concerns (brief mention)
-- Example pirate-speak content (detailed):
-  - "Arrr! The Chihuahua be a tiny shipmate: standin' 'bout 6–9 inches at the shoulder and weighin' 2–6 pounds fer most landlubbers. Two coats ye may see — the smooth (short) coat that lies flat, and the long coat that's soft and feathered 'round the ears and tail. Colors be many: fawn, black, cream, chocolate, parti, merle, and mixes o' markings. Heads come in two fashions: the 'apple' dome head, round as a cannonball, and the 'deer' head, more tapered and graceful. Eyes be large an' round, full o' mischief; ears be erect an' alert. The tail be often carried up or curled o'er the back. Though small, they be nimble and quick in gait. Typical lifespan be 12–20 years; mind yer vet fer dental and patellar troubles, matey."
-- Steps:
-  1. API-post-page with parent CHIHUAHUA_PAGE_ID, properties.title as above.
-  2. Capture PHYSICAL_PAGE_ID.
-  3. API-patch-block-children on PHYSICAL_PAGE_ID adding multiple paragraph blocks or a single longer paragraph per the detail.
+5) Create the page
+- Call API-post-page with prepared payload.
+- Verify response: capture new page_id and URL (Notion returns id; URL can be inferred or returned).
+- If API returns an error (rate limit, validation, permission), handle:
+  - For permission errors, report to user and stop.
+  - For rate limit, back off and retry per Notion guidelines.
+  - For validation errors, log and adjust payload accordingly.
 
-C) Temperament and Behavior
-- Title requirement: include breed name and detailed description.
-- Title example: "Chihuahua — Temperament & Behavior"
-- Detailed description (pirate speak) should cover:
-  - Personality: bold, confident, loyal, sometimes bossy
-  - Socialization needs, suitability as companion, relationship with children and other pets
-  - Training tips, barking tendencies, exercise needs, mental stimulation
-  - Warnings about fragility and proper handling
-- Example pirate-speak content:
-  - "Arrr! Chihuahuas be fierce little mates — bold, loyal, an' oft clingy t' their chosen human. They be smart but may be stubborn an' can talk (yap) t' warn ye o' strangers. Early socializin' keeps 'em from turnin' into scallywags around kids or other beasts. Short walks, play, an' mental puzzles keep their minds sharp. Train with patience and plunder treats for good behavior. Mind their tiny bones — handle gentle-like, and supervise small children. With proper socializin' and trainin', they be a faithful, watchful companion fer many a voyage."
-- Steps:
-  1. API-post-page with parent CHIHUAHUA_PAGE_ID, properties.title as above.
-  2. Capture TEMPERAMENT_PAGE_ID.
-  3. API-patch-block-children on TEMPERAMENT_PAGE_ID adding detailed paragraphs and optional bullet list tips.
+6) Append additional content or media (optional)
+- If user supplied image URLs or wants images added:
+  - Use API-patch-page to add cover or icon, or API-patch-block-children to append image blocks (if supported).
+  - If Notion file objects required, use external image URL fields in cover/icon.
+- If user requested links to authoritative resources (breed club pages, vet resources), append as paragraph blocks with link objects.
 
-5) Verify pages and content
-- For each created page (CHIHUAHUA_PAGE_ID, HISTORY_PAGE_ID, PHYSICAL_PAGE_ID, TEMPERAMENT_PAGE_ID):
-  - Call API-retrieve-a-page to confirm existence and basic properties (title).
-  - Call API-get-block-children for each page to confirm children blocks contain the pirate-speak content.
-- Return a summary with page titles and their page IDs (so the user can open them).
+7) Verify page content
+- Call API-retrieve-a-page and/or API-get-block-children for the new page_id to confirm children were created and contain the intended pirate-speak content.
+- Validate that sections exist and formatting looks correct.
 
-6) Error handling and retries
-- If any API call fails due to rate limit or transient error: retry up to 2 times with exponential backoff.
-- If permission errors occur: surface the error and ask the user to provide a page_id for "Dog Breeds" or grant the necessary permissions.
-- If content is too long for a single block: split into multiple paragraph blocks via API-patch-block-children.
+8) Update logs & inform user
+- Save page_id and URL to the session log (include title).
+- Return a confirmation message to the user with:
+  - Page title
+  - Page ID
+  - URL
+  - Summary of sections added
+  - Offer next actions: change tone, add images/links, create another breed page, or edit content.
 
-7) Post-creation checks & polish
-- Optionally set page icons and covers (emoji or image URL) using API-patch-page with icon or cover fields.
-- Optionally add properties/tags to the Chihuahua page (e.g., Size: Toy, Lifespan, Temperament) if the "Dog Breeds" page uses a database schema. If "Dog Breeds" is a database rather than a page, adapt: create a new database item row instead of a page — confirm structure first by retrieving the "Dog Breeds" object type (database vs page) using API-post-search or API-retrieve-a-database.
-- Ask user whether they'd like the pages to include images or references/links; if yes, request the image URLs or sources.
+9) Offer follow-ups / edits
+- Offer options the user can pick: more/less piratey, more detail, add photos, add breed-specific resources, or create additional pages.
+- If user requests edits, repeat appropriate steps: draft new content and call API-patch-block-children or API-patch-page as needed.
 
-8) Output to user / final deliverable
-- Provide the user with:
-  - Confirmation that pages were created (or will be created) and the IDs/links.
-  - The pirate-speak content used for each page (so they can review).
-  - Any follow-up actions needed (e.g., permission, parent page id).
+Error handling and contingencies
+- Duplicate detected: ask user whether to update existing page or create a new one with a modified title.
+- Insufficient permissions: notify user and stop.
+- Rate limiting: implement exponential backoff and retry (up to 3 attempts), then surface error.
+- Content-length or block schema issues: fall back to splitting large sections into multiple blocks.
 
-Notes / important constraints
-- All content sent to Notion (page content/children) will be in pirate speak per inherited context.
-- If "Dog Breeds" is actually a Notion database rather than a regular page, creation workflow differs — we must create a new database entry (API-post-page with parent.database_id or API-post-database?); confirm object type first.
-- For creating page children (content), use API-patch-block-children for reliable block structure.
-- Keep each paragraph block under typical Notion limits (if needed, break into multiple paragraph blocks).
+Deliverables after execution
+- A new Notion page (pirate-speak) about Greyhounds under Dog Breeds with the agreed title and sections.
+- Page ID and URL recorded in the log.
+- A message to the user confirming creation and offering next edits.
 
 If you want, I can now:
-- (A) Execute the above plan (I will search for "Dog Breeds" and create the pages and content), or
-- (B) Produce the exact JSON payloads for each API call (including the pirate-speak text) so you can run them, or
-- (C) Ask for the Dog Breeds page_id and permission details so I skip the search step and create pages directly.
+- (A) Draft the pirate-speak content for the Greyhounds page and show it here for approval, then create the page; or
+- (B) Immediately create the page with a default pirate-speak draft (medium detail) and return the page link.
 
-Which next step do ye want me to take, matey?
+Which do ye prefer, matey?

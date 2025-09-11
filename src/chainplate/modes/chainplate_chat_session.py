@@ -33,7 +33,9 @@ class ChainplateChatSession:
         while True:
             try:
                 #Get input from the user...
-                user_input_txt = ux_service.get_input_from_user("[USER]    >> ")
+                user_input_txt = ux_service.get_input_from_user("[USER] ")
+                use_input_message = create_user_message(user_input_txt)
+                self.chat_history.append(use_input_message)     
 
                 #Check for special commands...
                 if user_input_txt.lower() == 'exit':
@@ -46,24 +48,16 @@ class ChainplateChatSession:
                 #Process the user input through the workflow...
                 message = Message()
                 message.set_payload(user_input_txt)
-            
-                # temp testing
                 message.conversation_history = self.chat_history
                 message = self.create_workflow().run(message)
 
-                #Update the chat history with the latest user and assistant messages
-                #IMORTANT NOTE (!) transformed_input may be different from user_input_txt depending on how the workflow is designed.
-                transformed_input = message.get_pipeline_input()
-                transformed_user_message_obj = create_user_message(transformed_input)
-                self.chat_history.append(transformed_user_message_obj)
-
-                #Update chat history with assistant response
+                #Update chat history with workflow response
                 assistant_response_text = message.get_pipeline_output()
                 assistant_response_obj = create_assistant_message(assistant_response_text)
                 self.chat_history.append(assistant_response_obj)
 
-                #Print the assistant response
-                ux_service.show_output_to_user(f"[CHATBOT] >> {assistant_response_text}\n\n")
+                #Print the workflow response
+                ux_service.show_output_to_user(f"[AGENT] {assistant_response_text}\n\n")
             except Exception as e:
                 ux_service.show_output_to_user(f"An error occurred: {e}")
                 break

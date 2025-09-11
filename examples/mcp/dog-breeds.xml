@@ -1,6 +1,22 @@
 <pipeline name="mcp-workflow" description="A pipeline to generate some info pages about dogs.">
+    <send-prompt output_var="dog_breed">
+        Extract a requested dog breed from the following user input:
+
+        {{ __payload__ }}
+
+        Valid responses are either:
+        1. A single dog breed name (e.g., "Labrador Retriever", "German Shepherd", "Bulldog", etc.)
+        2. "None" if no specific dog breed is mentioned in the input.
+    </send-prompt>
+    <debug>AI extracted: {{ dog_breed }}</debug>
     <set-variable output_var="agent_goals">
-        Create an notion page for the following dog breed: {{ __payload__ }} under the "Dog Breeds" page.
+        Here's the dog breed from the user: {{ dog_breed }}
+
+        If the dog breed is "None", respond with "No specific dog breed was requested. Please provide a dog breed name."
+
+        Otherwise, your goal is to create a Notion page for the dog breed with the following structure:
+
+        Create an notion page for the following dog breed: {{ dog_breed }} under the "Dog Breeds" page.
 
         After this page is created, create 3 sub-pages for the following topics related to this dog breed:
 
@@ -11,6 +27,8 @@
         For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
         For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
         For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
+    
+        Err on the side of making reasonable assumptions if you are unsure about any details.
     </set-variable>
     <context>
         All outputs to notion should be in pirate speak, alright matey?

@@ -77,7 +77,7 @@ class AgentElement(BaseElement):
         return message
         
     def run_agent_iteration(self, message: Message) -> tuple[bool, Message]:
-        self.print_agent_output("Thinking...")
+        self.print_agent_output("Thinking about my next action...")
         self.next_action_text = self.get_next_action_text(message)
         next_action_object = self.convert_action_text_to_object(self.next_action_text)
         is_complete, message = self.process_action_object(next_action_object, message)
@@ -125,7 +125,7 @@ class AgentElement(BaseElement):
             f"Log of what has been done so far: {self.data_service.get_working_memory()}\n",
             f" >>> Chat history summary: {self.data_service.get_chat_history_summary(message)}\n",
             f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n",
-            f" >>> Your current goals are: {self.data_service.get_goals()}\n",
+            # f" >>> Your current goals are: {self.data_service.get_goals()}\n",
             f" >>> Your current plan (if any) is: {self.data_service.get_plan()}\n",
             f" >>> Your current service names are: {self.data_service.get_services(message)}\n",
             f" >>> Your available tools and their descriptions are as follows: {self.data_service.get_tools(message)}\n",
@@ -200,16 +200,11 @@ class AgentElement(BaseElement):
         return message
 
     def get_next_action_text(self, message: Message) -> str:
-        prompt = ACTION_PLAN_SELCTION_PROMPT
-        system_prompt = ACTION_PLAN_SELCTION_SYSTEM
-        context_string = self.create_context_string(message)
-        self.data_service.save_context(context_string)
-        full_prompt = f"{system_prompt}\n\n{context_string}\n\n{prompt}"
-        response = self.llm_provider.ask_question(system=system_prompt, question=full_prompt)
+        response = self.send_llm_request(prompt=ACTION_PLAN_SELCTION_PROMPT, message=message)
         return response
 
     def print_agent_output(self, text: str) -> None:
-        self.ux_service.show_output_to_user(f"[AGENT: {self.name}] {text}")
+        self.ux_service.show_output_to_user(f"[AGENT] {text}")
 
     def get_user_input(self, prompt: str) -> str:
         return self.ux_service.get_input_from_user(f"[USER] {prompt}")

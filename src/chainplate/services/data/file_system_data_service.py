@@ -79,7 +79,14 @@ class FileSystemDataService(AgentDataService):
             return ""
     
     def save_chat_history_summary(self, message) -> None:
+        self.save_chat_history_full(message)
         summary = AgentDataService.generate_chat_history_summary(message)
         chat_history_path = f"{self.base_path}/{CHAT_HISTORY_SUMMARY_FILE_NAME}"
         with open(chat_history_path, "w", encoding="utf-8") as f:
             f.write(summary)
+
+    def save_chat_history_full(self, message: Message) -> None:
+        chat_history_path = f"{self.base_path}/chat_history_full.txt"
+        full_history = message.read_chat_history()
+        with open(chat_history_path, "w", encoding="utf-8") as f:
+            f.write(full_history)

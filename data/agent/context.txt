@@ -2,259 +2,128 @@ Consider the following when carrying out your tasks:
 
 Log of what has been done so far: 
 
-DESCRIPTION: Call the Notion API search endpoint to find a page titled "Dog Breeds" (limit results to pages). This will return candidate pages so we can pick the correct parent or determine that the page must be created.
-
-CHAIN OF THOUGHT: Per the plan, the very first actionable step is to locate the existing "Dog Breeds" page so I can create the Chihuahua page as a child. I must search the workspace for a page titled "Dog Breeds" and prefer an exact title match; if none exists I'll create it next. Calling the Notion search API is necessary and consistent with the plan because it yields the DOG_BREEDS_PAGE_ID required for all subsequent page-creation calls.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-search'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'query': 'Dog Breeds', 'filter': {'property': 'object', 'value': 'page'}, 'page_size': 20}
-
-  RESPONSE: 
-{"object":"list","results":[{"object":"page","id":"2692177e-9a4d-800c-8a4b-e28721e5cbd1","created_time":"2025-09-09T23:39:00.000Z","last_edited_time":"2025-09-10T21:44:00.000Z","created_by":{"object":"user","id":"8ea7052e-3ef3-4fc7-ad81-01eb53ba773c"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"2652177e-9a4d-8045-a0c9-f6f58a3b73ff"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Dog Breeds","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Dog Breeds","href":null}]}},"url":"https://www.notion.so/Dog-Breeds-2692177e9a4d800c8a4be28721e5cbd1","public_url":null}],"next_cursor":null,"has_more":false,"type":"page_or_database","page_or_database":{},"request_id":"9f959e02-9473-4870-8e3f-c1d4e849408b"}
-
-
-DESCRIPTION: Create a new Notion page titled 'Chihuahua' under the found 'Dog Breeds' page (will add intro and sub-pages after creation).
-
-CHAIN OF THOUGHT: The search returned an exact match for the 'Dog Breeds' page and provided its page_id. Per the plan, the next actionable step is to create the main 'Chihuahua' page as a child of that parent so we can then append the pirate-speak intro and create the three sub-pages. Creating the parent Chihuahua page now is necessary to obtain its page_id for subsequent API calls (adding intro paragraph and creating sub-pages).
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '2692177e-9a4d-800c-8a4b-e28721e5cbd1'}, 'properties': {'title': [{'text': {'content': 'Chihuahua'}}]}, 'icon': '{"emoji":"🐶"}'}
-
-  RESPONSE: 
-{"status":400,"object":"error","code":"validation_error","message":"body failed validation: body.icon should be an object, `null`, or `undefined`, instead was `\"{\\\"emoji\\\":\\\"🐶\\\"}\"`.","request_id":"87020ea7-9f46-4936-ba58-50d94467c59f"}
-
-
-DESCRIPTION: Create a new Notion page titled 'Chihuahua' as a child of the found 'Dog Breeds' page (omit icon to avoid previous validation error).
-
-CHAIN OF THOUGHT: The search already returned the exact 'Dog Breeds' page_id. A previous attempt to create the 'Chihuahua' page failed due to an invalid icon field (it was passed as a string rather than an object). To proceed with the plan we must create the parent 'Chihuahua' page so we can obtain its page_id for adding intro content and sub-pages. To avoid the prior validation error, I'll create the page without an icon (icon is optional) and only include the required parent and title properties. This API call is necessary and consistent with the plan's next actionable step.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '2692177e-9a4d-800c-8a4b-e28721e5cbd1'}, 'properties': {'title': [{'text': {'content': 'Chihuahua'}}]}}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d","created_time":"2025-09-10T22:44:00.000Z","last_edited_time":"2025-09-10T22:44:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"2692177e-9a4d-800c-8a4b-e28721e5cbd1"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua","href":null}]}},"url":"https://www.notion.so/Chihuahua-26a2177e9a4d81c9b1e7e8ade1a6962d","public_url":null,"request_id":"877bfb3f-c280-4b25-b776-fac00d02d527"}
-
-
-DESCRIPTION: Append a pirate-speak introductory paragraph to the newly created 'Chihuahua' page so the main page has its opening content before sub-pages are created.
-
-CHAIN OF THOUGHT: The Chihuahua page was just created and we now need to add the required pirate-speak intro paragraph to that page before creating the three sub-pages. Appending the intro as a child block of the newly created page is the next actionable step in the plan and is necessary to populate the main page with content. Using the notion API-patch-block-children call with the Chihuahua page ID will add the paragraph block in pirate speak and keep progress consistent with the planned sequence (create parent page -> add intro -> create sub-pages).
-
-Agent called MCP tool:
-
-  TOOL: 'API-patch-block-children'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'block_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d', 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map t' learn the breed o' Chihuahua: its past, how it looks, an' the temper o' the beast, matey."}}]}, 'type': 'paragraph'}]}
-
-  RESPONSE: 
-{"object":"list","results":[{"object":"block","id":"26a2177e-9a4d-81e0-be1f-c19adfd04012","parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"created_time":"2025-09-10T22:45:00.000Z","last_edited_time":"2025-09-10T22:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"has_children":false,"archived":false,"in_trash":false,"type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map t' learn the breed o' Chihuahua: its past, how it looks, an' the temper o' the beast, matey.","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map t' learn the breed o' Chihuahua: its past, how it looks, an' the temper o' the beast, matey.","href":null}],"color":"default"}}],"next_cursor":null,"has_more":false,"type":"block","block":{},"request_id":"f58c0890-7a30-467b-bb46-1ae663697c56"}
-
-
-DESCRIPTION: Create the 'Chihuahua — History and Origin' sub-page under the existing Chihuahua page and add a pirate-speak summary paragraph as the page content.
-
-CHAIN OF THOUGHT: The Chihuahua page has been created and the intro paragraph appended. The next actionable step in the plan is to create the three required sub-pages under the Chihuahua page. To make incremental progress and avoid a long multi-step batch call, I'll create the first sub-page, 'Chihuahua — History and Origin', and include its pirate-speak summary as the page content in the same API call. This is necessary and consistent with the plan because it yields the HISTORY_PAGE_ID immediately and ensures the content is added in pirate speak before proceeding to create the remaining two sub-pages.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d'}, 'properties': {'title': [{'text': {'content': 'Chihuahua — History and Origin'}}]}, 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! The Chihuahua be a descendant o' ancient small dogs kept by the peoples o' Mexico. Tales say she traces back t' the Techichi o' the Toltec an' was prized by the Aztecs. The modern Chihuahua rose t' fame in Mexico an' then crossed the seas in the 19th century, findin' favor with many a landlubber, savvy?"}}]}, 'type': 'paragraph'}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-8175-a303-e597d9957c81","created_time":"2025-09-10T22:45:00.000Z","last_edited_time":"2025-09-10T22:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua — History and Origin","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua — History and Origin","href":null}]}},"url":"https://www.notion.so/Chihuahua-History-and-Origin-26a2177e9a4d8175a303e597d9957c81","public_url":null,"request_id":"94659dd0-bd05-4433-a038-924efc871ab8"}
-
-
-DESCRIPTION: Create the 'Chihuahua — Physical Characteristics and Appearance' sub-page under the Chihuahua page and add a pirate-speak detailed description of the breed's physical characteristics as the page content.
-
-CHAIN OF THOUGHT: The plan's next actionable step is to create the second sub-page under the already-created Chihuahua page: 'Chihuahua — Physical Characteristics and Appearance'. We have the Chihuahua page_id from the earlier successful creation (26a2177e-9a4d-81c9-b1e7-e8ade1a6962d). Creating this sub-page now is necessary to obtain its page_id so we can add the detailed pirate-speak content and then proceed to create the final Temperament page. This API-post-page call is consistent with the sequence already followed (create sub-page with children content in one call).
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d'}, 'properties': {'title': [{'text': {'content': 'Chihuahua — Physical Characteristics and Appearance'}}]}, 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! The Chihuahua be a tiny shipmate: standin' about 6–9 inches at the shoulder an' weighin' 2–6 pounds fer most landlubbers. Two coats ye may spy — the smooth coat that lies close t' the skin, an' the long coat that's soft an' feathered 'round the ears an' tail. Colors be plentiful: fawn, cream, black, chocolate, parti, merle, an' many mixes o' markings. Heads come in two fashions: the 'apple' dome, round as a cannonball, an' the 'deer' head, more tapered an' graceful. Eyes be large, round, an' bright, full o' mischief; ears be erect an' keen. The muzzle be short, body compact, an' the tail be carried up or curl'd o'er the back. Though wee, they be nimble an' quick in gait. Typical height be 'bout 6–9 inches; lifespan commonly 12–20 years. Mind yer vet fer dental woes, patellar luxation, an' tracheal collapse which can trouble some o' these tiny mates."}}]}, 'type': 'paragraph'}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-8190-9297-ce593acc1be5","created_time":"2025-09-10T22:45:00.000Z","last_edited_time":"2025-09-10T22:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua — Physical Characteristics and Appearance","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua — Physical Characteristics and Appearance","href":null}]}},"url":"https://www.notion.so/Chihuahua-Physical-Characteristics-and-Appearance-26a2177e9a4d81909297ce593acc1be5","public_url":null,"request_id":"92de5ca9-c56a-4d0c-b98f-c22612ddeaaa"}
-
-
-DESCRIPTION: Create the 'Chihuahua — Temperament and Behavior' sub-page under the existing Chihuahua page and add a pirate-speak detailed description of the breed's temperament and behavior as the page content.
-
-CHAIN OF THOUGHT: We have already created the Chihuahua page and two sub-pages (History and Physical Characteristics) and appended the intro paragraph. The next required step per the plan is to create the third sub-page, 'Chihuahua — Temperament and Behavior', as a child of the Chihuahua page and populate it with pirate-speak content. Making an API-post-page call now is necessary and consistent with the plan to complete all three sub-pages and obtain the Temperament page ID for verification.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-81c9-b1e7-e8ade1a6962d'}, 'properties': {'title': [{'text': {'content': 'Chihuahua — Temperament and Behavior'}}]}, 'children': [{'paragraph': {'rich_text': [{'text': {'content': "Arrr! Chihuahuas be fierce little mates — bold, loyal, an' oft clingy t' their chosen human. They be bright an' quick o' wit but may show stubborn streaks an' a mighty yap when warnin' o' strangers. Early socializin' an' gentle, consistent trainin' keeps 'em from growin' into scallywags around children an' other beasts. Short walks, lively play, an' puzzle toys keep their minds sharp; they don't need grand voyages o' exercise but do crave daily fun an' companionship. Train with patience, praise, an' tasty booty fer good behavior. Mind their tiny bones an' delicate bodies — handle 'em gentle-like an' supervise small children. With proper socializin', confident leadership, an' regular mental stimulation, a Chihuahua will be a devoted, watchful companion fer many a voyage."}}]}, 'type': 'paragraph'}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-8154-b5c5-fdf16d783a8c","created_time":"2025-09-10T22:46:00.000Z","last_edited_time":"2025-09-10T22:46:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"26a2177e-9a4d-81c9-b1e7-e8ade1a6962d"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Chihuahua — Temperament and Behavior","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Chihuahua — Temperament and Behavior","href":null}]}},"url":"https://www.notion.so/Chihuahua-Temperament-and-Behavior-26a2177e9a4d8154b5c5fdf16d783a8c","public_url":null,"request_id":"61651ed0-2f0e-4266-9532-242a4ae20485"}
-
-
- >>> Chat history summary: - No source text provided — nothing to summarize.
-- No key facts, decisions, or critical information identified.
-- Awaiting input: provide text plus objectives and constraints for summarization.
+ >>> Chat history summary: - No input text provided; nothing to summarize.
+- No key facts, decisions, or critical information available.
+- Request user to supply the source text to summarize.
 
  >>> The inherited context from previous stages of the process is as follows: All outputs to notion should be in pirate speak, alright matey?
 
- >>> Your current goals are: Create an notion page for the following dog breed: chihuahua under the "Dog Breeds" page.
+ >>> Your current plan (if any) is: Below is a clear, step-by-step plan I will follow to achieve the task (summarize source text and post the result to Notion), given the current context and the Notion-related tools available. I note the important constraint: any content I put into Notion must be converted into pirate speak.
 
-        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
+If you want me to start executing this plan, please provide the missing inputs called out in Step 1.
 
-        1. History and Origin
-        2. Physical Characteristics and Appearance
-        3. Temperament and Behavior
+Plan
 
-        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
-        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
-        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
+1) Clarify scope & collect inputs (human step)
+   - Ask the user for:
+     - The source text (or upload / link). If very long, indicate it can be a file or chunked text.
+     - Desired summary length: short (1–2 bullets), medium (3–6 bullets / ~150–300 words), or long (~500+ words).
+     - Tone/format for the summary (e.g., bullet list, paragraph, TL;DR + details).
+     - Target in Notion: existing page_id (to append/replace) or parent page_id where to create a new page; or confirm no Notion posting required.
+     - Whether to overwrite existing content, append as new blocks, or create a new page.
+     - Any metadata: page title, tags, database properties, desired emoji/icon.
+     - Confirm pirate-speak requirement (I will default to applying pirate-speak to anything posted to Notion).
+   - If inputs are missing, I will pause and request them.
 
- >>> Your current plan (if any) is: Plan to create the "Chihuahua" Notion page and three sub-pages (with all content that will be sent to Notion written in pirate speak as required)
+2) Authenticate / identify workspace (automated checks)
+   - Call API-get-self to confirm the Notion integration identity and ensure we can act.
+     - Tool: API-get-self
+   - If needed, call API-get-user with provided user_id to fetch user info.
+     - Tool: API-get-user (only if user_id is required/available).
 
-Summary: 
-- Find the "Dog Breeds" page (or create it if missing). 
-- Create a parent page "Chihuahua" under "Dog Breeds". 
-- Add an intro paragraph to the Chihuahua page (pirate speak). 
-- Create 3 sub-pages under the Chihuahua page with specified titles and content (pirate speak). 
-- Verify creations and return page IDs/titles.
+3) Validate target Notion destination
+   - If user supplied a page_id:
+     - Call API-retrieve-a-page to check the page exists and inspect relevant properties.
+       - Tool: API-retrieve-a-page
+   - If user supplied a parent page_id (to create a new page):
+     - Optionally call API-retrieve-a-page for the parent to confirm existence.
+       - Tool: API-retrieve-a-page
+   - If user supplied a database_id and wants the summary as a page in that DB:
+     - Since posting pages into databases may require database-specific properties, confirm the database schema via API-retrieve-a-database.
+       - Tool: API-retrieve-a-database
+   - If any target is invalid or missing, prompt the user to supply a valid id or choose a different destination.
 
-Step-by-step plan (actions, API calls, payload hints, and error handling)
+4) Preprocess the source text
+   - If source text is short enough (within token limits), proceed; otherwise:
+     - Chunk the source into logical sections (e.g., by paragraph or heading).
+     - Summarize each chunk, then combine into a final summary (hierarchical/recursive summarization).
+   - Clean text (remove non-text artifacts, strip irrelevant boilerplate).
 
-1) Locate the "Dog Breeds" parent page
-- Action: Search for a page titled "Dog Breeds".
-- API call: API-post-search
-  - Payload: { "query": "Dog Breeds", "filter": { "property": "object", "value": "page" }, "page_size": 20 }
-- If found:
-  - Choose the correct page result and record DOG_BREEDS_PAGE_ID.
-  - If multiple results, prefer exact title match; if ambiguous, prompt user to confirm or pick the most recently edited.
-- If not found:
-  - Create the "Dog Breeds" page.
-  - API call: API-post-page
-    - Payload parent: specify a top-level parent (user provided page_id or workspace root). If no workspace root permitted, ask user for where to create.
-    - Properties.title: [{"text":{"content":"Dog Breeds"}}]
-  - Record DOG_BREEDS_PAGE_ID.
-- Error handling: If search fails due to permissions, surface the error and request valid page_id or permission.
+5) Produce summaries locally (non-Notion output)
+   - Generate:
+     - A short TL;DR
+     - A medium-length summary
+     - An expanded summary (if requested)
+   - Provide both plain-English summaries and a conversion-ready pirate-speak version for Notion.
+   - If requested, produce multiple formats: bullet list, paragraph, or headings + bullet points.
 
-2) Create the main "Chihuahua" page under "Dog Breeds"
-- Action: Create the child page titled "Chihuahua" with a small intro title property.
-- API call: API-post-page
-  - Payload:
-    - parent: { "page_id": DOG_BREEDS_PAGE_ID }
-    - properties: { "title": [ { "text": { "content": "Chihuahua" } } ] }
-    - (optional) icon: emoji object e.g., {"emoji":"🐶"} encoded per API requirements.
-- Record CHIHUAHUA_PAGE_ID from the response.
-- Error handling: If creation fails (permissions or invalid parent id), return error and ask for correct parent.
+6) Convert summary to pirate speak for posting to Notion
+   - Apply consistent pirate-speak conversion rules (e.g., "you" -> "ye", "my" -> "me", exclamations like "Arr!", nautical metaphors where appropriate).
+   - Ensure the converted pirate-speak remains readable and preserves meaning.
+   - Keep a plain-English backup copy (not posted to Notion unless requested).
 
-3) Add an intro paragraph to the Chihuahua page (pirate speak)
-- Content to add (pirate speak):
-  - "Arrr! The Chihuahua be a wee dog o' great spirit — tiny in size but bold in heart. This page be yer map to learn the breed o' Chihuahua: its past, how it looks, and the temper o' the beast, matey."
-- Action: Append child blocks to CHIHUAHUA_PAGE_ID
-- API call: API-patch-block-children
-  - block_id: CHIHUAHUA_PAGE_ID
-  - children: an array with one paragraph block containing the pirate-speak text
-    - Example child block structure: { "paragraph": { "rich_text": [ { "text": { "content": "<pirate text>" } } ] }, "type": "paragraph" }
-- Verify returned children or follow up with API-get-block-children to confirm.
+7) Build Notion block payload(s)
+   - Construct children blocks according to Notion API schema available:
+     - Use "paragraph" blocks with "rich_text" text objects for summary paragraphs.
+     - Use "bulleted_list_item" blocks for lists, if desired.
+   - For page creation:
+     - Prepare API-post-page payload with parent.page_id and properties.title set to the user-specified title (title in plain text, but children content in pirate speak).
+       - Tool: API-post-page
+     - If creating a page inside a database and database posting requires properties, include them per database schema discovered in step 3.
+   - For updating or appending to an existing page:
+     - If replacing the title or properties, use API-patch-page for page metadata.
+       - Tool: API-patch-page
+     - To add content blocks to an existing page, use API-patch-block-children with block_id = page_id and the constructed children array.
+       - Tool: API-patch-block-children
 
-4) Create 3 sub-pages under the Chihuahua page
-For each sub-page: create the page, then add children content (detailed content required). All content to Notion must be in pirate speak.
+8) Post to Notion (execute)
+   - If creating new page:
+     - Call API-post-page with parent.page_id, properties.title, and children (children will be pirate-speak).
+       - Tool: API-post-page
+   - If appending to existing page:
+     - Call API-patch-block-children with block_id set to that page_id and pass children blocks (pirate-speak).
+       - Tool: API-patch-block-children
+   - If editing page metadata (title/icon/cover):
+     - Call API-patch-page with page_id and the requested properties.
+       - Tool: API-patch-page
 
-A) History and Origin
-- Title requirement: include breed name and brief summary.
-- Title example: "Chihuahua — History and Origin"
-- Brief summary (pirate speak) example:
-  - "Arrr! The Chihuahua be a descendant o' ancient small dogs kept by peoples o' Mexico. Tales say it traces back t' the Techichi o' the Toltec and was later prized by Aztecs. The modern Chihuahua rose t' fame in Mexico and then across the seas by the 19th century, savvy?"
-- Steps:
-  1. API-post-page with parent: { "page_id": CHIHUAHUA_PAGE_ID }, properties.title: "Chihuahua — History and Origin".
-  2. Capture HISTORY_PAGE_ID.
-  3. API-patch-block-children on HISTORY_PAGE_ID to add the brief summary paragraph (pirate speak).
+9) Verify & retrieve posted content
+   - After posting, call API-retrieve-a-page and/or API-get-block-children to confirm the content exists and to fetch a snippet or link to return to the user.
+     - Tools: API-retrieve-a-page, API-get-block-children
+   - If verification fails, capture error and retry with exponential backoff or prompt the user for permission to retry.
 
-B) Physical Characteristics and Appearance
-- Title requirement: include breed name and detailed description.
-- Title example: "Chihuahua — Physical Characteristics & Appearance"
-- Detailed description (pirate speak) should cover:
-  - Size & weight (toy breed, tiny, typical weight range)
-  - Two coat types (smooth and long), coat colors and markings
-  - Head types (apple/head vs deer/head), ears, eyes, muzzle, tail
-  - Typical height, body, gait, lifespan note, and common physical health concerns (brief mention)
-- Example pirate-speak content (detailed):
-  - "Arrr! The Chihuahua be a tiny shipmate: standin' 'bout 6–9 inches at the shoulder and weighin' 2–6 pounds fer most landlubbers. Two coats ye may see — the smooth (short) coat that lies flat, and the long coat that's soft and feathered 'round the ears and tail. Colors be many: fawn, black, cream, chocolate, parti, merle, and mixes o' markings. Heads come in two fashions: the 'apple' dome head, round as a cannonball, and the 'deer' head, more tapered and graceful. Eyes be large an' round, full o' mischief; ears be erect an' alert. The tail be often carried up or curled o'er the back. Though small, they be nimble and quick in gait. Typical lifespan be 12–20 years; mind yer vet fer dental and patellar troubles, matey."
-- Steps:
-  1. API-post-page with parent CHIHUAHUA_PAGE_ID, properties.title as above.
-  2. Capture PHYSICAL_PAGE_ID.
-  3. API-patch-block-children on PHYSICAL_PAGE_ID adding multiple paragraph blocks or a single longer paragraph per the detail.
+10) Report back to the user
+   - Provide:
+     - A brief summary of actions taken (created/updated page id, title).
+     - The plain-English summary (for clarity) and the pirate-speak version that was posted.
+     - Any links or identifiers needed to find the Notion page.
+   - Offer to make edits or produce alternate summary lengths/styles.
+   - Ask whether to keep posting future summaries in pirate-speak or switch for some outputs.
 
-C) Temperament and Behavior
-- Title requirement: include breed name and detailed description.
-- Title example: "Chihuahua — Temperament & Behavior"
-- Detailed description (pirate speak) should cover:
-  - Personality: bold, confident, loyal, sometimes bossy
-  - Socialization needs, suitability as companion, relationship with children and other pets
-  - Training tips, barking tendencies, exercise needs, mental stimulation
-  - Warnings about fragility and proper handling
-- Example pirate-speak content:
-  - "Arrr! Chihuahuas be fierce little mates — bold, loyal, an' oft clingy t' their chosen human. They be smart but may be stubborn an' can talk (yap) t' warn ye o' strangers. Early socializin' keeps 'em from turnin' into scallywags around kids or other beasts. Short walks, play, an' mental puzzles keep their minds sharp. Train with patience and plunder treats for good behavior. Mind their tiny bones — handle gentle-like, and supervise small children. With proper socializin' and trainin', they be a faithful, watchful companion fer many a voyage."
-- Steps:
-  1. API-post-page with parent CHIHUAHUA_PAGE_ID, properties.title as above.
-  2. Capture TEMPERAMENT_PAGE_ID.
-  3. API-patch-block-children on TEMPERAMENT_PAGE_ID adding detailed paragraphs and optional bullet list tips.
+11) Error handling & edge cases
+   - If Notion returns permission, rate-limit, or schema errors, capture the message and present it to the user with suggested fixes (e.g., grant integration access to page, provide correct database properties).
+   - For very large inputs: use chunking and iterative summarization; if chunking required, inform the user of approximate time and steps.
+   - If the user requests posting into a database but the API schema provided lacks database_id parent in API-post-page, ask for clarification or permission to create a child page under the given page instead.
 
-5) Verify pages and content
-- For each created page (CHIHUAHUA_PAGE_ID, HISTORY_PAGE_ID, PHYSICAL_PAGE_ID, TEMPERAMENT_PAGE_ID):
-  - Call API-retrieve-a-page to confirm existence and basic properties (title).
-  - Call API-get-block-children for each page to confirm children blocks contain the pirate-speak content.
-- Return a summary with page titles and their page IDs (so the user can open them).
+12) Iteration & automation options (optional next steps)
+   - Offer to:
+     - Automate periodic summaries of a page or database (would require scheduling).
+     - Store user preferences (default pirate-speak, default summary length).
+     - Add comments instead of page content (use API-create-a-comment) if user prefers comments on a page.
 
-6) Error handling and retries
-- If any API call fails due to rate limit or transient error: retry up to 2 times with exponential backoff.
-- If permission errors occur: surface the error and ask the user to provide a page_id for "Dog Breeds" or grant the necessary permissions.
-- If content is too long for a single block: split into multiple paragraph blocks via API-patch-block-children.
+Notes / Assumptions
+   - All content posted to Notion will be converted to pirate speak, per inherited context.
+   - I will not post anything until you supply the source text and confirm target Notion destination and posting preferences.
+   - Tools I will use include: API-get-self, API-retrieve-a-page, API-retrieve-a-database, API-post-page, API-patch-page, API-patch-block-children, API-get-block-children, and others as needed per above steps.
 
-7) Post-creation checks & polish
-- Optionally set page icons and covers (emoji or image URL) using API-patch-page with icon or cover fields.
-- Optionally add properties/tags to the Chihuahua page (e.g., Size: Toy, Lifespan, Temperament) if the "Dog Breeds" page uses a database schema. If "Dog Breeds" is a database rather than a page, adapt: create a new database item row instead of a page — confirm structure first by retrieving the "Dog Breeds" object type (database vs page) using API-post-search or API-retrieve-a-database.
-- Ask user whether they'd like the pages to include images or references/links; if yes, request the image URLs or sources.
+If you want me to begin now, please provide:
+   - The source text (or file/link)
+   - Target Notion page_id or parent page_id or database_id and whether to append or create
+   - Desired summary length/format
+   - Page title to use (or say “auto-generate”)
+   - Any other preferences
 
-8) Output to user / final deliverable
-- Provide the user with:
-  - Confirmation that pages were created (or will be created) and the IDs/links.
-  - The pirate-speak content used for each page (so they can review).
-  - Any follow-up actions needed (e.g., permission, parent page id).
-
-Notes / important constraints
-- All content sent to Notion (page content/children) will be in pirate speak per inherited context.
-- If "Dog Breeds" is actually a Notion database rather than a regular page, creation workflow differs — we must create a new database entry (API-post-page with parent.database_id or API-post-database?); confirm object type first.
-- For creating page children (content), use API-patch-block-children for reliable block structure.
-- Keep each paragraph block under typical Notion limits (if needed, break into multiple paragraph blocks).
-
-If you want, I can now:
-- (A) Execute the above plan (I will search for "Dog Breeds" and create the pages and content), or
-- (B) Produce the exact JSON payloads for each API call (including the pirate-speak text) so you can run them, or
-- (C) Ask for the Dog Breeds page_id and permission details so I skip the search step and create pages directly.
-
-Which next step do ye want me to take, matey?
+Arrr — once ye give me those inputs, I'll start the steps and post the pirate-speak summary to yer Notion page, matey!
 
  >>> Your current service names are: Available Service Name: notion
 

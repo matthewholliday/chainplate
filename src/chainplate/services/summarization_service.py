@@ -1,6 +1,6 @@
 from .external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
 
-SUMMARIZATION_SYSTEM = "You are an expert AI assistant specializing in text summarization for AI agents."
+SUMMARIZATION_SYSTEM = "You are an expert AI assistant specializing in text summarization."
 
 SUMMARIZATION_PROMPT = """
 Instruction:
@@ -9,15 +9,15 @@ You are an AI summarization assistant. Your task is to distill the following tex
 
 Guidelines:
 
-Length: Limit the summary to 3–5 bullet points, each no more than 20 words.
-
 Content: Focus on key facts, decisions, and critical information.
 
 Clarity: Use clear and unambiguous language.
 
-Relevance: Include only information pertinent to the AI agent's tasks and objectives.
+Objectivity: Only be descriptive; do not include any analysis, opinions, or suggestions.
 
 Format: Present the summary as a bullet-point list.
+
+Do not include what is ABSENT from the text. If the text is empty or lacks substantive content, respond with "No content to summarize."
 
 Text to Summarize:
 """
