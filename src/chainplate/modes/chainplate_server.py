@@ -2,10 +2,11 @@ from json import JSONDecodeError
 from .chainplate_workflow import ChainplateWorkflow
 from ..message import Message
 from flask import jsonify, request, Flask
-from ..services.data.database.rdb_service import RDBService
+from ..services.data.data_service import DataService
 from ..services.ux.rdb_ux_service import RelationalDatabaseUXService
 from .chainplate_chat_session import ChainplateChatSession
 import asyncio
+import os
 # import jsonify, request
 
 import logging
@@ -16,172 +17,112 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("[CHAINPLATE SERVER]")
-    
 
 app = Flask(__name__)
 
+# NEW: initialize DataService (file or memory)
+_DB_PATH = os.getenv("CHAINPLATE_DB", "chainplate.db")
+data_service = DataService(_DB_PATH)
+
 @app.route('/')
 def hello():
-	return 'Hello, World!' # TODO - remove testing endpoint
+    return 'Hello, World!' # TODO - remove testing endpoint
 
 @app.route('/workflow', methods=['POST'])
 def workflow():
-	# Example: get JSON from request and run workflow
-	try:
-		data = request.get_json()
-		code = data.get('chainplate_code', '<pipeline name="no code provided"><debug>No code was provided to server.</debug></pipeline>')
-		payload = data.get('payload', '')
-		message = Message()
-		message.set_payload(payload)
-		message = ChainplateWorkflow(code, mode="workflow").run(message)
-		result = {  
-			'payload': message.get_payload(),
-			'logs': message.get_logs(),
-			'vars': message.get_vars()
-		}
-		return jsonify(result), 200
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
+    # Example: get JSON from request and run workflow
+    try:
+        data = request.get_json()
+        code = data.get('chainplate_code', '<pipeline name="no code provided"><debug>No code was provided to server.</debug></pipeline>')
+        payload = data.get('payload', '')
+        message = Message()
+        message.set_payload(payload)
+        message = ChainplateWorkflow(code, mode="workflow").run(message)
+        result = {  
+            'payload': message.get_payload(),
+            'logs': message.get_logs(),
+            'vars': message.get_vars()
+        }
+        return jsonify(result), 200
+    except JSONDecodeError:
+        return jsonify({'error': 'Invalid JSON'}), 400
+    except Exception as e:
+        logger.exception("Workflow error")
+        return jsonify({'error': str(e)}), 500
 
-async def run_chat_session(xml_body, ux_service):
-	await asyncio.sleep(5)
-	logger.info("Received ping request!") 
-	#ChainplateChatSession(xml_body).run_interactive(ux_service)
+# ---------------- DataService REST Endpoints ----------------
 
-# create a new conversation
-@app.route('/conversation', methods=['POST'])
-def post_conversation():
-	logger.info("Received ping request!") 
-	try:
-		if request.method == 'POST':
-			# get body of request (should be xml)
-			xml_body = request.data.decode('utf-8')
-			if not xml_body:
-				return jsonify({'error': 'Request body (XML) is required'}), 400
+@app.route('/data/logs', methods=['POST'])
+def create_log():
+    try:
+        data = request.get_json()
+        level = (data.get('level') or 'INFO').upper()
+        message = data.get('message')
+        if not message:
+            return jsonify({'error': 'message required'}), 400
+        if level not in ('INFO','WARNING','ERROR'):
+            return jsonify({'error': 'invalid level'}), 400
+        log_id = data_service.insert_log(level, message)
+        return jsonify({'id': log_id, 'level': level, 'message': message}), 201
+    except JSONDecodeError:
+        return jsonify({'error': 'Invalid JSON'}), 400
+    except Exception as e:
+        logger.exception("create_log failed")
+        return jsonify({'error': str(e)}), 500
 
-			database = RDBService()
+@app.route('/data/executions', methods=['POST'])
+def create_execution():
+    try:
+        data = request.get_json()
+        code = data.get('code')
+        if not code:
+            return jsonify({'error': 'code required'}), 400
+        exec_id = data_service.create_execution(code)
+        return jsonify({'execution_id': exec_id}), 201
+    except JSONDecodeError:
+        return jsonify({'error': 'Invalid JSON'}), 400
+    except Exception as e:
+        logger.exception("create_execution failed")
+        return jsonify({'error': str(e)}), 500
 
-			# create a new conversation
-			conversation_id = database.create_conversation()
+@app.route('/data/executions/<int:execution_id>/steps', methods=['POST'])
+def add_execution_step(execution_id: int):
+    try:
+        data = request.get_json()
+        content = data.get('content')
+        role = data.get('role')
+        channel = data.get('channel')
+        requires_input = data.get('requires_input', False)
+        # Normalize types
+        if isinstance(channel, str) and channel.isdigit():
+            channel = int(channel)
+        requires_input = bool(requires_input in (True, 1, '1', 'true', 'True'))
+        step_id = data_service.add_execution_step(
+            execution_id,
+            content=content,
+            role=role,
+            channel=channel,
+            requires_input=requires_input
+        )
+        return jsonify({'step_id': step_id}), 201
+    except JSONDecodeError:
+        return jsonify({'error': 'Invalid JSON'}), 400
+    except KeyError as ke:
+        return jsonify({'error': str(ke)}), 404
+    except Exception as e:
+        logger.exception("add_execution_step failed")
+        return jsonify({'error': str(e)}), 500
 
-			# initialize a ux service for this conversation
-			ux_service = RelationalDatabaseUXService(conversation_id)
-
-			# run the chat session (async)
-			run_chat_session(xml_body, ux_service)
-
-			result = {'conversation_id': conversation_id}
-			return jsonify(result), 201
-		else:
-			return jsonify({'error': 'Invalid request method'}), 405
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
-
-# get a specific conversation by id
-@app.route('/conversation/<conversation_id>', methods=['GET'])
-def get_conversation(conversation_id):
-	try:
-		if request.method == 'GET':
-			database = RDBService()
-			messages = database.get_messages(conversation_id)
-			if messages is None:
-				return jsonify({'error': 'Conversation not found'}), 404
-			result = {'conversation_id': conversation_id, 'messages': []}
-			for msg in messages:
-				result['messages'].append({
-					'id': msg[0],
-					'content': msg[1],
-					'order': msg[2],
-					'created_at': msg[3]
-				})
-			return jsonify(result), 200
-		else:
-			return jsonify({'error': 'Invalid request method'}), 405
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
-
-# create a message in a specific conversation
-@app.route('/conversation/<conversation_id>/message', methods=['POST'])
-def post_message(conversation_id):
-	try:
-		if request.method == 'POST':
-			data = request.get_json()
-			role = data.get('role', 'user')
-			content = data.get('content', '')
-			if not content:
-				return jsonify({'error': 'Message content is required'}), 400
-			database = RDBService()
-			message_id = database.create_message(conversation_id, role, content)
-			result = {'message_id': message_id}
-			return jsonify(result), 201
-		else:
-			return jsonify({'error': 'Invalid request method'}), 405
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
-
-# delete a specific conversation by id
-@app.route('/conversation/<conversation_id>', methods=['DELETE'])
-def delete_conversation(conversation_id):
-	try:
-		if request.method == 'DELETE':
-			database = RDBService()
-			database.delete_conversation(conversation_id)
-			return jsonify({'message': 'Conversation deleted'}), 200
-		else:
-			return jsonify({'error': 'Invalid request method'}), 405
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
-
-# purge all conversations
-@app.route('/conversations/purge', methods=['POST'])
-def purge_conversations():
-	try:
-		if request.method == 'POST':
-			database = RDBService()
-			database.purge_conversations()
-			return jsonify({'message': 'All conversations purged'}), 200
-		else:
-			return jsonify({'error': 'Invalid request method'}), 405
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
-
-# get all messages in a specific conversation
-@app.route('/conversation/<conversation_id>/messages', methods=['GET'])
-def get_messages(conversation_id):
-	try:
-		if request.method == 'GET':
-			database = RDBService()
-			messages = database.get_messages(conversation_id)
-			if messages is None:
-				return jsonify({'error': 'Conversation not found'}), 404
-			result = {'conversation_id': conversation_id, 'messages': []}
-			for msg in messages:
-				result['messages'].append({
-					'id': msg[0],
-					'content': msg[1],
-					'order': msg[2],
-					'created_at': msg[3]
-				})
-			return jsonify(result), 200
-		else:
-			return jsonify({'error': 'Invalid request method'}), 405
-	except JSONDecodeError:
-		return jsonify({'error': 'Invalid JSON'}), 400
-	except Exception as e:
-		return jsonify({'error': str(e)}), 500
-	
+@app.route('/data/executions/<int:execution_id>', methods=['GET'])
+def get_execution(execution_id: int):
+    try:
+        execution, steps = data_service.get_execution_with_steps(execution_id)
+        return jsonify({'execution': execution, 'steps': steps}), 200
+    except KeyError as ke:
+        return jsonify({'error': str(ke)}), 404
+    except Exception as e:
+        logger.exception("get_execution failed")
+        return jsonify({'error': str(e)}), 500
 
 def run_server(port: int = 5000):
-	app.run(host='0.0.0.0', port=port) #TODO - move to config file or environment variable for flexibility
+    app.run(host='0.0.0.0', port=port) #TODO - move to config file or environment variable for flexibility
