@@ -5,42 +5,7 @@ from ..services.external.prompt_completion_services.openai_llm_provider import O
 from .base_element import BaseElement
 from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
 from ..services.data.data_service import DataService
-
-def concatenate_content(records) -> str:
-    texts = [record["content"] for record in records if record["content"]]
-    return "\n".join(texts)
-
-def get_working_memory(data_service: DataService=DataService(),execution_id: int=None) -> str:
-    entries = data_service.get_agent_memory(execution_id)
-    return concatenate_content(entries)
-
-def get_goals(data_service: DataService=DataService(), execution_id: int=None) -> str:
-    entries = data_service.get_agent_goal(execution_id)
-    return concatenate_content(entries)
-
-def get_plan(data_service: DataService=DataService(), execution_id: int=None) -> str:
-    entries = data_service.get_agent_plan(execution_id)
-    return concatenate_content(entries)
-
-def get_services(message: Message) -> str:
-    service_names = list(message.mcp_services.keys())
-    return ", ".join(service_names)
-
-def get_tools(message: Message) -> str:
-    tool_descriptions = []
-    for service in message.mcp_services.values():
-        for tool in service.get_tools():
-            tool_descriptions.append(f"{tool['name']}: {tool['description']}")
-    return "\n".join(tool_descriptions)
-
-def save_goals(data_service: DataService=DataService(), execution_id: int=None, goals: str="") -> None:
-    data_service.upsert_agent_goal_content(execution_id, goals)
-
-def save_plan(data_service: DataService=DataService(), execution_id: int=None, plan: str="") -> None:
-    data_service.upsert_agent_plan_content(execution_id, plan)
-
-def print_agent_output(data_service: DataService=DataService(), text: str="") -> None:
-    data_service.
+from ..agent.agent_data import AgentData
 
 class AgentElement(BaseElement):
     def __init__(self, name="Unnamed Agent", goals="default_goal_var", output_var="__payload__", max_iterations=1, ux_service=CliIService()):
