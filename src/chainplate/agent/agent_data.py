@@ -60,3 +60,7 @@ class AgentData:
     @staticmethod
     def save_plan(data_service: DataService, execution_id: Optional[int] = None, plan: str = "") -> None:
         data_service.upsert_agent_plan_content(execution_id, plan)
+
+    @staticmethod
+    def add_memory(data_service: DataService, execution_id: Optional[int] = None, entry: str = "") -> None:
+        data_service.add_agent_memory(execution_id, entry)

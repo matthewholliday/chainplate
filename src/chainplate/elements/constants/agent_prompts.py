@@ -1,4 +1,4 @@
-ACTION_PLAN_SELCTION_PROMPT = """
+ACTION_PLAN_SELECTION_PROMPT = """
 Provide a valid output based on the context already provided to you.
 
 There are four valid JSON structures that you can output depending on the appropriate course of action for the NEXT step in the plan. Please ensure that your output strictly adheres to one of the following structures:
