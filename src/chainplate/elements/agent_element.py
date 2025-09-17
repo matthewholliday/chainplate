@@ -6,9 +6,10 @@ from .base_element import BaseElement
 from .constants.agent_prompts import ACTION_PLAN_SELCTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
 from ..services.data.data_service import DataService
 from ..agent.agent_data import AgentData
+from ..agent.agent_environment import AgentEnvironment
 
 class AgentElement(BaseElement):
-    def __init__(self, name="Unnamed Agent", goals="default_goal_var", output_var="__payload__", max_iterations=1, ux_service=CliIService()):
+    def __init__(self,name="Unnamed Agent", goals="default_goal_var", output_var="__payload__", max_iterations=1, ux_service=CliIService(),execution_id=""):
         super().__init__()
 
         self.next_action_text = "No action has been determined yet."
@@ -32,6 +33,10 @@ class AgentElement(BaseElement):
 
         self.inherited_context = ""
 
+        self.agent_data = AgentData()
+        self.agent_environment = AgentEnvironment()
+        self.execution_id = execution_id
+
     def enter(self, execution_id: str,  message: Message) -> Message:
         self.inherited_context = message.read_context()
         self.execution_id = execution_id
@@ -40,7 +45,7 @@ class AgentElement(BaseElement):
 
         goals_value = message.get_var(self.goals_var_name)
         if(goals_value):
-            save_goals(self.data_service, self.execution_id, goals_value)
+            self.agent_data.save_goals(self.data_service, self.execution_id, goals_value)
 
         message = self.run_agent(message)
         return message
@@ -86,7 +91,7 @@ class AgentElement(BaseElement):
     def generate_plan(self, message: Message) -> str:
         self.print_agent_output(f"Generating a new plan...")
         plan = self.send_llm_request(message=message,prompt="Generate a step-by-step plan to achive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
-        self.data_service.save_plan(plan)
+        self.agent_data.save_plan(plan)
     
     def send_llm_request(self, prompt: str, message: Message) -> str:
         context_string = self.create_context_string(message)
@@ -95,11 +100,11 @@ class AgentElement(BaseElement):
         return response
     
     def create_context_string(self, message: Message) -> str:
-        working_memory = get_working_memory(self.execution_id)
-        current_goals = get_goals.get_goals(self.execution_id)
-        current_plan = get_plan(self.execution_id)
-        services = self.data_service.get_services(message)
-        tools = self.data_service.get_tools(message)
+        working_memory = self.agent_data.get_working_memory(self.execution_id)
+        current_goals = self.agent_data.get_goals(self.execution_id)
+        current_plan = self.agent_data.get_plan(self.execution_id)
+        services = self.agent_data.get_services(message)
+        tools = self.agent_data.get_tools(message)
         
         if(message.is_debug_mode()):
             if(not self.inherited_context):
@@ -122,11 +127,11 @@ class AgentElement(BaseElement):
 
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
-            f"Log of what has been done so far: {self.data_service.get_working_memory()}\n",
-            f" >>> Chat history summary: {self.data_service.get_chat_history_summary(message)}\n",
+            f"Log of what has been done so far: {self.agent_data.get_working_memory(self.execution_id)}\n",
+            f" >>> Chat history summary: {self.agent_data.get_chat_history_summary(message)}\n",
             f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n",
             # f" >>> Your current goals are: {self.data_service.get_goals()}\n",
-            f" >>> Your current plan (if any) is: {self.data_service.get_plan()}\n",
+            f" >>> Your current plan (if any) is: {self.agent_data.get_plan()}\n",
             f" >>> Your current service names are: {self.data_service.get_services(message)}\n",
             f" >>> Your available tools and their descriptions are as follows: {self.data_service.get_tools(message)}\n",
             "Based on the above information, please with your instructions(see below):\n"

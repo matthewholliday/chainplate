@@ -28,7 +28,7 @@ class TestAgentData(unittest.TestCase):
             {"content": ""},
             {"content": "step 2"},
         ]
-
+        # default instance without execution id; individual tests may set one
         self.agent_data = AgentData()
 
     def test_concatenate_content_filters_and_joins(self):
@@ -45,24 +45,22 @@ class TestAgentData(unittest.TestCase):
         self.assertEqual(AgentData.concatenate_content([]), "")
 
     def test_get_working_memory(self):
-        result = self.agent_data.get_working_memory(execution_id=42)
+        self.agent_data.set_execution_id(42)
+        result = self.agent_data.get_working_memory()
         self.mock_data_service.get_agent_memory.assert_called_once_with(42)
         self.assertEqual(result, "memory line 1\nmemory line 2")
 
     def test_get_goals(self):
-        result = self.agent_data.get_goals(execution_id=7)
+        self.agent_data.set_execution_id(7)
+        result = self.agent_data.get_goals()
         self.mock_data_service.get_agent_goal.assert_called_once_with(7)
         self.assertEqual(result, "goal 1\ngoal 2")
 
     def test_get_plan(self):
-        result = self.agent_data.get_plan(execution_id=9)
+        self.agent_data.set_execution_id(9)
+        result = self.agent_data.get_plan()
         self.mock_data_service.get_agent_plan.assert_called_once_with(9)
         self.assertEqual(result, "step 1\nstep 2")
-
-    def test_get_services(self):
-        message = SimpleNamespace(mcp_services={"svc1": object(), "svc2": object()})
-        result = self.agent_data.get_services(message)
-        self.assertEqual(result, "svc1, svc2")
 
     def test_get_services(self):
         message = SimpleNamespace(mcp_services={"svc1": object(), "svc2": object()})
