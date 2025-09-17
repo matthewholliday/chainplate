@@ -3,9 +3,6 @@ from .chainplate_workflow import ChainplateWorkflow
 from ..message import Message
 from flask import jsonify, request, Flask
 from ..services.data.data_service import DataService
-from ..services.ux.rdb_ux_service import RelationalDatabaseUXService
-from .chainplate_chat_session import ChainplateChatSession
-import asyncio
 import os
 # import jsonify, request
 
@@ -32,9 +29,8 @@ def hello():
 def workflow():
     # Example: get JSON from request and run workflow
     try:
-        data = request.get_json()
-        code = data.get('chainplate_code', '<pipeline name="no code provided"><debug>No code was provided to server.</debug></pipeline>')
-        payload = data.get('payload', '')
+        code = request.get_data(as_text=True)
+        payload = request.headers.get('X-Payload')
         message = Message()
         message.set_payload(payload)
         message = ChainplateWorkflow(code, mode="workflow").run(message)
@@ -49,6 +45,8 @@ def workflow():
     except Exception as e:
         logger.exception("Workflow error")
         return jsonify({'error': str(e)}), 500
+
+@app.route('/chat', methods=['POST'])
 
 # ---------------- DataService REST Endpoints ----------------
 

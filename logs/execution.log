@@ -1,16 +1,16 @@
-[2025-09-11 10:52:54]
-Entering: PipelineElement(name=simple chat)
+[2025-09-17 16:33:34]
+Entering: PipelineElement(name=for loop testing)
 ===============END LOG ENTRY================
 
-[2025-09-11 10:52:54]
-Entering: SendPromptElement(output_var=__payload__, content={{ __payload__ }})
+[2025-09-17 16:33:34]
+Entering: SetPayloadElement(input_var=, content=xyz)
 ===============END LOG ENTRY================
 
-[2025-09-11 10:53:11]
-Exiting: SendPromptElement(output_var=__payload__, content=What kinds of things can you do for me?)
+[2025-09-17 16:33:34]
+Exiting: SetPayloadElement(input_var=, content=xyz)
 ===============END LOG ENTRY================
 
-[2025-09-11 10:53:11]
-Exiting: PipelineElement(name=simple chat)
+[2025-09-17 16:33:34]
+Exiting: PipelineElement(name=for loop testing)
 ===============END LOG ENTRY================
 

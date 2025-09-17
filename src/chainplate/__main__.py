@@ -7,8 +7,6 @@ from .modes.chainplate_chat_session import ChainplateChatSession
 from .modes.chainplate_server import run_server
 from .core import AIXMLCore  # your library function
 from .message import Message
-from .services.ux.rdb_ux_service import RelationalDatabaseUXService
-from .services.data.database.rdb_service import RDBService
 
 # TODO: Move most of this out of the __main__ file and into core.py or similar.
 
