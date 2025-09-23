@@ -108,10 +108,10 @@ docker build -t chainplate:latest .
 
 ## ⚡ Usage
 
-Once installed, you can run workflows defined in XML files. For example, the repository includes a **Hello World** workflow:
+Once installed, you can run the chainplate agent server
 
 ```bash
-chainplate --workflow examples/hello-world.xml
+chainplate --agent
 ```
 
 ### Optional: Run the Development Server with CORS
