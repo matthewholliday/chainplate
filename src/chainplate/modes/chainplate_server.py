@@ -117,17 +117,6 @@ except Exception as e:  # pragma: no cover - defensive
 
 data_service = DataService(_DB_PATH)
 
-def do_work(payload="default"):
-	for i in range(25):
-		logger.info(f"Background work iteration {i+1}/5 with payload {payload}")
-		sleep(10)  # Simulate work by sleeping
-    
-@app.route('/do-async-work', methods=['POST'])
-def hello():
-    executor = ThreadPoolExecutor(max_workers=1)
-    executor.submit(do_work, "custom-payload")
-    return jsonify({'status': 'Work started'}), 202
-
 def run_workflow(execution_id: str, code: str, payload: str, my_logger=None):
     # Local import to avoid importing heavy dependencies (e.g., OpenAI) unless needed
     from .chainplate_workflow import ChainplateWorkflow  # type: ignore
