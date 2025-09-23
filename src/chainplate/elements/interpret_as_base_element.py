@@ -4,11 +4,14 @@ from abc import abstractmethod
 
 from ..helpers.template_helper import TemplateHelper
 from ..helpers.prompt_helper import ask_llm
+from ..execution_context import ExecutionContext
 
 class InterpretAsBase(BaseElement):
-    def __init__(self, output_var, input_var):
+    def __init__(self, output_var, input_var, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.output_var = "unnamed" if output_var is None else output_var
         self.input_var = "unnamed" if input_var is None else input_var
+        self.context = context
 
     def enter(self , message: Message) -> Message:
 

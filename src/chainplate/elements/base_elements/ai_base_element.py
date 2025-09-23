@@ -2,12 +2,15 @@ from ...message import Message
 from ...helpers.template_helper import TemplateHelper
 from abc import abstractmethod
 from ..base_element import BaseElement
+from ...execution_context import ExecutionContext
 
 class AiBaseElement(BaseElement):
-    def __init__(self, output_var, content):
+    def __init__(self, output_var, content, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.output_var = "unnamed" if output_var is None else output_var
         self.content = content
         self.original_content = content
+        self.context = context
 
     @abstractmethod
     def enter(self , message: Message) -> Message:

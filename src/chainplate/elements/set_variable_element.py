@@ -1,13 +1,15 @@
 from ..message import Message
 from .base_element import BaseElement
 from ..helpers.template_helper import TemplateHelper
+from ..execution_context import ExecutionContext
 
 class SetVariableElement(BaseElement):
-    def __init__(self, output_var, content):
-
+    def __init__(self, output_var, content, context: ExecutionContext = None):
+        super().__init__(context=context)
         #TODO: come up with better defaults...
         self.output_var = "unnamed" if output_var is None else output_var
         self.content = content
+        self.context = context
 
     def enter(self , message: Message) -> Message:
         content = TemplateHelper.safe_render_template(template_str=self.content, template_context=message.vars)

@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper2
+from ..execution_context import ExecutionContext
 
 class BaseElement(ABC):
     """Abstract base class for all elements in the XML interpreter."""
+
+    def __init__(self, context: ExecutionContext | None = None):
+        self.context = context
 
     @abstractmethod
     def enter(self, message: "Message") -> "Message":

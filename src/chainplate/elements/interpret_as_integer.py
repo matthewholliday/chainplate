@@ -1,6 +1,7 @@
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper
 from .interpret_as_base_element import InterpretAsBase
+from ..execution_context import ExecutionContext
 
 TEMPLATE_TEXT = """
 You are a precise integer interpreter. Convert the given input into a single integer using the best available information.
@@ -25,8 +26,9 @@ Now output exactly the integer and nothing else.
 """
 
 class InterpretAsIntegerElement(InterpretAsBase):
-    def __init__(self, output_var, input_var):
-        super().__init__(output_var, input_var)
+    def __init__(self, output_var, input_var, context: ExecutionContext = None):
+        super().__init__(output_var, input_var, context=context)
+        self.context = context
 
     def get_prompt_template(self):
         return TEMPLATE_TEXT

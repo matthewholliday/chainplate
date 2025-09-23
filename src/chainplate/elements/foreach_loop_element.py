@@ -1,15 +1,18 @@
 from .base_element import BaseElement
 from ..message import Message
 from ..helpers.list_helper import ListHelper
+from ..execution_context import ExecutionContext
 
 class ForEachLoopElement(BaseElement):
     """Element for handling foreach loops in the XML interpreter."""
-    def __init__(self, output_var: str, input_var: str):
+    def __init__(self, output_var: str, input_var: str, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.is_repeating = True
         self.output_var = output_var
         self.input_var = input_var
         self.collection = []
         self.index = 0
+        self.context = context
 
     def enter(self, message: Message) -> Message:
         """Initialize the loop by retrieving the collection from the input variable."""

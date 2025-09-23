@@ -1,13 +1,16 @@
 from .base_element import BaseElement
 from ..message import Message
 from ..services.memory_service import MemoryService
+from ..execution_context import ExecutionContext
 
 class StoreMemory(BaseElement):
     PREFIX = "Here is a more recent memory that has been stored in the system. Please use this information to inform your responses and actions: "
 
-    def __init__(self, input_var: str, content: str):
+    def __init__(self, input_var: str, content: str, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.input_var = input_var
         self.content = content
+        self.context = context
 
     def enter(self,message: Message) -> Message:
         value = self.PREFIX + self.get_value(message)

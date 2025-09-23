@@ -1,9 +1,12 @@
 from ..message import Message
 from .base_element import BaseElement
+from ..execution_context import ExecutionContext
 
 class ContextElement(BaseElement):
-    def __init__(self, content: str):
+    def __init__(self, content: str, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.content = content
+        self.context = context
 
     def enter(self, message:Message) -> Message:
 

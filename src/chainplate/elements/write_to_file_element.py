@@ -3,11 +3,14 @@
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper
 from .base_element import BaseElement
+from ..execution_context import ExecutionContext
 
 class WriteToFileElement(BaseElement):
-	def __init__(self, filename, content):
+	def __init__(self, filename, content, context: ExecutionContext = None):
+		super().__init__(context=context)
 		self.filename = filename or "output.txt"
 		self.content = content
+		self.context = context
 
 	def enter(self, message: Message) -> Message:
 		# Render content with template variables from message

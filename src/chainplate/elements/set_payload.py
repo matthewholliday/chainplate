@@ -1,10 +1,13 @@
 from .base_element import BaseElement
 from ..message import Message
+from ..execution_context import ExecutionContext
 
 class SetPayloadElement(BaseElement):
-    def __init__(self, input_var: str = "", content: str = ""):
+    def __init__(self, input_var: str = "", content: str = "", context: ExecutionContext = None):
+        super().__init__(context=context)
         self.input_var = input_var
         self.content = content
+        self.context = context
 
     def enter(self, message: Message) -> Message:
         value = self.get_input_value(message, self.input_var, self.content)

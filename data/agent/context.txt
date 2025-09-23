@@ -2,196 +2,128 @@ Consider the following when carrying out your tasks:
 
 Log of what has been done so far: 
 
-DESCRIPTION: Search the Notion workspace for a page titled 'Dog Breeds' to obtain the parent page_id needed to create the Poodle page and its sub-pages.
-
-CHAIN OF THOUGHT: To create the Poodle page and its subpages under the existing 'Dog Breeds' parent, I must first locate that parent page in the workspace. The plan's step 3 directs searching for a page titled 'Dog Breeds'. Calling the Notion search API now will either return the existing parent page_id (so I can proceed to create the Poodle page) or indicate that no such page exists (so I can prompt the user). This tool call is the necessary next action to continue the automated plan without asking the user for a parent page_id yet.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-search'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'query': 'Dog Breeds', 'filter': {'property': 'object', 'value': 'page'}, 'page_size': 100}
-
-  RESPONSE: 
-{"object":"list","results":[{"object":"page","id":"2692177e-9a4d-800c-8a4b-e28721e5cbd1","created_time":"2025-09-09T23:39:00.000Z","last_edited_time":"2025-09-10T04:14:00.000Z","created_by":{"object":"user","id":"8ea7052e-3ef3-4fc7-ad81-01eb53ba773c"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":null,"parent":{"type":"page_id","page_id":"2652177e-9a4d-8045-a0c9-f6f58a3b73ff"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Dog Breeds","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Dog Breeds","href":null}]}},"url":"https://www.notion.so/Dog-Breeds-2692177e9a4d800c8a4be28721e5cbd1","public_url":null}],"next_cursor":null,"has_more":false,"type":"page_or_database","page_or_database":{},"request_id":"42d73e2e-51c7-463d-8312-b5a949d0e019"}
-
-
-DESCRIPTION: Create the main 'Poodle' Notion page under the identified 'Dog Breeds' parent page (id 2692177e-9a4d-800c-8a4b-e28721e5cbd1). The page will include a pirate-speak opening paragraph and an emoji icon.
-
-CHAIN OF THOUGHT: The search tool already returned a matching page titled 'Dog Breeds' with id 2692177e-9a4d-800c-8a4b-e28721e5cbd1, so the next step per the plan is to create the main 'Poodle' page as a child of that parent. Calling API-post-page now will create the Poodle page, return its page_id, and let me proceed to create the three sub-pages under it without asking the user for more info.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '2692177e-9a4d-800c-8a4b-e28721e5cbd1'}, 'properties': {'title': [{'text': {'content': 'Poodle'}}]}, 'icon': '{"emoji":"🐩"}', 'children': [{'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! The Poodle be a clever an' elegant sea-dog o' the land, spry an' proud, famed fer its curly coat, sharp wits, an' loyal companionship fer sailors an' landlubbers alike."}}]}}]}
-
-  RESPONSE: 
-{"status":400,"object":"error","code":"validation_error","message":"body failed validation: body.icon should be an object, `null`, or `undefined`, instead was `\"{\\\"emoji\\\":\\\"🐩\\\"}\"`.","request_id":"fe7e7dd8-5ba0-4af0-9e23-64a1047f9116"}
-
-
-DESCRIPTION: Create the main 'Poodle' Notion page as a child of 'Dog Breeds', using a proper icon object and a pirate-speak opening paragraph.
-
-CHAIN OF THOUGHT: The search already located the 'Dog Breeds' page (page_id 2692177e-9a4d-800c-8a4b-e28721e5cbd1). The previous attempt to create the 'Poodle' page failed due to the icon being passed as a JSON string rather than an object. To continue the plan and create the Poodle page (so I can then create the three sub-pages), I should retry the API-post-page call with the icon provided as an object and include the pirate-speak opening paragraph. This tool call is the direct next step per the plan.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '2692177e-9a4d-800c-8a4b-e28721e5cbd1'}, 'properties': {'title': [{'text': {'content': 'Poodle'}}]}, 'icon': {'emoji': '🐩'}, 'children': [{'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! The Poodle be a clever an' elegant sea-dog o' the land, spry an' proud, famed fer its curly coat, sharp wits, an' loyal companionship fer sailors an' landlubbers alike."}}]}}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-815c-9e2d-d7ac584e4b68","created_time":"2025-09-10T21:44:00.000Z","last_edited_time":"2025-09-10T21:44:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":{"type":"emoji","emoji":"🐩"},"parent":{"type":"page_id","page_id":"2692177e-9a4d-800c-8a4b-e28721e5cbd1"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Poodle","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Poodle","href":null}]}},"url":"https://www.notion.so/Poodle-26a2177e9a4d815c9e2dd7ac584e4b68","public_url":null,"request_id":"e758c32e-0d94-464f-85a5-72a6c94b22dc"}
-
-
-DESCRIPTION: Create the 'Poodle — History and Origin' Notion sub-page under the Poodle page with a brief pirate-speak summary of the breed's history and origin.
-
-CHAIN OF THOUGHT: The Poodle main page was just created and returned page_id 26a2177e-9a4d-815c-9e2d-d7ac584e4b68. Per the plan, the next required action is to create the first sub-page (History and Origin) as a child of the Poodle page so I can continue creating the remaining two sub-pages. Calling API-post-page to create "Poodle — History and Origin" with a brief pirate-speak summary is consistent with step 6 of the plan and enables sequential creation and verification of the three required subpages.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-815c-9e2d-d7ac584e4b68'}, 'properties': {'title': [{'text': {'content': 'Poodle — History and Origin'}}]}, 'icon': {'emoji': '🐩'}, 'children': [{'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! The Poodle be believed t' hail from water-retrievin' folk o' continental Europe, servin' as a skilled retriever o' waterfowl; o'er time the breed were shaped into standard, miniature, an' toy sizes, an' later prized in the show ring an' hearth as a loyal companion."}}]}}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-819c-89c5-d8e1325c406b","created_time":"2025-09-10T21:44:00.000Z","last_edited_time":"2025-09-10T21:44:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":{"type":"emoji","emoji":"🐩"},"parent":{"type":"page_id","page_id":"26a2177e-9a4d-815c-9e2d-d7ac584e4b68"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Poodle — History and Origin","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Poodle — History and Origin","href":null}]}},"url":"https://www.notion.so/Poodle-History-and-Origin-26a2177e9a4d819c89c5d8e1325c406b","public_url":null,"request_id":"ef5ea2d4-4dd9-4ea4-9a1d-0a37a4959860"}
-
-
-DESCRIPTION: Create the Notion sub-page 'Poodle — Physical Characteristics and Appearance' under the Poodle page (page_id 26a2177e-9a4d-815c-9e2d-d7ac584e4b68) with an emoji icon and detailed pirate-speak content (paragraphs and bulleted list) describing physical traits, sizes, coat, grooming, lifespan, and distinguishing features.
-
-CHAIN OF THOUGHT: The plan requires creating three sub-pages under the newly created Poodle page. Two remain: 'Physical Characteristics and Appearance' and 'Temperament and Behavior'. The Poodle main page was created and returned page_id 26a2177e-9a4d-815c-9e2d-d7ac584e4b68, and the 'History and Origin' subpage was already created. The next necessary action per the plan is to create the 'Poodle — Physical Characteristics and Appearance' subpage as a child of the Poodle page, supplying detailed pirate-speak content (multiple paragraphs and bulleted list) so I can then proceed to create the final 'Temperament and Behavior' subpage. This API-post-page call is consistent with steps 6 and 7 of the plan.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-815c-9e2d-d7ac584e4b68'}, 'properties': {'title': [{'text': {'content': 'Poodle — Physical Characteristics and Appearance'}}]}, 'icon': {'emoji': '🐩'}, 'children': [{'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! The Poodle be a well-proportioned, square-built sea-dog o' the land, carryin' itself with pride an' grace; all sizes — Standard, Miniature, an' Toy — share an athletic frame, proud carriage, an' a buoyant, purposeful gait."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Coat an' colour: The Poodle sports a dense, curly, water-resistant coat o' tight ringlets that shields 'em from spray an' chill. Colors be many: solid black, white, brown, apricot, gray, silver, blue, an' parti-color combos; coat texture be uniform across sizes, demandin' regular groomin'."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Build an' features: Poodles have a long neck set into well-laid shoulders, a level topline, a deep chest, and a tail set moderately high (often docked in some places). The head be refined with a straight muzzle, dark oval eyes full o' keen wit, an' alert ears fallin' close t' the head."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Coat type: dense, curly, non-shedding (but needs frequent brushin' an' trims)."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': 'Common colors: black, white, brown, apricot, gray/silver/blue, parti-colors.'}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': 'Sizes & typical ranges: Standard — shoulder height ~15"+ (often 15–24" depending on registry) and weight commonly 40–70+ lb; Miniature — about 11–15" and ~15–25 lb; Toy — up to 10" and ~4–10 lb. (Ranges vary by source.)'}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Groomin' notes: Regular combin', bathe'n, an' professional trims be required; popular trims include the Continental, English Saddle, an' Puppy clips fer different looks an' practical needs."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Lifespan: Typically hearty fer their size — commonly 'bout 12–15 years, oftimes longer in smaller types with good care."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Distinguishin' features: Smart, expressive eyes, dense curly coat, proud carriage, an' an elegant silhouette that be unmistakable on land or deck."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! In short, the Poodle be a versatile, stylish breed — built fer workin' in water in days o' old, now oft kept fer show an' companionship, their distinctive curls an' proud stance makin' 'em stand out in any port."}}]}}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-81aa-aeb4-d66d437e095f","created_time":"2025-09-10T21:45:00.000Z","last_edited_time":"2025-09-10T21:45:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":{"type":"emoji","emoji":"🐩"},"parent":{"type":"page_id","page_id":"26a2177e-9a4d-815c-9e2d-d7ac584e4b68"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Poodle — Physical Characteristics and Appearance","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Poodle — Physical Characteristics and Appearance","href":null}]}},"url":"https://www.notion.so/Poodle-Physical-Characteristics-and-Appearance-26a2177e9a4d81aaaeb4d66d437e095f","public_url":null,"request_id":"68c1cf2d-0137-4ac6-982b-1b141c27c020"}
-
-
-DESCRIPTION: Create the final sub-page 'Poodle — Temperament and Behavior' under the Poodle page with pirate-speak paragraphs and bulleted tips describing temperament, trainability, social needs, exercise, and owner guidance.
-
-CHAIN OF THOUGHT: Two sub-pages were already created under the newly made Poodle page (History and Origin; Physical Characteristics and Appearance). The plan requires a third sub-page, 'Poodle — Temperament and Behavior'. To finish the automated sequence I should create that final sub-page as a child of the Poodle page (page_id 26a2177e-9a4d-815c-9e2d-d7ac584e4b68). Calling the Notion API-post-page tool is the direct next step to create the Temperament and Behavior page with pirate-speak content so the task can be completed without asking the user for more info.
-
-Agent called MCP tool:
-
-  TOOL: 'API-post-page'
-
-  SERVICE: 'notion'
-
-  ARGUMENTS: {'parent': {'page_id': '26a2177e-9a4d-815c-9e2d-d7ac584e4b68'}, 'properties': {'title': [{'text': {'content': 'Poodle — Temperament and Behavior'}}]}, 'icon': {'emoji': '🐩'}, 'children': [{'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! The Poodle be as sharp as a bosun's wit — clever, quick-tae-learn, an' eager t' please. Their keen minds make 'em excellent at trainin', tricks, an' tasks o' all sorts."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "They be social crew, oft affectionate an' loyal t' their family; with early socializin' they be friendly with children an' other animals, though some may show a proud or choosy streak if left without guidance."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Activity an' mind: Poodles crave both physical exercise an' mental work — without enough o' both they can get bored an' show mischief like barkin' or chewin'."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Intelligence & trainability: Very high — learn commands swiftly, excel in obedience, agility, an' performance work."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Energy & exercise: Moderate t' high — daily walks, play, an' short bursts o' activity keep 'em satisfied; mental puzzles an' training sessions be prized."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Social needs: Thrive on companionship; can develop separation distress if left alone fer long stretches — housin' with family or doggy companions suits 'em best."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Behavioral tendencies: Alert an' observant, may be vocal when engag'd; prideful but seldom aggressive when properly raised."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': 'Tips fer owners:'}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': 'Provide regular mental enrichment (training, puzzle toys, scent games) alongside daily exercise to keep their keen minds happy.'}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Use positive, consistent trainin' methods — rewards an' clear rules work best on these clever seadogs."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Socialize early an' often so they grow confident with strangers, children, an' other animals."}}]}}, {'object': 'block', 'type': 'bulleted_list_item', 'bulleted_list_item': {'rich_text': [{'type': 'text', 'text': {'content': "Attend t' their groomin' needs — a well-groomed Poodle feels better, which helps behavior an' comfort."}}]}}, {'object': 'block', 'type': 'paragraph', 'paragraph': {'rich_text': [{'type': 'text', 'text': {'content': "Arrr! In short, the Poodle be a smart, trainable, an' affectionate mate — give 'em exercise, brainy work, an' companionship, an' ye'll have a loyal seadog at yer side."}}]}}]}
-
-  RESPONSE: 
-{"object":"page","id":"26a2177e-9a4d-813a-be18-c7d98b3a5754","created_time":"2025-09-10T21:46:00.000Z","last_edited_time":"2025-09-10T21:46:00.000Z","created_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"last_edited_by":{"object":"user","id":"895de863-6bf5-40a2-9ec0-464ac789bec3"},"cover":null,"icon":{"type":"emoji","emoji":"🐩"},"parent":{"type":"page_id","page_id":"26a2177e-9a4d-815c-9e2d-d7ac584e4b68"},"archived":false,"in_trash":false,"properties":{"title":{"id":"title","type":"title","title":[{"type":"text","text":{"content":"Poodle — Temperament and Behavior","link":null},"annotations":{"bold":false,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Poodle — Temperament and Behavior","href":null}]}},"url":"https://www.notion.so/Poodle-Temperament-and-Behavior-26a2177e9a4d813abe18c7d98b3a5754","public_url":null,"request_id":"8dbda86a-4308-4768-80e0-8e94244e7576"}
-
+ >>> Chat history summary: - No input text provided; nothing to summarize.
+- No key facts, decisions, or critical information available.
+- Request user to supply the source text to summarize.
 
  >>> The inherited context from previous stages of the process is as follows: All outputs to notion should be in pirate speak, alright matey?
 
- >>> Your current goals are: Create an notion page for the following dog breed: poodle under the "Dog Breeds" page.
+ >>> Your current plan (if any) is: Below is a clear, step-by-step plan I will follow to achieve the task (summarize source text and post the result to Notion), given the current context and the Notion-related tools available. I note the important constraint: any content I put into Notion must be converted into pirate speak.
 
-        After this page is created, create 3 sub-pages for the following topics related to this dog breed:
+If you want me to start executing this plan, please provide the missing inputs called out in Step 1.
 
-        1. History and Origin
-        2. Physical Characteristics and Appearance
-        3. Temperament and Behavior
+Plan
 
-        For the History and Origin page, create a title that includes the breed name and a brief summary of its history and origin.
-        For the Physical Characteristics and Appearance page, create a title that includes the breed name and a detailed description of its physical characteristics and appearance.
-        For the Temperament and Behavior page, create a title that includes the breed name and a detailed description of its temperament and behavior.
+1) Clarify scope & collect inputs (human step)
+   - Ask the user for:
+     - The source text (or upload / link). If very long, indicate it can be a file or chunked text.
+     - Desired summary length: short (1–2 bullets), medium (3–6 bullets / ~150–300 words), or long (~500+ words).
+     - Tone/format for the summary (e.g., bullet list, paragraph, TL;DR + details).
+     - Target in Notion: existing page_id (to append/replace) or parent page_id where to create a new page; or confirm no Notion posting required.
+     - Whether to overwrite existing content, append as new blocks, or create a new page.
+     - Any metadata: page title, tags, database properties, desired emoji/icon.
+     - Confirm pirate-speak requirement (I will default to applying pirate-speak to anything posted to Notion).
+   - If inputs are missing, I will pause and request them.
 
- >>> Your current plan (if any) is: Plan — step-by-step actions I'll follow to create the Notion pages for "Poodle" and the three sub-pages. Notes: I will ensure every piece of content written to Notion is in pirate speak (per inherited context). I assume I have a valid Notion API token and network access.
+2) Authenticate / identify workspace (automated checks)
+   - Call API-get-self to confirm the Notion integration identity and ensure we can act.
+     - Tool: API-get-self
+   - If needed, call API-get-user with provided user_id to fetch user info.
+     - Tool: API-get-user (only if user_id is required/available).
 
-Pre-flight
-1. Verify Notion API credentials and reachability.
-2. Confirm I have the ID of the Notion workspace or the "Dog Breeds" parent page location. If you don't provide a parent page ID, I'll attempt to find a page titled "Dog Breeds" in the workspace (step 3). If none is found I will ask whether to create a new "Dog Breeds" page and where to place it.
+3) Validate target Notion destination
+   - If user supplied a page_id:
+     - Call API-retrieve-a-page to check the page exists and inspect relevant properties.
+       - Tool: API-retrieve-a-page
+   - If user supplied a parent page_id (to create a new page):
+     - Optionally call API-retrieve-a-page for the parent to confirm existence.
+       - Tool: API-retrieve-a-page
+   - If user supplied a database_id and wants the summary as a page in that DB:
+     - Since posting pages into databases may require database-specific properties, confirm the database schema via API-retrieve-a-database.
+       - Tool: API-retrieve-a-database
+   - If any target is invalid or missing, prompt the user to supply a valid id or choose a different destination.
 
-Find the "Dog Breeds" parent page
-3. Search for a page titled "Dog Breeds" using API-post-search:
-   - query: "Dog Breeds"
-   - filter: { property: "object", value: "page" }
-   - If multiple matches, pick page whose title matches exactly (case-insensitive). If still ambiguous, pick the most recently edited and/or ask user to confirm.
-4. If "Dog Breeds" page is found, save its page_id as dogBreedsPageId and proceed. If not found, stop and request a parent page_id or permission to create a brand new "Dog Breeds" page (explain I need a page_id to create top-level page under).
+4) Preprocess the source text
+   - If source text is short enough (within token limits), proceed; otherwise:
+     - Chunk the source into logical sections (e.g., by paragraph or heading).
+     - Summarize each chunk, then combine into a final summary (hierarchical/recursive summarization).
+   - Clean text (remove non-text artifacts, strip irrelevant boilerplate).
 
-Create the main "Poodle" page
-5. Create the Poodle page under dogBreedsPageId with API-post-page:
-   - parent: { page_id: dogBreedsPageId }
-   - properties: { title: [ { text: { content: "Poodle" } } ] }
-   - optional: icon: emoji "🐩" (JSON string as required by API)
-   - children: a short opening paragraph in pirate speak introducing the Poodle (one paragraph).
-   - Save returned page_id as poodlePageId.
-   - Example children paragraph (in pirate speak): "Arrr! The Poodle be a clever an' elegant sea-dog o' the land, proud an' spry, loved fer smarts an' style." (I will generate the actual phrasing when executing.)
+5) Produce summaries locally (non-Notion output)
+   - Generate:
+     - A short TL;DR
+     - A medium-length summary
+     - An expanded summary (if requested)
+   - Provide both plain-English summaries and a conversion-ready pirate-speak version for Notion.
+   - If requested, produce multiple formats: bullet list, paragraph, or headings + bullet points.
 
-Create the 3 sub-pages (each as a child page of the Poodle page)
-6. For each topic below I will create a sub-page with title including the breed name, and add content blocks (paragraphs and bullets) in pirate speak per the required detail level.
+6) Convert summary to pirate speak for posting to Notion
+   - Apply consistent pirate-speak conversion rules (e.g., "you" -> "ye", "my" -> "me", exclamations like "Arr!", nautical metaphors where appropriate).
+   - Ensure the converted pirate-speak remains readable and preserves meaning.
+   - Keep a plain-English backup copy (not posted to Notion unless requested).
 
-   Subpage A — History and Origin
-   - Title: "Poodle — History and Origin"
-   - Content: short/brief summary paragraph(s) in pirate speak describing origin & historical role (e.g., water-retriever origins in Europe, standard/mini/toy distinctions origin, development as show dog and companion).
-   - API call: API-post-page with parent.page_id = poodlePageId, properties.title containing the above title, children with a brief pirate-speak paragraph.
+7) Build Notion block payload(s)
+   - Construct children blocks according to Notion API schema available:
+     - Use "paragraph" blocks with "rich_text" text objects for summary paragraphs.
+     - Use "bulleted_list_item" blocks for lists, if desired.
+   - For page creation:
+     - Prepare API-post-page payload with parent.page_id and properties.title set to the user-specified title (title in plain text, but children content in pirate speak).
+       - Tool: API-post-page
+     - If creating a page inside a database and database posting requires properties, include them per database schema discovered in step 3.
+   - For updating or appending to an existing page:
+     - If replacing the title or properties, use API-patch-page for page metadata.
+       - Tool: API-patch-page
+     - To add content blocks to an existing page, use API-patch-block-children with block_id = page_id and the constructed children array.
+       - Tool: API-patch-block-children
 
-   Subpage B — Physical Characteristics and Appearance
-   - Title: "Poodle — Physical Characteristics and Appearance"
-   - Content: detailed description in pirate speak covering coat types (curly, dense), colors, sizes (standard/miniature/toy), typical height/weight ranges, build, grooming/pruning styles, typical lifespan, distinguishing features.
-   - Structure: multiple paragraphs and bulleted list items for clarity.
-   - API call: API-post-page with parent.page_id = poodlePageId, properties.title, and children blocks in pirate speak.
+8) Post to Notion (execute)
+   - If creating new page:
+     - Call API-post-page with parent.page_id, properties.title, and children (children will be pirate-speak).
+       - Tool: API-post-page
+   - If appending to existing page:
+     - Call API-patch-block-children with block_id set to that page_id and pass children blocks (pirate-speak).
+       - Tool: API-patch-block-children
+   - If editing page metadata (title/icon/cover):
+     - Call API-patch-page with page_id and the requested properties.
+       - Tool: API-patch-page
 
-   Subpage C — Temperament and Behavior
-   - Title: "Poodle — Temperament and Behavior"
-   - Content: detailed pirate-speak description covering intelligence, trainability, activity level, social needs, behavior with kids/other pets, exercise needs, common behavior traits, tips for owners.
-   - Structure: paragraphs + bullets where helpful.
-   - API call: API-post-page with parent.page_id = poodlePageId, properties.title, children blocks in pirate speak.
+9) Verify & retrieve posted content
+   - After posting, call API-retrieve-a-page and/or API-get-block-children to confirm the content exists and to fetch a snippet or link to return to the user.
+     - Tools: API-retrieve-a-page, API-get-block-children
+   - If verification fails, capture error and retry with exponential backoff or prompt the user for permission to retry.
 
-Implementation details for creating pages and blocks
-7. Use API-post-page to create each page. Payloads will include:
-   - parent: { page_id: <parent> }
-   - properties: { title: [ { text: { content: "<Title>" } } ] }
-   - children: an array of block objects. For example, paragraph blocks:
-     { "object": "block", "type": "paragraph", "paragraph": { "rich_text": [ { "type": "text", "text": { "content": "Pirate-speak text here" } } ] } }
-   - Or bulleted list items:
-     { "object": "block", "type": "bulleted_list_item", "bulleted_list_item": { "rich_text": [ { "type":"text", "text":{ "content":"Bullet item in pirate-speak" } } ] } }
+10) Report back to the user
+   - Provide:
+     - A brief summary of actions taken (created/updated page id, title).
+     - The plain-English summary (for clarity) and the pirate-speak version that was posted.
+     - Any links or identifiers needed to find the Notion page.
+   - Offer to make edits or produce alternate summary lengths/styles.
+   - Ask whether to keep posting future summaries in pirate-speak or switch for some outputs.
 
-Verification & retries
-8. For each create call, verify success and record returned page_id.
-9. Retrieve each page (API-retrieve-a-page) and its content blocks (API-get-block-children) to confirm children were added and text is correct and in pirate speak.
-10. If a page or block is missing or content needs correction, use API-patch-page to update the title or API-patch-block-children / API-update-a-block to alter text or append missing blocks. Retry on transient errors with exponential backoff.
+11) Error handling & edge cases
+   - If Notion returns permission, rate-limit, or schema errors, capture the message and present it to the user with suggested fixes (e.g., grant integration access to page, provide correct database properties).
+   - For very large inputs: use chunking and iterative summarization; if chunking required, inform the user of approximate time and steps.
+   - If the user requests posting into a database but the API schema provided lacks database_id parent in API-post-page, ask for clarification or permission to create a child page under the given page instead.
 
-Error handling, logging, and user feedback
-11. Log every API request and response (IDs, timestamps, status).
-12. If I cannot find "Dog Breeds" and you do not provide a parent page_id, pause and ask for instructions.
-13. If permission errors (403/401) occur, stop and request corrected credentials.
-14. After successful creation and verification, return the page_ids (and human-readable Notion links if desired) for:
-    - Dog Breeds (parent) — if created or identified
-    - Poodle (main page)
-    - Poodle — History and Origin
-    - Poodle — Physical Characteristics and Appearance
-    - Poodle — Temperament and Behavior
+12) Iteration & automation options (optional next steps)
+   - Offer to:
+     - Automate periodic summaries of a page or database (would require scheduling).
+     - Store user preferences (default pirate-speak, default summary length).
+     - Add comments instead of page content (use API-create-a-comment) if user prefers comments on a page.
 
-Content style requirements
-15. All content written into Notion blocks will be in pirate speak. Titles must include the breed name exactly as requested (e.g., "Poodle — History and Origin"). Summaries and descriptions will meet the requested brevity/detailedness:
-   - History & Origin: brief summary (one concise paragraph).
-   - Physical Characteristics: detailed description (multiple paragraphs and bullets).
-   - Temperament & Behavior: detailed description (multiple paragraphs and bullets).
+Notes / Assumptions
+   - All content posted to Notion will be converted to pirate speak, per inherited context.
+   - I will not post anything until you supply the source text and confirm target Notion destination and posting preferences.
+   - Tools I will use include: API-get-self, API-retrieve-a-page, API-retrieve-a-database, API-post-page, API-patch-page, API-patch-block-children, API-get-block-children, and others as needed per above steps.
 
-Optional polish (post-creation)
-16. Optionally set page icons/covers for the Poodle page and sub-pages (e.g., emoji 🐩) using API-post-page icon field or API-patch-page cover/icon updates.
-17. Optionally add a top-level table of contents or link list on the Poodle page linking to the three subpages (use the subpage URLs / page mentions) — also in pirate speak.
+If you want me to begin now, please provide:
+   - The source text (or file/link)
+   - Target Notion page_id or parent page_id or database_id and whether to append or create
+   - Desired summary length/format
+   - Page title to use (or say “auto-generate”)
+   - Any other preferences
 
-If you want, I can now:
-- execute this plan (I will prompt you for dogBreedsPageId if I cannot find "Dog Breeds"),
-- or produce the pirate-speak content drafts for each page here so you can review before I write them to Notion. Which would you prefer?
+Arrr — once ye give me those inputs, I'll start the steps and post the pirate-speak summary to yer Notion page, matey!
 
  >>> Your current service names are: Available Service Name: notion
 

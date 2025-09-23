@@ -1,9 +1,12 @@
 from ..message import Message
 from .base_element import BaseElement
+from ..execution_context import ExecutionContext
 
 class PipelineElement(BaseElement):
-    def __init__(self, name):
+    def __init__(self, name, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.name = name
+        self.context = context
 
     def enter(self, message:Message) -> Message:
         message.set_var("__pipeline_input__", message.get_payload())

@@ -53,6 +53,59 @@ Currently, Chainplate must be installed from source. Future releases will be ava
 
 ---
 
+## 🐳 Docker
+
+A Docker image can be built locally to run the Chainplate server in a containerized environment.
+
+### Build the image
+
+Using Docker directly:
+```powershell
+# From repo root
+docker build -t chainplate:latest .
+```
+
+Or with the provided PowerShell helper script:
+```powershell
+# Optional: set a custom Python version
+$Env:CHAINPLATE_PYTHON = "3.11"
+
+./scripts/build_docker.ps1 -ImageName chainplate -Tag latest
+# With registry + push (example)
+./scripts/build_docker.ps1 -ImageName chainplate -Registry ghcr.io/youruser -Tag v0.1.0 -Push
+```
+
+### Run the container
+
+```powershell
+# Basic run (ephemeral DB inside container)
+docker run --rm -p 5000:5000 -e OPENAI_API_KEY=$Env:OPENAI_API_KEY chainplate:latest
+
+# Persist database + logs to host volume
+docker run --rm -p 5000:5000 -e OPENAI_API_KEY=$Env:OPENAI_API_KEY -v ${PWD}/data:/data chainplate:latest
+```
+
+### Environment variables
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `OPENAI_API_KEY` | Required for model calls | (none) |
+| `CHAINPLATE_DB` | Path to sqlite DB inside container | `/data/chainplate.db` |
+| `CHAINPLATE_PORT` | Port the Flask server binds to | `5000` |
+
+Expose a different port:
+```powershell
+docker run --rm -e OPENAI_API_KEY=$Env:OPENAI_API_KEY -e CHAINPLATE_PORT=8080 -p 8080:8080 chainplate:latest
+```
+
+### Updating / Rebuilding
+If you change source code, rebuild the image:
+```powershell
+docker build -t chainplate:latest .
+```
+
+---
+
 ## ⚡ Usage
 
 Once installed, you can run workflows defined in XML files. For example, the repository includes a **Hello World** workflow:
@@ -60,6 +113,28 @@ Once installed, you can run workflows defined in XML files. For example, the rep
 ```bash
 chainplate --workflow examples/hello-world.xml
 ```
+
+### Optional: Run the Development Server with CORS
+
+If you are building a frontend (e.g. React/Vite) that calls Chainplate's Flask server from `http://localhost:3000` or similar, you can enable permissive CORS for local development:
+
+```bash
+set CHAINPLATE_ENABLE_CORS=true              # PowerShell: $Env:CHAINPLATE_ENABLE_CORS = "true"
+set CHAINPLATE_CORS_ORIGINS=http://localhost:3000,http://localhost:5173  # Comma-separated list (optional)
+```
+
+Then start your server mode (example command depends on how you invoke it). By default the following origins are allowed when CORS is enabled and no override is provided:
+
+```
+http://localhost:3000
+http://127.0.0.1:3000
+http://localhost:5173
+http://127.0.0.1:5173
+http://localhost:8000
+http://127.0.0.1:8000
+```
+
+Use these variables only for local development; avoid enabling broad CORS in production deployments.
 
 ### Example: `examples/hello-world.xml`
 
@@ -122,5 +197,5 @@ Once the **extensions system** reaches a stable release, contributions from deve
 
 ## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).  
+This project is licensed under the [MIT License](LICENSE).
 
