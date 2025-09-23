@@ -1,16 +1,20 @@
 from ..message import Message
 from ..ainode import AiNode
 from ..tree import TreeNode
-from ..services.cli_service import CLIService
+from ..services.ux.cli_ux_service import CLIService
 import json
 import os
+from ..execution_context import ExecutionContext
+from ..services.logging.logging_service import LoggingService
+from ..services.data.data_service import DataService
 
 class ChainplateWorkflow:
-    def __init__(self, xml_string: str, mode: str = "workflow"):
+    def __init__(self, xml_string: str, mode: str = "workflow",execution_id: int = None):
         json_str = TreeNode.get_xml_as_json_string(xml_string)
         data = json.loads(json_str)
-        self.tree = AiNode.from_dict(data)
+        self.tree = AiNode.from_dict(data,context=ExecutionContext(execution_id=execution_id))
         self.mode = mode
+        self.execution_id = execution_id
 
     def run(self, message: Message, ux_service=CLIService()) -> Message: # Default to the CLI for I/O
 

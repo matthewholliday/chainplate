@@ -2,11 +2,14 @@ from ..message import Message
 from ..helpers.template_helper import TemplateHelper
 from .base_element import BaseElement
 from ..helpers.boolean_helper import BooleanHelper
+from ..execution_context import ExecutionContext
 
 class ContinueIfElement(BaseElement):
-    def __init__(self, condition: str, output_var=None):
+    def __init__(self, condition: str, output_var=None, context: ExecutionContext = None):
+        super().__init__(context=context)
         self.condition = condition
         self.output_var = output_var
+        self.context = context
 
     def enter(self, message:Message) -> Message:
         return message

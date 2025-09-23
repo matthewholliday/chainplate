@@ -1,4 +1,5 @@
 from .interpret_as_base_element import InterpretAsBase
+from ..execution_context import ExecutionContext
 
 TEMPLATE_TEXT = """
     You are a meticulous, pragmatic classifier.
@@ -26,10 +27,11 @@ TEMPLATE_TEXT = """
 """
 
 class ApplyLabelsElement(InterpretAsBase):
-    def __init__(self, output_var, input_var, categories, criteria):
-        super().__init__(output_var, input_var)
+    def __init__(self, output_var, input_var, categories, criteria, context: ExecutionContext = None):
+        super().__init__(output_var, input_var, context=context)
         self.categories = categories
         self.criteria = criteria
+        self.context = context
 
     def get_label(self) -> str:
         return f"ApplyLabelsElement(output_var={self.output_var}, input_var={self.input_var})"

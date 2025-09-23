@@ -18,7 +18,7 @@ class MCPService:
         return tool_result
     
     def list_tools(self):
-        return MCPService.get_stdio_tools(self.server_params)
+        return asyncio.run(MCPService.get_stdio_tools(self.server_params))
     
     def set_tool(self,tool: any):
         self.tools[tool.name] = {

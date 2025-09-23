@@ -2,10 +2,12 @@ from ..message import Message
 from .base_elements.ai_base_element import AiBaseElement
 from ..helpers.prompt_helper import ask_with_context, ask_with_context_and_spinner
 from ..helpers.template_helper import TemplateHelper2
+from ..execution_context import ExecutionContext
 
 class SendPromptElement(AiBaseElement):
-    def __init__(self, output_var, content):
-        super().__init__(output_var, content)
+    def __init__(self, output_var, content, context: ExecutionContext = None):
+        super().__init__(output_var, content, context=context)
+        self.context = context
 
     def enter(self , message: Message) -> Message: #test please
          # This will template output_var and content

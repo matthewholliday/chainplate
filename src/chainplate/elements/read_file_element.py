@@ -1,6 +1,7 @@
 from .base_element import BaseElement
 from ..message import Message
 import os
+from ..execution_context import ExecutionContext
 
 class ReadFileElement(BaseElement):
     """
@@ -11,6 +12,10 @@ class ReadFileElement(BaseElement):
     """
     name = "read-file"
     required_props = ["output_var", "path"]
+
+    def __init__(self, context: ExecutionContext = None):
+        super().__init__(context=context)
+        self.context = context
 
     def enter(self, message: Message) -> Message:
         output_var = self.props.get("output_var")

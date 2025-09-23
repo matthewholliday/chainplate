@@ -1,0 +1,6 @@
+<pipeline name="trace example">
+    <trace>This is trace 1.</trace>
+    <trace>This is trace 2.</trace>
+    <trace>This is trace 3.</trace>
+    <set-payload>MIH</set-payload>
+</pipeline>

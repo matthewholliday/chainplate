@@ -1,8 +1,12 @@
 from ..message import Message
 from .base_element import BaseElement
 from ..services.memory_service import MemoryService
+from ..execution_context import ExecutionContext
 
 class WithMemoryElement(BaseElement):
+    def __init__(self, context: ExecutionContext = None):
+        super().__init__(context=context)
+        self.context = context
     def enter(self, message:Message) -> Message:
 
         # Apply templating to the content

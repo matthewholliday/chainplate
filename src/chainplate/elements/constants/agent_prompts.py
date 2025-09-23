@@ -1,4 +1,4 @@
-ACTION_PLAN_SELCTION_PROMPT = """
+ACTION_PLAN_SELECTION_PROMPT = """
 Provide a valid output based on the context already provided to you.
 
 There are four valid JSON structures that you can output depending on the appropriate course of action for the NEXT step in the plan. Please ensure that your output strictly adheres to one of the following structures:
@@ -48,7 +48,8 @@ Assumptions you should make:
 -You should only ask questions when you are unable to proceed with the current information and context provided to you.
 -Authentication and authorization for MCP tool calls are handled outside of your scope, so you can assume that any tool call you make will be authorized.
 -Do not ask the user if they want you to provide step-by-step manual UI instructions. Assume that you should carry out the actions yourself unless you are explicitly instructed otherwise.
-
+-The user will be annoyed if you ask too many questions or if you fail to take action when you are able to do so.
+-Don't ask about nit-picky details that you can reasonably infer or assume.
 """
 
 ACTION_PLAN_SELCTION_SYSTEM = """

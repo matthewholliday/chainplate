@@ -1,6 +1,6 @@
 from .helpers.template_helper import TemplateHelper
 import os
-from .services.cli_service import CLIService
+from .services.ux.cli_ux_service import CLIService
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
@@ -42,11 +42,7 @@ class Message:
         return self.logs
     
     def print_logs(self):
-        # print all logs to logs/execution.log (overwrite instead of append)
-        os.makedirs("logs", exist_ok=True)
-        with open("logs/execution.log", "w", encoding="utf-8") as f:
-            for log in self.logs:
-                f.write(log + "\n")
+        pass
 
     def set_var(self, key: str, value):
         self.vars[key] = value
@@ -86,7 +82,15 @@ class Message:
         self.conversation_history = chat_history
 
     def get_chat_history(self) -> list:
-        return self.conversation_history    
+        return self.conversation_history  
+
+    def read_chat_history(self) -> str:
+        history_text = ""
+        for message in self.conversation_history:
+            role = message.get("role", "unknown")
+            content = message.get("content", "")
+            history_text += f"{role.capitalize()}: {content}\n"
+        return history_text.strip()  
     
     def get_pipeline_input(self) -> str:
         return self.get_var("__pipeline_input__")

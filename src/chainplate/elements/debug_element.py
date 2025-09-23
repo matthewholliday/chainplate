@@ -1,10 +1,13 @@
 from ..message import Message
 from ..helpers.template_helper import TemplateHelper
 from .base_element import BaseElement
+from ..execution_context import ExecutionContext
 
 class DebugElement(BaseElement):
-	def __init__(self, content="Debug Message"):
+	def __init__(self, content="Debug Message", context: ExecutionContext = None):
+		super().__init__(context=context)
 		self.content = content
+		self.context = context
 
 	def enter(self, message: Message) -> Message:
 		try:

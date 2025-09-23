@@ -1,0 +1,42 @@
+# Ignore VCS
+.git
+.gitignore
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.build/
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Tests and local scripts not needed in image
+tests/
+scripts/*.bat
+scripts/*.ps1
+
+# Local data and logs
+logs/
+logs.db
+chainplate.db*
+*.sqlite3
+*.db-wal
+*.db-shm
+workspace/
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Build artifacts
+dist/
+build/
