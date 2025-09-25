@@ -3,7 +3,7 @@ from ..message import Message
 from flask import jsonify, request, Flask
 import traceback
 try:
-    # flask-cors is lightweight; optional dependency for local dev
+    # Need to reconfigure cors settings
     from flask_cors import CORS
 except ImportError:  # pragma: no cover
     CORS = None  # type: ignore
