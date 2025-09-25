@@ -6,7 +6,6 @@ from .constants.agent_prompts import ACTION_PLAN_SELECTION_PROMPT
 from ..agent.agent_data import AgentData
 from ..agent.agent_environment import AgentEnvironment
 from ..execution_context import ExecutionContext
-from ..services.logging.logging_service import LoggingService
 import traceback
 from ..exceptions import MissingAgentGoalsException
 
@@ -21,26 +20,20 @@ class AgentElement(BaseElement):
         #set the name of the agent for identification purposes
         self.name = name
 
-        self.goals_var_name = goals
-        LoggingService.log_info(f"Agent goals variable name set to: {self.goals_var_name}")
-
-        self.payload_var_name = output_var
-
         #set the maximum number of iterations for the agent to perform its tasks
         self.max_iterations = max_iterations
 
-        #initialize default texts for conversation history, working memory, and planner to ensure they have initial values
-        self.conversation_history_text = "The conversation history is currently empty."
+        self.inherited_context = "" #TODO: change variable name to differentiate between types of 'context'
 
-        self.inherited_context = ""
-
-        self.context = context
-        self.execution_id = context.execution_id
-
-        LoggingService.log_info(f"Initializing AgentElement with execution_id: {self.execution_id}")
+        self.execution_context = context
+        self.execution_id = self.execution_context.execution_id
+        self.execution_context.log_info(f"Initializing AgentElement with execution_id: {self.execution_id}")
 
         self.agent_data = agent_data.set_execution_id(self.execution_id)
         self.agent_environment = agent_environment.set_execution_id(self.execution_id)
+
+        self.goals_var_name = goals
+        self.execution_context.log_info(f"Agent goals variable name set to: {self.goals_var_name}")
 
 
     def enter(self, message: Message) -> Message:
@@ -120,7 +113,7 @@ class AgentElement(BaseElement):
 
     def send_llm_request(self, prompt: str = "", message: Message = None) -> str:
         if(prompt == ""):
-            message.log_warning("No prompt was provided to the LLM request; using empty string as prompt.")
+            self.execution_context.log_warning("No prompt was provided to the LLM request; using empty string as prompt.")
 
         try:
             full_prompt = self.generate_prompt(message=message, prompt=prompt)
@@ -130,6 +123,22 @@ class AgentElement(BaseElement):
             raise Exception(error_message)
         return response
     
+    def debug_context_string(self, chat_history = None, goals = None, inherited_context = None, plan = None, services = None, tools = None, working_memory = None) -> str:
+        if(not inherited_context):
+            self.self.execution_context.log_info(f"Note: There is no inherited context from previous elements.")
+        if(not working_memory):
+            self.self.execution_context.log_info(f"Note: The working memory is currently empty.")
+        if(not goals):
+            self.self.execution_context.log_error(f"Note: The current goals empty.")
+        if(not plan):
+            self.self.execution_context.log_error(f"Note: The current plan is empty.")
+        if(not services):
+            self.self.execution_context.log_warning(f"Note: There are no services available.")
+        if(not tools):
+            self.self.execution_context.log_warning(f"Note: There are no tools available.")
+        if(not chat_history):
+            self.self.execution_context.log_info(f"Note: The chat history is currently empty.")
+
     def create_context_string(self, message: Message) -> str:
         context = ""
         try:
@@ -140,28 +149,8 @@ class AgentElement(BaseElement):
             services = self.agent_data.get_services(message)
             tools = self.agent_data.get_tools(message)
             working_memory = self.agent_data.get_working_memory()
-            
-            if(message.is_debug_mode()):
-                if(not inherited_context):
-                    self.message.log_info(f"Note: There is no inherited context from previous elements.")
 
-                if(not working_memory):
-                    self.message.log_info(f"Note: The working memory is currently empty.")
-
-                if(not goals):
-                    self.message.log_error(f"Note: The current goals empty.")
-
-                if(not plan):
-                    self.message.log_error(f"Note: The current plan is empty.")
-                
-                if(not services):
-                    self.message.log_warning(f"Note: There are no services available.")
-
-                if(not tools):
-                    self.message.log_warning(f"Note: There are no tools available.")
-
-                if(not chat_history):
-                    self.message.log_info(f"Note: The chat history is currently empty.")
+            self.debug_context_string(chat_history, goals, inherited_context, plan, services, tools, working_memory)
 
             context_parts = [
                 "Consider the following when carrying out your tasks: \n",
@@ -174,8 +163,7 @@ class AgentElement(BaseElement):
                 f" ===== GOALS ===== \n {goals}\n\n"
             ]
             context = "\n".join(context_parts)
-
-            LoggingService.log_info(f"Context for LLM request created...\n\n {context}")
+            self.execution_context.log_info(f"Context for LLM request created...\n\n {context}")
         except Exception as e:
             error_message = f"An unexpected error occurred when attempting to create the context string: {e}\n{traceback.format_exc()}"
             raise Exception(error_message)
@@ -187,13 +175,9 @@ class AgentElement(BaseElement):
         try:
             action_object = json.loads(action_text)
         except json.JSONDecodeError as e:
-            LoggingService.log_error(f"(chainplate) [GET-NEXT-ACTION-ERROR]Error parsing action text to JSON: Here is the action text that caused the error:\n{action_text}\n\nError details: {e}\n{traceback.format_exc()}")
-            self.agent_environment.send_to_user("I encountered an error while trying to understand my next action. I'll try again.")
-            action_object = {
-                "action": "ERROR_PARSING_ACTION",
-                "chain_of_thought": "I encountered an error while trying to parse the action text to JSON.",
-                "description": "The action text could not be parsed to JSON.",
-            }
+            error_message = f"An unexpected error occurred while parsing MCP action text to JSON. Here is the action text that caused the error:\n\n{action_text}\n\nError details: {e}\n{traceback.format_exc()}"
+            self.self.execution_context.log_error(error_message)
+            raise Exception(error_message) #TODO: decide if we want to raise here or just log and continue with empty action_object
         return action_object
     
     def process_action_object(self, action_object: dict, message: Message) -> tuple[bool, Message]:
@@ -264,12 +248,11 @@ class AgentElement(BaseElement):
         self.agent_environment.send_to_user("Here is the result: " + result)
         self.agent_data.add_memory(entry=self.create_handle_complete_task_memory_string(description, chain_of_thought))
         self.agent_environment.send_to_user("The task completion has been logged in my memory.")
-        message.set_var(self.payload_var_name, result)
         return message
 
     def get_next_action_text(self, message: Message) -> str:
         response = self.send_llm_request(prompt=ACTION_PLAN_SELECTION_PROMPT, message=message)
-        LoggingService.log_info(f"(chainplate) [NEXT-ACTION-TEXT (should be JSON-parseable):\n\n{response}")
+        self.execution_context.log_info(f"(chainplate) [NEXT-ACTION-TEXT (should be JSON-parseable):\n\n{response}")
         return response
 
     def print_agent_output(self, text: str) -> None:
