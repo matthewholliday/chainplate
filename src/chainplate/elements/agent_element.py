@@ -2,7 +2,7 @@ import json
 from ..message import Message
 from ..services.external.prompt_completion_services.openai_llm_provider import OpenAIPromptService
 from .base_element import BaseElement
-from .constants.agent_prompts import ACTION_PLAN_SELECTION_PROMPT, ACTION_PLAN_SELCTION_SYSTEM
+from .constants.agent_prompts import ACTION_PLAN_SELECTION_PROMPT
 from ..agent.agent_data import AgentData
 from ..agent.agent_environment import AgentEnvironment
 from ..execution_context import ExecutionContext
@@ -10,7 +10,7 @@ from ..services.logging.logging_service import LoggingService
 import traceback
 
 class AgentElement(BaseElement):
-    def __init__(self, name="Unnamed Agent", goals="default_goal_var", output_var="__payload__", max_iterations=1, context: ExecutionContext = None):
+    def __init__(self, name="Unnamed Agent", goals="__agent_goals__", output_var="__payload__", max_iterations=1, context: ExecutionContext = None, agent_data = AgentData(), agent_environment = AgentEnvironment()):
         super().__init__(context=context)
 
         self.next_action_text = "No action has been determined yet."
@@ -37,8 +37,9 @@ class AgentElement(BaseElement):
         self.execution_id = context.execution_id
 
         LoggingService.log_info(f"Initializing AgentElement with execution_id: {self.execution_id}")
-        self.agent_data = AgentData(execution_id=self.execution_id)
-        self.agent_environment = AgentEnvironment(execution_id=self.execution_id)
+
+        self.agent_data = agent_data.set_execution_id(self.execution_id)
+        self.agent_environment = agent_environment.set_execution_id(self.execution_id)
 
 
     def enter(self, message: Message) -> Message:

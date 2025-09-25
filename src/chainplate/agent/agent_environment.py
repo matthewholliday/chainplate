@@ -22,15 +22,12 @@ class AgentEnvironment:
     """
 
     def __init__(self, execution_id = None, data_service: Optional[DataService] = None):
-        # Allow dependency injection for easier testing (use an in-memory DB by default)
         self.data_service = data_service or DataService(":memory:")
         
-        # If no execution_id provided, create a new execution
-        if execution_id is None:
-            self.execution_id = self.data_service.create_execution("auto-created-execution")
-        else:
-            self.execution_id = execution_id
-        
+    def set_execution_id(self, execution_id: int) -> 'AgentEnvironment':
+        self.execution_id = execution_id
+        return self
+
     def send_to_user(self, content: str = "") -> int:
         """Send a message to the user (no input expected). Returns created step id."""
         return self.data_service.add_execution_step(

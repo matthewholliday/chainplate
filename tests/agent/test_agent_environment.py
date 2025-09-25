@@ -13,35 +13,43 @@ class TestAgentEnvironment(unittest.TestCase):
         # fresh in-memory DB for each test
         self.data_service = DataService(":memory:")
         self.execution_id = self.data_service.create_execution("test-code")
-        self.env = AgentEnvironment(execution_id=self.execution_id, data_service=self.data_service)
+        self.env = AgentEnvironment(data_service=self.data_service).set_execution_id(self.execution_id)
 
     def test_initialization_with_custom_data_service(self):
         """Test AgentEnvironment initialization with custom DataService."""
         custom_ds = DataService(":memory:")
         custom_exec_id = custom_ds.create_execution("custom-test")
-        env = AgentEnvironment(execution_id=custom_exec_id, data_service=custom_ds)
+        env = AgentEnvironment(data_service=custom_ds).set_execution_id(custom_exec_id)
         
         self.assertEqual(env.execution_id, custom_exec_id)
         self.assertEqual(env.data_service, custom_ds)
 
     def test_initialization_with_default_data_service(self):
         """Test AgentEnvironment initialization creates default DataService when none provided."""
-        env = AgentEnvironment(execution_id=123)
+        env = AgentEnvironment().set_execution_id(123)
         
         self.assertEqual(env.execution_id, 123)
         self.assertIsNotNone(env.data_service)
         # Default should be in-memory
         self.assertIsInstance(env.data_service, DataService)
 
-    def test_initialization_creates_execution_when_none_provided(self):
-        """Test AgentEnvironment creates execution when none provided."""
+    def test_set_execution_id_method(self):
+        """Test set_execution_id method sets execution ID and returns self."""
         env = AgentEnvironment(data_service=DataService(":memory:"))
         
-        self.assertIsNotNone(env.execution_id)
-        # Should be able to retrieve the created execution
-        exec_row, steps = env.data_service.get_execution_with_steps(env.execution_id)
-        self.assertIsNotNone(exec_row)
-        self.assertEqual(steps, [])
+        # Initially execution_id should not be set
+        self.assertFalse(hasattr(env, 'execution_id'))
+        
+        # Set execution ID
+        result = env.set_execution_id(42)
+        
+        # Should return self for method chaining
+        self.assertIs(result, env)
+        self.assertEqual(env.execution_id, 42)
+        
+        # Can chain method calls
+        env2 = AgentEnvironment().set_execution_id(99)
+        self.assertEqual(env2.execution_id, 99)
 
     def test_send_to_user_creates_step(self):
         """Test send_to_user creates a proper execution step."""
@@ -311,7 +319,7 @@ class TestAgentEnvironment(unittest.TestCase):
         """Test that different AgentEnvironment instances with different execution IDs are properly isolated."""
         # Use the same data service but different executions to test logical isolation
         execution_id2 = self.data_service.create_execution("second-test")
-        env2 = AgentEnvironment(execution_id=execution_id2, data_service=self.data_service)
+        env2 = AgentEnvironment(data_service=self.data_service).set_execution_id(execution_id2)
         
         # Send messages from both environments
         self.env.send_to_user("Message from env1")
@@ -328,15 +336,17 @@ class TestAgentEnvironment(unittest.TestCase):
         self.assertEqual(steps1[0]["execution_id"], self.execution_id)
         self.assertEqual(steps2[0]["execution_id"], execution_id2)
 
-    def test_default_execution_id_created_when_none_supplied(self):
-        """Test that AgentEnvironment creates execution when none is provided."""
-        env2 = AgentEnvironment(data_service=DataService(":memory:"))
+    def test_initialization_without_execution_id(self):
+        """Test that AgentEnvironment can be initialized without execution_id."""
+        env = AgentEnvironment(data_service=DataService(":memory:"))
         
-        # Should have created an execution automatically
-        self.assertIsNotNone(env2.execution_id)
-        exec_row, steps = env2.data_service.get_execution_with_steps(env2.execution_id)
-        self.assertIsNotNone(exec_row)
-        self.assertEqual(steps, [])
+        # Should not have execution_id set initially
+        self.assertFalse(hasattr(env, 'execution_id'))
+        
+        # Should be able to set it later
+        test_exec_id = env.data_service.create_execution("test")
+        env.set_execution_id(test_exec_id)
+        self.assertEqual(env.execution_id, test_exec_id)
 
     def test_get_user_input_timeout_returns_empty_string(self):
         """Test that get_user_input returns empty string when polling times out."""
@@ -385,7 +395,7 @@ class TestAgentEnvironment(unittest.TestCase):
     def test_multiple_environments_same_execution_id(self):
         """Test that multiple AgentEnvironment instances with same execution ID work correctly."""
         # Create second environment with same execution ID
-        env2 = AgentEnvironment(execution_id=self.execution_id, data_service=self.data_service)
+        env2 = AgentEnvironment(data_service=self.data_service).set_execution_id(self.execution_id)
         
         # Both should be able to send messages to the same execution
         step_id1 = self.env.send_to_user("Message from env1")
@@ -416,6 +426,54 @@ class TestAgentEnvironment(unittest.TestCase):
             
             # Verify the response was returned correctly
             self.assertEqual(result, special_response)
+
+    def test_set_execution_id_allows_method_chaining(self):
+        """Test that set_execution_id returns self for method chaining."""
+        ds = DataService(":memory:")
+        exec_id = ds.create_execution("test-chaining")
+        
+        # Test method chaining
+        env = AgentEnvironment(data_service=ds).set_execution_id(exec_id)
+        
+        self.assertEqual(env.execution_id, exec_id)
+        self.assertEqual(env.data_service, ds)
+
+    def test_set_execution_id_can_change_execution(self):
+        """Test that set_execution_id can change the execution ID."""
+        # Create two executions
+        exec_id1 = self.data_service.create_execution("first-execution")
+        exec_id2 = self.data_service.create_execution("second-execution")
+        
+        # Set to first execution and send a message
+        self.env.set_execution_id(exec_id1)
+        self.env.send_to_user("Message in first execution")
+        
+        # Change to second execution and send a message
+        self.env.set_execution_id(exec_id2)
+        self.env.send_to_user("Message in second execution")
+        
+        # Verify messages went to correct executions
+        _, steps1 = self.data_service.get_execution_with_steps(exec_id1)
+        _, steps2 = self.data_service.get_execution_with_steps(exec_id2)
+        
+        self.assertEqual(len(steps1), 1)
+        self.assertEqual(len(steps2), 1)
+        self.assertEqual(steps1[0]["content"], "Message in first execution")
+        self.assertEqual(steps2[0]["content"], "Message in second execution")
+
+    def test_set_execution_id_with_invalid_type_still_works(self):
+        """Test that set_execution_id accepts different types (as per the signature)."""
+        # The method signature accepts int, but let's test it works with various inputs
+        env = AgentEnvironment(data_service=self.data_service)
+        
+        # Test with integer
+        result = env.set_execution_id(42)
+        self.assertEqual(env.execution_id, 42)
+        self.assertIs(result, env)
+        
+        # Test with string (may be converted in actual usage)
+        env.set_execution_id("123")  # type: ignore
+        self.assertEqual(env.execution_id, "123")
 
 
 if __name__ == "__main__":

@@ -11,11 +11,14 @@ class AgentData:
     the instance's self.execution_id value provided at construction (or later via setter).
     """
 
-    def __init__(self, execution_id: int, data_service: Optional[DataService] = DataService()):
+    def __init__(self, data_service: Optional[DataService] = DataService()):
         self.data_service = data_service
-        self.execution_id = execution_id
-        LoggingService.log_info(f"AgentData initialized with execution_id: {self.execution_id}")
     
+    def set_execution_id(self, execution_id: int) -> 'AgentData':
+        self.execution_id = execution_id
+        LoggingService.log_info(f"AgentData execution_id set to: {self.execution_id}")
+        return self
+
     # -------------------------- static helpers -------------------------- #
     @staticmethod
     def concatenate_content(records: Iterable[Dict[str, Any]]) -> str:
