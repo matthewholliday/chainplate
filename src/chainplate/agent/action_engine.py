@@ -49,7 +49,6 @@ class ActionEngine:
         action_type = ""
         chain_of_thought = ""
         description = ""
-        result_message = None
 
         task_is_complete = False
 
@@ -77,7 +76,7 @@ class ActionEngine:
                 tool_name=tool_name
             )
 
-            result_message = ActionEngine.call_mcp_tool(
+            ActionEngine.call_mcp_tool(
                 mcp_tool_call_action=mcp_tool_call_action,
                 agent_environment=agent_environment,
                 agent_data=agent_data,
@@ -91,8 +90,7 @@ class ActionEngine:
                 description=description,
                 question=question
             )
-            user_response = ActionEngine.ask_user_question(ask_user_action, agent_environment, agent_data)
-            result_message = Message(role="user", content=user_response)
+            ActionEngine.ask_user_question(ask_user_action, agent_environment, agent_data)
         elif(action_type == "modify_plan"):
             new_plan = action_object.get("new_plan", "ERROR_MISSING_NEW_PLAN")
 
@@ -102,7 +100,6 @@ class ActionEngine:
                 new_plan=new_plan
             )
             ActionEngine.modify_plan(modify_plan_action, agent_environment, agent_data)
-            result_message = Message(role="assistant", content=f"Plan modified: {new_plan}")
         elif(action_type == "complete_task"):
             result = action_object.get("result", "ERROR_MISSING_RESULT")
             
@@ -112,18 +109,14 @@ class ActionEngine:
                 result=result
             )
 
-            result_message = ActionEngine.mark_task_as_complete(
+            ActionEngine.mark_task_as_complete(
                 mark_task_as_complete_action=mark_task_as_complete_action,
                 agent_environment=agent_environment,
                 agent_data=agent_data
             )
             task_is_complete = True
-        
-        # Ensure we always have a result_message
-        if result_message is None:
-            result_message = Message(role="assistant", content="Action completed")
             
-        return task_is_complete, result_message
+        return task_is_complete
 
     # Helper methods...
     
@@ -139,18 +132,16 @@ class ActionEngine:
     # Action implementation methods...
 
     @staticmethod
-    def mark_task_as_complete(mark_task_as_complete_action: MarkTaskAsCompleteAction = None, agent_environment = None, agent_data = None) -> Message:
+    def mark_task_as_complete(mark_task_as_complete_action: MarkTaskAsCompleteAction = None, agent_environment = None, agent_data = None) -> None:
         completion_message = f"Task completed. Result: {mark_task_as_complete_action.result}"
         agent_environment.send_to_user(completion_message)
         agent_data.add_memory(entry=f"Agent completed the task: {mark_task_as_complete_action.description}\n\nAgent's chain of thought before completing the task: {mark_task_as_complete_action.chain_of_thought}\n\n{completion_message}")
-        return Message(role="assistant", content=completion_message)
     
     @staticmethod
-    def modify_plan(modify_plan_action: ModifyPlanAction = None, agent_environment = None, agent_data = None) -> Message:
+    def modify_plan(modify_plan_action: ModifyPlanAction = None, agent_environment = None, agent_data = None) -> None:
         message_content = f"I am modifying my plan. New plan:\n\n{modify_plan_action.new_plan}"
         agent_environment.send_to_user(message_content)
         agent_data.add_memory(entry=f"Agent modified its plan to: {modify_plan_action.new_plan}\n\nAgent was trying to: {modify_plan_action.description}\n\nAgent's chain of thought before modifying the plan: {modify_plan_action.chain_of_thought}")
-        return Message(role="assistant", content=message_content)
 
     @staticmethod
     def ask_user_question(ask_user_action: AskQuestionToUserAction = None, agent_environment = None, agent_data = None) -> str:
@@ -159,7 +150,7 @@ class ActionEngine:
         return user_response
     
     @staticmethod
-    def call_mcp_tool(mcp_tool_call_action: MCPToolCallAction, agent_environment = None, agent_data = None, mcp_services = {}) -> Message:
+    def call_mcp_tool(mcp_tool_call_action: MCPToolCallAction, agent_environment = None, agent_data = None, mcp_services = {}) -> None:
         # Inform the user we're calling a tool
         agent_environment.send_to_user(f"I'm calling MCP tool '{mcp_tool_call_action.tool_name}' from service '{mcp_tool_call_action.service_name}'.") 
 
@@ -183,7 +174,6 @@ class ActionEngine:
         ))
         result_message = f"I received a result from the tool call: {result}"
         agent_environment.send_to_user(result_message)
-        return Message(role="assistant", content=result_message)
 
     @staticmethod
     def create_tool_call_memory_string(description: str = "", chain_of_thought: str = "", tool_name: str = "", service_name: str = "", arguments: any = None, result = None) -> str:
