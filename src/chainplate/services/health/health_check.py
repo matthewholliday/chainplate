@@ -1,10 +1,11 @@
 import os
 import dataclasses
+from typing import List
 
+@dataclasses.dataclass
 class HealthCheck:
-    def __init__(self,status="unknown", errors=[]):
-        self.status = status
-        self.errors = errors
+    status: str = "unknown"
+    errors: List[str] = dataclasses.field(default_factory=list)
     
     def to_dict(self):
         return dataclasses.asdict(self)
@@ -14,7 +15,7 @@ class HealthCheckService:
 
     @staticmethod
     def check():
-        errors: list[str] = []
+        errors: List[str] = []
         api_key = os.getenv("OPENAI_API_KEY", "").strip()
         if not api_key:
             errors.append("OPENAI_API_KEY not configured")
