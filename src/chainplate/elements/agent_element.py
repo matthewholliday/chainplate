@@ -8,6 +8,7 @@ from ..agent.agent_environment import AgentEnvironment
 from ..execution_context import ExecutionContext
 from ..services.logging.logging_service import LoggingService
 import traceback
+from ..exceptions import MissingAgentGoalsException
 
 class AgentElement(BaseElement):
     def __init__(self, name="Unnamed Agent", goals="__agent_goals__", output_var="__payload__", max_iterations=1, context: ExecutionContext = None, agent_data = AgentData(), agent_environment = AgentEnvironment()):
@@ -43,18 +44,22 @@ class AgentElement(BaseElement):
 
 
     def enter(self, message: Message) -> Message:
+        if(not message):
+            raise MissingMessageException("A valid Message object must be provided to the AgentElement's enter method.")
+
         self.inherited_context = message.read_context()
         self.mcp_services = message.mcp_services
 
         goals_value = message.get_var(self.goals_var_name)
+        
         if(goals_value):
             self.agent_data.save_goals(goals=goals_value)
             LoggingService.log_info(f"LOADED AGENT GOALS: \n\n  VAR_NAME:\n'{self.goals_var_name}':\n\n  VALUE:\n{goals_value}")
         else:
-            LoggingService.log_warning(f"Agent goals variable '{self.goals_var_name}' not found in message. Using empty goals list.")
-            self.agent_data.save_goals(goals="")
+            raise MissingAgentGoalsException(f"AgentElement '{self.name}' was initialized without goals. Please provide goals via the 'goals' parameter or ensure the variable '{self.goals_var_name}' exists in the message and that it contains non-empty goals.")
 
         message = self.run_agent(message)
+
         return message
 
     def exit(self, message) -> Message:
@@ -71,7 +76,6 @@ class AgentElement(BaseElement):
         return [f"AgentElement(\n",name_str, goals_str, max_iter_str, ")\n"]
     
     def run_agent(self, message: Message) -> Message:
-
         goals_are_accomplished = False
         iteration_count = 0
 
@@ -96,66 +100,85 @@ class AgentElement(BaseElement):
         return (is_complete, message)
     
     def create_generate_plan_prompt(self, message: Message) -> str:
-        goals_text = self.agent_data.get_goals()
-        prompt = f"Generate a step-by-step plan to archive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow: {goals_text}"
+        try:
+            goals_text = self.agent_data.get_goals()
+            prompt = f"Generate a step-by-step plan to archive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow: {goals_text}"
+        except Exception as e:
+            error_message = f"An unexpected error occurred when attempting to generate the agent's plan: {e}\n{traceback.format_exc()}"
+            raise Exception(error_message)
         return prompt
 
     def generate_plan(self, message: Message) -> str:
-        self.agent_environment.send_to_user(f"Generating a new plan...")
         prompt_text = self.create_generate_plan_prompt(message)
-        LoggingService.log_info(f"Prompt for generating plan:\n\n{prompt_text}")
         plan = self.send_llm_request(prompt=prompt_text,message=message)
-        self.agent_environment.send_to_user(f"Okay! Here's my plan...\n\n{plan}")
         self.agent_data.save_plan(plan=plan)
     
-    def send_llm_request(self, prompt: str = "", message: Message = None) -> str:
+    def generate_prompt(self, message: Message=None, prompt: str = "") -> str:
         context_string = self.create_context_string(message)
         full_prompt = f"{context_string}\n\n{prompt}"
-        response = self.llm_provider.ask_question(system="You are an intelligent agent tasked with assisting in the completion of goals based on the provided context and instructions.", question=full_prompt)
+        return full_prompt
+
+    def send_llm_request(self, prompt: str = "", message: Message = None) -> str:
+        if(prompt == ""):
+            message.log_warning("No prompt was provided to the LLM request; using empty string as prompt.")
+
+        try:
+            full_prompt = self.generate_prompt(message=message, prompt=prompt)
+            response = self.llm_provider.ask_question(system="You are an intelligent agent tasked with assisting in the completion of goals based on the provided context and instructions.", question=full_prompt)
+        except Exception as e:
+            error_message = f"An unexpected error occurred when attempting to send a request to the LLM: {e}\n{traceback.format_exc()}"
+            raise Exception(error_message)
         return response
     
     def create_context_string(self, message: Message) -> str:
-        working_memory = self.agent_data.get_working_memory()
-        current_goals = self.agent_data.get_goals()
-        current_plan = self.agent_data.get_plan()
-        services = self.agent_data.get_services(message)
-        tools = self.agent_data.get_tools(message)
-        
-        if(message.is_debug_mode()):
-            if(not self.inherited_context):
-                self.agent_environment.send_to_user(f"Note: There is no inherited context from previous elements.")
-
-            if(not working_memory):
-                self.agent_environment.send_to_user(f"Note: The working memory is currently empty.")
-
-            if(not current_goals):
-                self.agent_environment.send_to_user(f"Note: The current goals empty.")
-
-            if(not current_plan):
-                self.agent_environment.send_to_user(f"Note: The current plan is empty.")
+        context = ""
+        try:
+            chat_history = self.agent_data.get_chat_history_summary(message)
+            goals = self.agent_data.get_goals()
+            inherited_context = self.inherited_context
+            plan = self.agent_data.get_plan()
+            services = self.agent_data.get_services(message)
+            tools = self.agent_data.get_tools(message)
+            working_memory = self.agent_data.get_working_memory()
             
-            if(not services):
-                self.agent_environment.send_to_user(f"Note: There are no services available.")
+            if(message.is_debug_mode()):
+                if(not inherited_context):
+                    self.message.log_info(f"Note: There is no inherited context from previous elements.")
 
-            if(not tools):
-                self.agent_environment.send_to_user(f"Note: There are no tools available.")
+                if(not working_memory):
+                    self.message.log_info(f"Note: The working memory is currently empty.")
+
+                if(not goals):
+                    self.message.log_error(f"Note: The current goals empty.")
+
+                if(not plan):
+                    self.message.log_error(f"Note: The current plan is empty.")
                 
+                if(not services):
+                    self.message.log_warning(f"Note: There are no services available.")
 
-        context_parts = [
-            "Consider the following when carrying out your tasks: \n",
-            f"Log of what has been done so far: {self.agent_data.get_working_memory()}\n",
-            f" >>> Chat history summary: {self.agent_data.get_chat_history_summary(message)}\n\n",
-            f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n\n",
-            f" >>> Your current plan (if any) is: {self.agent_data.get_plan()}\n\n",
-            f" >>> Your current service names are: {self.agent_data.get_services(message)}\n\n",
-            f" >>> Your available tools and their descriptions are as follows: {self.agent_data.get_tools(message)}]\n\n",
-            f" >>> Your current goals are: {self.agent_data.get_goals()}\n\n",
-            "Based on the above information, proceed with your instructions."
-        ]
-        context = "\n".join(context_parts)
+                if(not tools):
+                    self.message.log_warning(f"Note: There are no tools available.")
 
-        LoggingService.log_info(f"Context for LLM request created:\n\n {context}")
+                if(not chat_history):
+                    self.message.log_info(f"Note: The chat history is currently empty.")
 
+            context_parts = [
+                "Consider the following when carrying out your tasks: \n",
+                f"Log of what has been done so far: {working_memory}\n",
+                f" ===== CHAT HISTORY SUMMARY ===== \n {chat_history}\n\n",
+                f" ===== ADDITIONAL CONTEXT ===== \n {inherited_context}\n\n",
+                f" ===== CURRENT PLAN ===== \n {plan}\n\n",
+                f" ===== MCP SERVICE NAMES ===== \n {services}\n\n",
+                f" ===== MCP SERVICE TOOLS ===== \n {tools}]\n\n",
+                f" ===== GOALS ===== \n {goals}\n\n"
+            ]
+            context = "\n".join(context_parts)
+
+            LoggingService.log_info(f"Context for LLM request created...\n\n {context}")
+        except Exception as e:
+            error_message = f"An unexpected error occurred when attempting to create the context string: {e}\n{traceback.format_exc()}"
+            raise Exception(error_message)
         return context
 
     

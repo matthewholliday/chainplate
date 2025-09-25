@@ -1,6 +1,7 @@
 from .helpers.template_helper import TemplateHelper
 import os
 from .services.ux.cli_ux_service import CLIService
+from .services.logging.logging_service import LoggingService
 
 CONTEXT_KEY = "__context__"
 PAYLOAD_KEY = "__payload__"
@@ -36,12 +37,24 @@ class Message:
         return context
 
     def log(self, message: str):
-        self.logs.append(message)
+        LoggingService.log_info(message)
 
-    def get_logs(self):
+    def log_info(self, message: str):
+        LoggingService.log_info(message)
+        return self
+    
+    def log_error(self, message: str):
+        LoggingService.log_error(message)
+        return self
+
+    def log_warning(self, message: str):
+        LoggingService.log_warning(message)
+        return self
+
+    def get_logs(self): #TODO: deprecate
         return self.logs
     
-    def print_logs(self):
+    def print_logs(self): #TODO: deprecate
         pass
 
     def set_var(self, key: str, value):
@@ -63,7 +76,7 @@ class Message:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-    def log_message(self, text: str):
+    def log_message(self, text: str): #TODO: deprecate
         timestamp = self.get_formatted_timestamp()
         formatted_text = f"[{timestamp}]"
         formatted_text += "\n" + text
@@ -78,13 +91,13 @@ class Message:
     def get_payload(self) -> str:
         return self.get_var(PAYLOAD_KEY)
     
-    def set_chat_history(self, chat_history: list) -> None:
+    def set_chat_history(self, chat_history: list) -> None: #TODO: deprecate
         self.conversation_history = chat_history
 
-    def get_chat_history(self) -> list:
+    def get_chat_history(self) -> list: #TODO: deprecate
         return self.conversation_history  
 
-    def read_chat_history(self) -> str:
+    def read_chat_history(self) -> str: #TODO: deprecate
         history_text = ""
         for message in self.conversation_history:
             role = message.get("role", "unknown")
