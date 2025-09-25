@@ -94,12 +94,20 @@ class AgentElement(BaseElement):
         is_complete, message = self.process_action_object(next_action_object, message)
         return (is_complete, message)
     
+    def create_generate_plan_prompt(self, message: Message) -> str:
+        goals_text = self.agent_data.get_goals()
+        prompt = f"Generate a step-by-step plan to archive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow: {goals_text}"
+        return prompt
+
     def generate_plan(self, message: Message) -> str:
         self.agent_environment.send_to_user(f"Generating a new plan...")
-        plan = self.send_llm_request(message=message,prompt="Generate a step-by-step plan to archive the following goals based on the current context and tools available. Remember that you are an intelligent agent who is building a plan for you yourself to follow.")
+        prompt_text = self.create_generate_plan_prompt(message)
+        LoggingService.log_info(f"Prompt for generating plan:\n\n{prompt_text}")
+        plan = self.send_llm_request(prompt=prompt_text,message=message)
+        self.agent_environment.send_to_user(f"Okay! Here's my plan...\n\n{plan}")
         self.agent_data.save_plan(plan=plan)
     
-    def send_llm_request(self, prompt: str, message: Message) -> str:
+    def send_llm_request(self, prompt: str = "", message: Message = None) -> str:
         context_string = self.create_context_string(message)
         full_prompt = f"{context_string}\n\n{prompt}"
         response = self.llm_provider.ask_question(system="You are an intelligent agent tasked with assisting in the completion of goals based on the provided context and instructions.", question=full_prompt)
@@ -130,25 +138,32 @@ class AgentElement(BaseElement):
 
             if(not tools):
                 self.agent_environment.send_to_user(f"Note: There are no tools available.")
+                
 
         context_parts = [
             "Consider the following when carrying out your tasks: \n",
             f"Log of what has been done so far: {self.agent_data.get_working_memory()}\n",
-            f" >>> Chat history summary: {self.agent_data.get_chat_history_summary(message)}\n",
-            f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n",
-            f" >>> Your current plan (if any) is: {self.agent_data.get_plan()}\n",
-            f" >>> Your current service names are: {self.agent_data.get_services(message)}\n",
-            f" >>> Your available tools and their descriptions are as follows: {self.agent_data.get_tools(message)}\n",
-            "Based on the above information, please with your instructions(see below):\n"
+            f" >>> Chat history summary: {self.agent_data.get_chat_history_summary(message)}\n\n",
+            f" >>> The inherited context from previous stages of the process is as follows: {self.inherited_context}\n\n",
+            f" >>> Your current plan (if any) is: {self.agent_data.get_plan()}\n\n",
+            f" >>> Your current service names are: {self.agent_data.get_services(message)}\n\n",
+            f" >>> Your available tools and their descriptions are as follows: {self.agent_data.get_tools(message)}]\n\n",
+            f" >>> Your current goals are: {self.agent_data.get_goals()}\n\n",
+            "Based on the above information, proceed with your instructions."
         ]
-        return "\n".join(context_parts)
+        context = "\n".join(context_parts)
+
+        LoggingService.log_info(f"Context for LLM request created:\n\n {context}")
+
+        return context
+
     
     def convert_action_text_to_object(self, action_text: str):
         action_object = {}
         try:
             action_object = json.loads(action_text)
         except json.JSONDecodeError as e:
-            LoggingService.log_error(f"Error parsing action text to JSON: Here is the action text that caused the error:\n{action_text}\n\nError details: {e}\n{traceback.format_exc()}")
+            LoggingService.log_error(f"(chainplate) [GET-NEXT-ACTION-ERROR]Error parsing action text to JSON: Here is the action text that caused the error:\n{action_text}\n\nError details: {e}\n{traceback.format_exc()}")
             self.agent_environment.send_to_user("I encountered an error while trying to understand my next action. I'll try again.")
             action_object = {
                 "action": "ERROR_PARSING_ACTION",
@@ -230,6 +245,7 @@ class AgentElement(BaseElement):
 
     def get_next_action_text(self, message: Message) -> str:
         response = self.send_llm_request(prompt=ACTION_PLAN_SELECTION_PROMPT, message=message)
+        LoggingService.log_info(f"(chainplate) [NEXT-ACTION-TEXT (should be JSON-parseable):\n\n{response}")
         return response
 
     def print_agent_output(self, text: str) -> None:

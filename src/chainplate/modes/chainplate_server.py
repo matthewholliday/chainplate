@@ -33,22 +33,16 @@ def root():  # pragma: no cover - trivial text response tested elsewhere
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Basic health check.
-
-    Returns JSON with at least a "status" key.
-    If the OPENAI_API_KEY environment variable is missing or empty,
-    returns status "error" and an "errors" list describing issues.
-    Otherwise returns status "ok".
-    """
-    errors: list[str] = []
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        errors.append("OPENAI_API_KEY not configured")
-
-    status = "ok" if not errors else "error"
-    body = {"status": status}
-    if errors:
-        body["errors"] = errors
+    from ..services.health.health_check import HealthCheckService
+    try:
+        health_service = HealthCheckService()
+        health_check = health_service.check()
+        body = health_check.to_dict()
+        status = body.get('status', 'unknown')
+    except Exception as e:  # pragma: no cover - defensive
+        logger.exception("Health check failed")
+        body = {'status': 'error', 'errors': [str(e)]}
+        status = 'error'
     return jsonify(body), (200 if status == "ok" else 503)
 
 @app.route('/workflow', methods=['POST'])

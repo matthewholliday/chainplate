@@ -43,8 +43,8 @@ class AgentData:
         tool_descriptions = []
         for service in message.mcp_services.values():
             for tool in service.list_tools():
-                tool_descriptions.append(tool + "\n")
-        return "\n".join(tool_descriptions)
+                tool_descriptions.append(tool)
+        return "".join(tool_descriptions)
 
     def get_chat_history_summary(self, message: Message) -> str:
         chat_messages = self.data_service.get_execution_steps(self.execution_id)
