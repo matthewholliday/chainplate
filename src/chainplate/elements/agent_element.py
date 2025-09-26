@@ -79,7 +79,7 @@ class AgentElement(BaseElement):
             goals_are_accomplished, message = self.run_agent_iteration(message=message)
             iteration_count += 1
             if goals_are_accomplished:
-                self.agent_environment.send_to_user(f"iteration count: {iteration_count}")
+                self.execution_context.log_info(f"iteration count: {iteration_count}")
         
         if not goals_are_accomplished:
             self.agent_environment.send_to_user(f"I reached the maximum number of iterations ({self.max_iterations}) without accomplishing the goals.")
