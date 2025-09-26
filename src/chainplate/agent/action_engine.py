@@ -34,7 +34,7 @@ class MarkTaskAsCompleteAction:
 class ActionEngine:
     def convert_action_text_to_object(self, action_text: str, execution_context=None):
         action_object = {}
-
+        execution_context.log_info(f"(chainplate) [CONVERTING-ACTION-TEXT-TO-OBJECT (should be JSON-parseable):\n\n{action_text}")
         try:
             action_object = json.loads(action_text)
         except json.JSONDecodeError as e:

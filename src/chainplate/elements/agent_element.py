@@ -89,7 +89,7 @@ class AgentElement(BaseElement):
     def run_agent_iteration(self, message: Message) -> tuple[bool, Message]:
         self.agent_environment.send_to_user("Thinking about my next action...")
         self.next_action_text = self.get_next_action_text(message)
-        next_action_object = self.action_engine.convert_action_text_to_object(self.next_action_text, self.execution_context)
+        next_action_object = self.action_engine.convert_action_text_to_object(action_text=self.next_action_text, execution_context=self.execution_context)
         is_complete = ActionEngine.perform_action(
             action_object=next_action_object,
             execution_context=self.execution_context,
