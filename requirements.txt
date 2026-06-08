@@ -1,6 +1,0 @@
-build
-jinja2
-openai
-flask
-mcp
-flask-cors

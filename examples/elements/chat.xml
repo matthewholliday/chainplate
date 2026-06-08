@@ -1,3 +1,0 @@
-<pipeline name="simple chat">
-    <send-prompt output_var="__payload__">{{ __payload__ }}</send-prompt>
-</pipeline>

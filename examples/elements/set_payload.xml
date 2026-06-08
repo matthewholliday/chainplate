@@ -1,3 +1,0 @@
-<pipeline name="set payload example">
-    <set-payload>This is the new payload data.</set-payload>
-</pipeline>

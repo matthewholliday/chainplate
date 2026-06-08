@@ -1,4 +1,0 @@
-<pipeline name="interpret as integer">
-    <interpret-as-integer input_var="__payload__" output_var="as_int_result"></interpret-as-integer>
-    <debug>Result: {{as_int_result}}</debug>
-</pipeline>
