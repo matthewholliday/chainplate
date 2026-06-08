@@ -43142,17 +43142,17 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = toPascalCase(iconName);
   return Component;
 };
-const __iconNode$l = [
+const __iconNode$o = [
   ["path", { d: "M12 5v14", key: "s699le" }],
   ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
 ];
-const ArrowDown = createLucideIcon("arrow-down", __iconNode$l);
-const __iconNode$k = [
+const ArrowDown = createLucideIcon("arrow-down", __iconNode$o);
+const __iconNode$n = [
   ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
   ["path", { d: "M12 19V5", key: "x0mq9r" }]
 ];
-const ArrowUp = createLucideIcon("arrow-up", __iconNode$k);
-const __iconNode$j = [
+const ArrowUp = createLucideIcon("arrow-up", __iconNode$n);
+const __iconNode$m = [
   ["path", { d: "M12 18V5", key: "adv99a" }],
   ["path", { d: "M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4", key: "1e3is1" }],
   ["path", { d: "M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5", key: "1gqd8o" }],
@@ -43162,51 +43162,51 @@ const __iconNode$j = [
   ["path", { d: "M6 18a4 4 0 0 1-2-7.464", key: "k1g0md" }],
   ["path", { d: "M6.003 5.125a4 4 0 0 0-2.526 5.77", key: "q97ue3" }]
 ];
-const Brain = createLucideIcon("brain", __iconNode$j);
-const __iconNode$i = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$i);
-const __iconNode$h = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$h);
-const __iconNode$g = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
-const ChevronLeft = createLucideIcon("chevron-left", __iconNode$g);
-const __iconNode$f = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
-const ChevronRight = createLucideIcon("chevron-right", __iconNode$f);
-const __iconNode$e = [
+const Brain = createLucideIcon("brain", __iconNode$m);
+const __iconNode$l = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$l);
+const __iconNode$k = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$k);
+const __iconNode$j = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+const ChevronLeft = createLucideIcon("chevron-left", __iconNode$j);
+const __iconNode$i = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+const ChevronRight = createLucideIcon("chevron-right", __iconNode$i);
+const __iconNode$h = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
   ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$e);
-const __iconNode$d = [
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$h);
+const __iconNode$g = [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
   ["path", { d: "m9 9 6 6", key: "z0biqf" }]
 ];
-const CircleX = createLucideIcon("circle-x", __iconNode$d);
-const __iconNode$c = [
+const CircleX = createLucideIcon("circle-x", __iconNode$g);
+const __iconNode$f = [
   ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
   ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
 ];
-const Copy = createLucideIcon("copy", __iconNode$c);
-const __iconNode$b = [
+const Copy = createLucideIcon("copy", __iconNode$f);
+const __iconNode$e = [
   ["ellipse", { cx: "12", cy: "5", rx: "9", ry: "3", key: "msslwz" }],
   ["path", { d: "M3 5V19A9 3 0 0 0 21 19V5", key: "1wlel7" }],
   ["path", { d: "M3 12A9 3 0 0 0 21 12", key: "mv7ke4" }]
 ];
-const Database = createLucideIcon("database", __iconNode$b);
-const __iconNode$a = [
+const Database = createLucideIcon("database", __iconNode$e);
+const __iconNode$d = [
   ["path", { d: "M12 15V3", key: "m9g1x1" }],
   ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
   ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
 ];
-const Download = createLucideIcon("download", __iconNode$a);
-const __iconNode$9 = [
+const Download = createLucideIcon("download", __iconNode$d);
+const __iconNode$c = [
   ["circle", { cx: "12", cy: "12", r: "1", key: "41hilf" }],
   ["circle", { cx: "19", cy: "12", r: "1", key: "1wjl8i" }],
   ["circle", { cx: "5", cy: "12", r: "1", key: "1pcz8c" }]
 ];
-const Ellipsis = createLucideIcon("ellipsis", __iconNode$9);
-const __iconNode$8 = [
+const Ellipsis = createLucideIcon("ellipsis", __iconNode$c);
+const __iconNode$b = [
   [
     "path",
     {
@@ -43219,8 +43219,30 @@ const __iconNode$8 = [
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
 ];
-const FileText = createLucideIcon("file-text", __iconNode$8);
-const __iconNode$7 = [
+const FileText = createLucideIcon("file-text", __iconNode$b);
+const __iconNode$a = [
+  [
+    "path",
+    {
+      d: "m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2",
+      key: "usdka0"
+    }
+  ]
+];
+const FolderOpen = createLucideIcon("folder-open", __iconNode$a);
+const __iconNode$9 = [
+  ["path", { d: "M12 10v6", key: "1bos4e" }],
+  ["path", { d: "M9 13h6", key: "1uhe8q" }],
+  [
+    "path",
+    {
+      d: "M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z",
+      key: "1kt360"
+    }
+  ]
+];
+const FolderPlus = createLucideIcon("folder-plus", __iconNode$9);
+const __iconNode$8 = [
   [
     "path",
     {
@@ -43243,8 +43265,8 @@ const __iconNode$7 = [
     }
   ]
 ];
-const Layers = createLucideIcon("layers", __iconNode$7);
-const __iconNode$6 = [
+const Layers = createLucideIcon("layers", __iconNode$8);
+const __iconNode$7 = [
   ["path", { d: "M12 2v4", key: "3427ic" }],
   ["path", { d: "m16.2 7.8 2.9-2.9", key: "r700ao" }],
   ["path", { d: "M18 12h4", key: "wj9ykh" }],
@@ -43254,8 +43276,8 @@ const __iconNode$6 = [
   ["path", { d: "M2 12h4", key: "j09sii" }],
   ["path", { d: "m4.9 4.9 2.9 2.9", key: "giyufr" }]
 ];
-const Loader = createLucideIcon("loader", __iconNode$6);
-const __iconNode$5 = [
+const Loader = createLucideIcon("loader", __iconNode$7);
+const __iconNode$6 = [
   [
     "path",
     {
@@ -43265,31 +43287,41 @@ const __iconNode$5 = [
   ],
   ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
 ];
-const Pencil = createLucideIcon("pencil", __iconNode$5);
-const __iconNode$4 = [
+const Pencil = createLucideIcon("pencil", __iconNode$6);
+const __iconNode$5 = [
   ["path", { d: "M5 12h14", key: "1ays0h" }],
   ["path", { d: "M12 5v14", key: "s699le" }]
 ];
-const Plus = createLucideIcon("plus", __iconNode$4);
-const __iconNode$3 = [
+const Plus = createLucideIcon("plus", __iconNode$5);
+const __iconNode$4 = [
   ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
   ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
   ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
   ["path", { d: "M8 16H3v5", key: "1cv678" }]
 ];
-const RefreshCw = createLucideIcon("refresh-cw", __iconNode$3);
-const __iconNode$2 = [
+const RefreshCw = createLucideIcon("refresh-cw", __iconNode$4);
+const __iconNode$3 = [
   ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }]
 ];
-const Square = createLucideIcon("square", __iconNode$2);
-const __iconNode$1 = [
+const Square = createLucideIcon("square", __iconNode$3);
+const __iconNode$2 = [
   ["path", { d: "M10 11v6", key: "nco0om" }],
   ["path", { d: "M14 11v6", key: "outv1u" }],
   ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
   ["path", { d: "M3 6h18", key: "d0wm0j" }],
   ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
 ];
-const Trash2 = createLucideIcon("trash-2", __iconNode$1);
+const Trash2 = createLucideIcon("trash-2", __iconNode$2);
+const __iconNode$1 = [
+  [
+    "path",
+    {
+      d: "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z",
+      key: "1ngwbx"
+    }
+  ]
+];
+const Wrench = createLucideIcon("wrench", __iconNode$1);
 const __iconNode = [
   ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
@@ -60054,7 +60086,45 @@ const defaultComponents = memoizeMarkdownComponents({
   },
   CodeHeader
 });
-const APP_MODE_STORAGE_KEY = "agentx:app-mode";
+const APP_MODE_STORAGE_KEY = "chainplate:app-mode";
+const AGENT_TOOLS = [
+  {
+    id: "read_file",
+    label: "Read File",
+    description: "Read the contents of a file at a given path."
+  },
+  {
+    id: "write_file",
+    label: "Write File",
+    description: "Write content to a file, creating it if it does not exist."
+  },
+  {
+    id: "list_directory",
+    label: "List Directory",
+    description: "List files and subdirectories in a directory."
+  },
+  {
+    id: "execute_command",
+    label: "Execute Command",
+    description: "Run a shell command and return its stdout/stderr output."
+  }
+];
+const ENABLED_TOOLS_STORAGE_KEY = "chainplate:enabled-tools";
+const ALL_TOOL_IDS = AGENT_TOOLS.map((t) => t.id);
+function readEnabledTools() {
+  if (typeof localStorage === "undefined") return ALL_TOOL_IDS;
+  try {
+    const raw = localStorage.getItem(ENABLED_TOOLS_STORAGE_KEY);
+    if (!raw) return ALL_TOOL_IDS;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return ALL_TOOL_IDS;
+    return parsed.filter(
+      (id) => ALL_TOOL_IDS.includes(id)
+    );
+  } catch {
+    return ALL_TOOL_IDS;
+  }
+}
 const ANTHROPIC_MODELS = [
   { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6" },
   { id: "claude-opus-4-6", label: "Claude Opus 4.6" },
@@ -60062,13 +60132,14 @@ const ANTHROPIC_MODELS = [
 ];
 const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6";
 const CONTEXT_WINDOW_SIZE = 2e5;
-const MODEL_STORAGE_KEY = "agentx:anthropic-model";
-const SYSTEM_PROMPT_STORAGE_KEY = "agentx:system-prompt";
-const KNOWLEDGE_LOCATION_STORAGE_KEY = "agentx:knowledge-location";
-const RAG_ENABLED_STORAGE_KEY = "agentx:rag-enabled";
-const RAG_MAX_CHUNKS_STORAGE_KEY = "agentx:rag-max-chunks";
+const MODEL_STORAGE_KEY = "chainplate:anthropic-model";
+const SYSTEM_PROMPT_STORAGE_KEY = "chainplate:system-prompt";
+const KNOWLEDGE_LOCATION_STORAGE_KEY = "chainplate:knowledge-location";
+const WORKSPACE_COLLAPSED_STORAGE_KEY = "chainplate:workspace-collapsed";
+const RAG_ENABLED_STORAGE_KEY = "chainplate:rag-enabled";
+const RAG_MAX_CHUNKS_STORAGE_KEY = "chainplate:rag-max-chunks";
 const DEFAULT_RAG_MAX_CHUNKS = 10;
-const RAG_SIMILARITY_CUTOFF_STORAGE_KEY = "agentx:rag-similarity-cutoff";
+const RAG_SIMILARITY_CUTOFF_STORAGE_KEY = "chainplate:rag-similarity-cutoff";
 const DEFAULT_RAG_SIMILARITY_CUTOFF = 0.1;
 function isAnthropicModelId(value) {
   return typeof value === "string" && ANTHROPIC_MODELS.some((model) => model.id === value);
@@ -61442,12 +61513,23 @@ const BranchPicker = ({
     }
   );
 };
-const STORAGE_KEY = "agentx:conversations";
+const HOME_WORKSPACE_ID = "home";
+const HOME_WORKSPACE = {
+  id: HOME_WORKSPACE_ID,
+  name: "HOME",
+  createdAt: 0
+};
+const STORAGE_KEY = "chainplate:conversations";
+const WORKSPACES_STORAGE_KEY = "chainplate:workspaces";
 function loadConversations() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return parsed.map((c) => ({
+      ...c,
+      workspaceId: c.workspaceId ?? HOME_WORKSPACE_ID
+    }));
   } catch {
     return [];
   }
@@ -61458,12 +61540,36 @@ function saveConversations(conversations) {
   } catch {
   }
 }
-function createConversation() {
+function createConversation(workspaceId = HOME_WORKSPACE_ID) {
   return {
     id: crypto.randomUUID(),
     title: "New conversation",
     createdAt: Date.now(),
+    workspaceId,
     messages: []
+  };
+}
+function loadWorkspaces() {
+  try {
+    const raw = localStorage.getItem(WORKSPACES_STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+function saveWorkspaces(workspaces) {
+  try {
+    localStorage.setItem(WORKSPACES_STORAGE_KEY, JSON.stringify(workspaces));
+  } catch {
+  }
+}
+function createWorkspace(name2, rootFolder) {
+  return {
+    id: crypto.randomUUID(),
+    name: name2,
+    rootFolder,
+    createdAt: Date.now()
   };
 }
 function formatRelativeTime(timestamp) {
@@ -61943,80 +62049,330 @@ const DataModal = () => {
     ] })
   ] });
 };
-const ConversationSidebar = ({
-  conversations,
-  activeId,
-  onNew,
-  onSelect,
-  onDelete
-}) => {
-  const sorted = [...conversations].sort((a, b) => b.createdAt - a.createdAt);
+function getIsCustomized() {
+  const enabled = readEnabledTools();
+  return enabled.length !== ALL_TOOL_IDS.length;
+}
+const ToolsModal = () => {
+  const [open, setOpen] = reactExports.useState(false);
+  const [enabledTools, setEnabledTools] = reactExports.useState(ALL_TOOL_IDS);
+  const [isCustomized, setIsCustomized] = reactExports.useState(getIsCustomized);
+  const handleOpen = reactExports.useCallback((isOpen) => {
+    if (isOpen) {
+      setEnabledTools(readEnabledTools());
+    }
+    setOpen(isOpen);
+  }, []);
+  const handleToggle = reactExports.useCallback((toolId, checked) => {
+    setEnabledTools((prev) => {
+      const next = checked ? [...prev, toolId] : prev.filter((id) => id !== toolId);
+      if (next.length === ALL_TOOL_IDS.length) {
+        localStorage.removeItem(ENABLED_TOOLS_STORAGE_KEY);
+      } else {
+        localStorage.setItem(ENABLED_TOOLS_STORAGE_KEY, JSON.stringify(next));
+      }
+      setIsCustomized(next.length !== ALL_TOOL_IDS.length);
+      return next;
+    });
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog, { open, onOpenChange: handleOpen, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      TooltipIconButton,
+      {
+        tooltip: isCustomized ? "Tools (customized)" : "Tools",
+        side: "top",
+        variant: "ghost",
+        size: "icon",
+        className: "hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30 size-8 rounded-full p-1",
+        "aria-label": "Open tools",
+        onClick: () => handleOpen(true),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Wrench,
+          {
+            className: isCustomized ? "size-4 stroke-[1.5px] text-primary" : "size-4 stroke-[1.5px]"
+          }
+        )
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent, { className: "sm:max-w-md", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle, { children: "Agent Tools" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1 py-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mb-3 text-xs text-muted-foreground", children: "Choose which tools the agent can use. Changes take effect on the next message." }),
+        AGENT_TOOLS.map((tool) => {
+          const checked = enabledTools.includes(tool.id);
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "label",
+            {
+              className: "flex cursor-pointer items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-muted/60",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked,
+                    onChange: (e) => handleToggle(tool.id, e.target.checked),
+                    className: "mt-0.5 size-4 shrink-0 rounded border-input accent-primary cursor-pointer"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-0.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium leading-none", children: tool.label }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-muted-foreground", children: tool.description })
+                ] })
+              ]
+            },
+            tool.id
+          );
+        })
+      ] })
+    ] })
+  ] });
+};
+function ConversationItem({ conv, isActive, isRunning, hasNotification, onSelect, onDelete }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "flex w-56 shrink-0 flex-col border-r border-border",
+      className: cn(
+        "group flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-150",
+        "border-l-2",
+        isActive ? "border-l-[--brand] bg-[--user-bubble]" : "border-l-transparent hover:border-l-[--brand-dim] hover:bg-accent hover:translate-x-0.5"
+      ),
+      onClick: () => onSelect(conv.id),
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            className: cn(
+              "min-w-0 flex-1 truncate font-medium leading-snug",
+              isActive ? "text-foreground" : "text-foreground/80"
+            ),
+            children: conv.title
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "shrink-0 text-xs text-muted-foreground group-hover:hidden", children: formatRelativeTime(conv.createdAt) }),
+        isRunning && !isActive && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "relative flex shrink-0 size-2 group-hover:hidden", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "relative inline-flex size-2 rounded-full bg-amber-500" })
+        ] }),
+        hasNotification && !isRunning && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "span",
+          {
+            className: "shrink-0 size-2 rounded-full group-hover:hidden",
+            style: { backgroundColor: "var(--brand)" }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            className: "hidden shrink-0 rounded p-0.5 text-muted-foreground transition-colors hover:text-foreground group-hover:block",
+            onClick: (e) => {
+              e.stopPropagation();
+              onDelete(conv.id);
+            },
+            "aria-label": "Delete conversation",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-3.5" })
+          }
+        )
+      ]
+    }
+  );
+}
+function WorkspaceSection({
+  workspace,
+  conversations,
+  isCollapsed,
+  isHome,
+  activeId,
+  runningIds,
+  notificationIds,
+  onNew,
+  onSelect,
+  onDelete,
+  onToggle,
+  onRename,
+  onDeleteWorkspace
+}) {
+  const [isEditing, setIsEditing] = reactExports.useState(false);
+  const [editValue, setEditValue] = reactExports.useState(workspace.name);
+  const inputRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditing]);
+  const commitRename = reactExports.useCallback(() => {
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== workspace.name && onRename) {
+      onRename(workspace.id, trimmed);
+    } else {
+      setEditValue(workspace.name);
+    }
+    setIsEditing(false);
+  }, [editValue, workspace.name, workspace.id, onRename]);
+  const sorted = [...conversations].sort((a, b) => b.createdAt - a.createdAt);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-1", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "group flex items-center gap-1 rounded-md px-1.5 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer",
+        onClick: () => onToggle(workspace.id),
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "shrink-0", children: isCollapsed ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "size-3" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "size-3" }) }),
+          !isHome && /* @__PURE__ */ jsxRuntimeExports.jsx(FolderOpen, { className: "size-3 shrink-0 text-[--brand]" }),
+          isEditing ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              ref: inputRef,
+              className: "min-w-0 flex-1 rounded bg-background px-1 py-0 text-xs font-semibold uppercase tracking-wider text-foreground outline-none ring-1 ring-[--brand]",
+              value: editValue,
+              onChange: (e) => setEditValue(e.target.value),
+              onBlur: commitRename,
+              onKeyDown: (e) => {
+                if (e.key === "Enter") commitRename();
+                if (e.key === "Escape") {
+                  setEditValue(workspace.name);
+                  setIsEditing(false);
+                }
+                e.stopPropagation();
+              },
+              onClick: (e) => e.stopPropagation()
+            }
+          ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: "min-w-0 flex-1 truncate",
+              onDoubleClick: (e) => {
+                if (!isHome) {
+                  e.stopPropagation();
+                  setIsEditing(true);
+                }
+              },
+              title: !isHome ? "Double-click to rename" : void 0,
+              children: workspace.name
+            }
+          ),
+          !isHome && onDeleteWorkspace && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              className: "ml-auto shrink-0 rounded p-0.5 opacity-0 transition-all hover:text-destructive group-hover:opacity-100",
+              onClick: (e) => {
+                e.stopPropagation();
+                onDeleteWorkspace(workspace.id);
+              },
+              "aria-label": `Delete workspace ${workspace.name}`,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-3" })
+            }
+          )
+        ]
+      }
+    ),
+    !isCollapsed && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "ml-2 border-l border-border/50 pl-1", children: [
+      sorted.map((conv) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ConversationItem,
+        {
+          conv,
+          isActive: conv.id === activeId,
+          isRunning: runningIds.has(conv.id),
+          hasNotification: notificationIds.has(conv.id),
+          onSelect,
+          onDelete
+        },
+        conv.id
+      )),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          className: "mt-0.5 flex w-full items-center gap-1.5 rounded-md px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+          onClick: (e) => {
+            e.stopPropagation();
+            onNew(workspace.id);
+          },
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "size-3 shrink-0" }),
+            "New conversation"
+          ]
+        }
+      )
+    ] })
+  ] });
+}
+const ConversationSidebar = ({
+  conversations,
+  workspaces,
+  collapsedWorkspaceIds,
+  activeId,
+  runningIds,
+  notificationIds,
+  onNew,
+  onSelect,
+  onDelete,
+  onNewWorkspace,
+  onRenameWorkspace,
+  onDeleteWorkspace,
+  onToggleWorkspace
+}) => {
+  const homeConversations = conversations.filter((c) => c.workspaceId === HOME_WORKSPACE_ID);
+  const isHomeCollapsed = collapsedWorkspaceIds.has(HOME_WORKSPACE_ID);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: "flex w-72 shrink-0 flex-col border-r border-border",
       style: { backgroundColor: "var(--sidebar-bg)" },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 pb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 pt-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
           Button,
           {
             variant: "ghost",
             size: "sm",
-            className: "group w-full justify-start gap-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
-            onClick: onNew,
+            className: "mb-1 w-full justify-start gap-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+            onClick: onNewWorkspace,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                Plus,
-                {
-                  className: "size-4 shrink-0 transition-colors group-hover:text-[--brand]",
-                  style: { color: "inherit" }
-                }
-              ),
-              "New conversation"
+              /* @__PURE__ */ jsxRuntimeExports.jsx(FolderPlus, { className: "size-3.5 shrink-0" }),
+              "Add workspace"
             ]
           }
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto px-2 pb-2", children: sorted.map((conv) => {
-          const isActive = conv.id === activeId;
-          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-2 pb-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkspaceSection,
             {
-              className: cn(
-                "group relative flex cursor-pointer flex-col rounded-md px-3 py-2 text-sm transition-all duration-150",
-                "border-l-2",
-                isActive ? "border-l-[--brand] bg-[--user-bubble]" : "border-l-transparent hover:border-l-[--brand-dim] hover:bg-accent hover:translate-x-0.5"
-              ),
-              onClick: () => onSelect(conv.id),
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "span",
-                  {
-                    className: cn(
-                      "truncate pr-5 font-medium leading-snug",
-                      isActive ? "text-foreground" : "text-foreground/80"
-                    ),
-                    children: conv.title
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mt-0.5 text-xs text-muted-foreground", children: formatRelativeTime(conv.createdAt) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    className: "absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground opacity-0 transition-all hover:text-foreground group-hover:opacity-100",
-                    onClick: (e) => {
-                      e.stopPropagation();
-                      onDelete(conv.id);
-                    },
-                    "aria-label": "Delete conversation",
-                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "size-3.5" })
-                  }
-                )
-              ]
+              workspace: HOME_WORKSPACE,
+              conversations: homeConversations,
+              isCollapsed: isHomeCollapsed,
+              isHome: true,
+              activeId,
+              runningIds,
+              notificationIds,
+              onNew,
+              onSelect,
+              onDelete,
+              onToggle: onToggleWorkspace
+            }
+          ),
+          workspaces.slice().sort((a, b) => a.createdAt - b.createdAt).map((ws) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            WorkspaceSection,
+            {
+              workspace: ws,
+              conversations: conversations.filter((c) => c.workspaceId === ws.id),
+              isCollapsed: collapsedWorkspaceIds.has(ws.id),
+              isHome: false,
+              activeId,
+              runningIds,
+              notificationIds,
+              onNew,
+              onSelect,
+              onDelete,
+              onToggle: onToggleWorkspace,
+              onRename: onRenameWorkspace,
+              onDeleteWorkspace
             },
-            conv.id
-          );
-        }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 border-t border-border px-2 py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(DataModal, {}) })
+            ws.id
+          ))
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-border px-2 py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DataModal, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ToolsModal, {})
+        ] }) })
       ]
     }
   );
@@ -62040,6 +62396,21 @@ function extractTitle(messages) {
     }
   }
   return text2.slice(0, 50) || void 0;
+}
+function RunningReporter({ conversationId, onRunningChange }) {
+  const isRunning = useAuiState((s) => s.thread.isRunning);
+  const prevRef = reactExports.useRef(false);
+  const onRunningChangeRef = reactExports.useRef(onRunningChange);
+  reactExports.useEffect(() => {
+    onRunningChangeRef.current = onRunningChange;
+  });
+  reactExports.useEffect(() => {
+    if (prevRef.current !== isRunning) {
+      prevRef.current = isRunning;
+      onRunningChangeRef.current(conversationId, isRunning);
+    }
+  }, [isRunning]);
+  return null;
 }
 function ConversationSyncer({ conversationId, onSave }) {
   const threadRuntime = useThreadRuntime();
@@ -62108,7 +62479,9 @@ function ChatAppInner({
   conversationId,
   initialMessages,
   onSave,
-  mode
+  onRunningChange,
+  mode,
+  workspaceRoot
 }) {
   const { pendingRef } = useRagStore();
   const transport = reactExports.useMemo(
@@ -62128,12 +62501,17 @@ ${c.text}`
 
 ${header}` : header;
         }
-        return system ? { system } : {};
+        const enabledTools = readEnabledTools();
+        return {
+          ...system ? { system } : {},
+          enabledTools,
+          ...workspaceRoot ? { workspaceRoot } : {}
+        };
       }
     }),
     // pendingRef is stable (useRef); chatApiUrl changes only on server restart
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chatApiUrl, mode]
+    [chatApiUrl, mode, workspaceRoot]
   );
   const validMessages = reactExports.useMemo(() => initialMessages.filter((m) => {
     if (Array.isArray(m.parts) && m.parts.some((p) => p.type !== "step-start")) return true;
@@ -62149,6 +62527,13 @@ ${header}` : header;
       {
         conversationId,
         onSave
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      RunningReporter,
+      {
+        conversationId,
+        onRunningChange
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(RagChunksSyncer, {}),
@@ -62180,13 +62565,28 @@ function ModeToggle({ mode, onChange }) {
     }
   );
 }
+function loadCollapsedWorkspaceIds() {
+  try {
+    const raw = localStorage.getItem(WORKSPACE_COLLAPSED_STORAGE_KEY);
+    if (!raw) return /* @__PURE__ */ new Set();
+    return new Set(JSON.parse(raw));
+  } catch {
+    return /* @__PURE__ */ new Set();
+  }
+}
+function saveCollapsedWorkspaceIds(ids) {
+  try {
+    localStorage.setItem(WORKSPACE_COLLAPSED_STORAGE_KEY, JSON.stringify([...ids]));
+  } catch {
+  }
+}
 function getInitialConvState() {
   const saved = loadConversations();
   if (saved.length > 0) {
     const sorted = [...saved].sort((a, b) => b.createdAt - a.createdAt);
     return { conversations: saved, activeId: sorted[0].id };
   }
-  const conv = createConversation();
+  const conv = createConversation(HOME_WORKSPACE_ID);
   saveConversations([conv]);
   return { conversations: [conv], activeId: conv.id };
 }
@@ -62197,6 +62597,16 @@ function App() {
     () => localStorage.getItem(APP_MODE_STORAGE_KEY) ?? "chat"
   );
   const [{ conversations, activeId }, setConvState] = reactExports.useState(getInitialConvState);
+  const [workspaces, setWorkspaces] = reactExports.useState(() => loadWorkspaces());
+  const [collapsedWorkspaceIds, setCollapsedWorkspaceIds] = reactExports.useState(
+    () => loadCollapsedWorkspaceIds()
+  );
+  const [runningIds, setRunningIds] = reactExports.useState(/* @__PURE__ */ new Set());
+  const [notificationIds, setNotificationIds] = reactExports.useState(/* @__PURE__ */ new Set());
+  const activeIdRef = reactExports.useRef(activeId);
+  reactExports.useEffect(() => {
+    activeIdRef.current = activeId;
+  }, [activeId]);
   reactExports.useEffect(() => {
     if (!window.electronAPI?.getChatApiUrl) {
       setError("Preload bridge failed to load. Restart the application.");
@@ -62212,8 +62622,14 @@ function App() {
   reactExports.useEffect(() => {
     saveConversations(conversations);
   }, [conversations]);
-  const handleNew = reactExports.useCallback(() => {
-    const conv = createConversation();
+  reactExports.useEffect(() => {
+    saveWorkspaces(workspaces);
+  }, [workspaces]);
+  reactExports.useEffect(() => {
+    saveCollapsedWorkspaceIds(collapsedWorkspaceIds);
+  }, [collapsedWorkspaceIds]);
+  const handleNew = reactExports.useCallback((workspaceId) => {
+    const conv = createConversation(workspaceId);
     setConvState((prev) => ({
       conversations: [conv, ...prev.conversations],
       activeId: conv.id
@@ -62221,12 +62637,37 @@ function App() {
   }, []);
   const handleSelect = reactExports.useCallback((id) => {
     setConvState((prev) => ({ ...prev, activeId: id }));
+    setNotificationIds((prev) => {
+      if (!prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
+  const handleRunningChange = reactExports.useCallback((id, isRunning) => {
+    setRunningIds((prev) => {
+      const next = new Set(prev);
+      if (isRunning) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+    if (!isRunning) {
+      setNotificationIds((prev) => {
+        if (activeIdRef.current === id) return prev;
+        const next = new Set(prev);
+        next.add(id);
+        return next;
+      });
+    }
   }, []);
   const handleDelete2 = reactExports.useCallback((id) => {
     setConvState((prev) => {
       const remaining = prev.conversations.filter((c) => c.id !== id);
       if (remaining.length === 0) {
-        const conv = createConversation();
+        const conv = createConversation(HOME_WORKSPACE_ID);
         return { conversations: [conv], activeId: conv.id };
       }
       const newActiveId = prev.activeId === id ? [...remaining].sort((a, b) => b.createdAt - a.createdAt)[0].id : prev.activeId;
@@ -62246,10 +62687,57 @@ function App() {
     },
     []
   );
+  const handleNewWorkspace = reactExports.useCallback(async () => {
+    const folderPath = await window.electronAPI?.selectKnowledgeFolder();
+    if (!folderPath) return;
+    const name2 = folderPath.split("/").filter(Boolean).pop() ?? folderPath;
+    const ws = createWorkspace(name2, folderPath);
+    setWorkspaces((prev) => [...prev, ws]);
+    const conv = createConversation(ws.id);
+    setConvState((prev) => ({
+      conversations: [conv, ...prev.conversations],
+      activeId: conv.id
+    }));
+  }, []);
+  const handleRenameWorkspace = reactExports.useCallback((id, name2) => {
+    setWorkspaces(
+      (prev) => prev.map((ws) => ws.id === id ? { ...ws, name: name2 } : ws)
+    );
+  }, []);
+  const handleDeleteWorkspace = reactExports.useCallback((id) => {
+    setWorkspaces((prev) => prev.filter((ws) => ws.id !== id));
+    setConvState((prev) => {
+      const remaining = prev.conversations.filter((c) => c.workspaceId !== id);
+      if (remaining.length === 0) {
+        const conv = createConversation(HOME_WORKSPACE_ID);
+        return { conversations: [conv], activeId: conv.id };
+      }
+      const newActiveId = prev.conversations.find((c) => c.id === prev.activeId)?.workspaceId === id ? [...remaining].sort((a, b) => b.createdAt - a.createdAt)[0].id : prev.activeId;
+      return { conversations: remaining, activeId: newActiveId };
+    });
+  }, []);
+  const handleToggleWorkspace = reactExports.useCallback((id) => {
+    setCollapsedWorkspaceIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
   if (error) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-full items-center justify-center p-6 text-center text-muted-foreground", children: error });
   }
-  const activeConversation = conversations.find((c) => c.id === activeId);
+  const getWorkspaceRoot = reactExports.useCallback((conv) => {
+    if (conv.workspaceId === HOME_WORKSPACE_ID) return HOME_WORKSPACE.rootFolder;
+    return workspaces.find((ws) => ws.id === conv.workspaceId)?.rootFolder;
+  }, [workspaces]);
+  const convsToRender = reactExports.useMemo(
+    () => conversations.filter((c) => c.id === activeId || runningIds.has(c.id)),
+    [conversations, activeId, runningIds]
+  );
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
@@ -62257,7 +62745,10 @@ function App() {
         className: "flex h-10 w-full shrink-0 items-center border-b border-border px-4",
         style: { WebkitAppRegion: "drag", backgroundColor: "var(--sidebar-bg)" },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 select-none items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ModeToggle, { mode: appMode, onChange: setAppMode }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 select-none items-center justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-semibold tracking-wide text-foreground", children: "Chainplate" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
@@ -62267,11 +62758,8 @@ function App() {
                   boxShadow: "0 0 8px var(--glow-brand)"
                 }
               }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-semibold tracking-wide text-foreground", children: "AgentX" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(ModeToggle, { mode: appMode, onChange: setAppMode }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" })
+            )
+          ] })
         ]
       }
     ),
@@ -62280,24 +62768,43 @@ function App() {
         ConversationSidebar,
         {
           conversations,
+          workspaces,
+          collapsedWorkspaceIds,
           activeId,
+          runningIds,
+          notificationIds,
           onNew: handleNew,
           onSelect: handleSelect,
-          onDelete: handleDelete2
+          onDelete: handleDelete2,
+          onNewWorkspace: handleNewWorkspace,
+          onRenameWorkspace: handleRenameWorkspace,
+          onDeleteWorkspace: handleDeleteWorkspace,
+          onToggleWorkspace: handleToggleWorkspace
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-w-0 flex-1 flex-col", children: !chatInfo ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-full items-center justify-center p-6 text-muted-foreground", children: "Starting chat server..." }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ChatApp,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative flex min-w-0 flex-1 flex-col", children: !chatInfo ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex h-full items-center justify-center p-6 text-muted-foreground", children: "Starting chat server..." }) : convsToRender.map((conv) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
         {
-          chatApiUrl: chatInfo.url,
-          configured: chatInfo.configured,
-          conversationId: activeId,
-          initialMessages: activeConversation?.messages ?? [],
-          onSave: handleSave,
-          mode: appMode
+          className: cn(
+            "flex min-h-0 flex-1 flex-col",
+            conv.id !== activeId && "hidden"
+          ),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ChatApp,
+            {
+              chatApiUrl: chatInfo.url,
+              configured: chatInfo.configured,
+              conversationId: conv.id,
+              initialMessages: conv.messages ?? [],
+              onSave: handleSave,
+              onRunningChange: handleRunningChange,
+              mode: appMode,
+              workspaceRoot: getWorkspaceRoot(conv)
+            }
+          )
         },
-        `${activeId}-${appMode}`
-      ) })
+        conv.id
+      )) })
     ] })
   ] }) });
 }
