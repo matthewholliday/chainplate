@@ -7,9 +7,9 @@ declare global {
     electronAPI: {
       getChatApiUrl: () => Promise<ChatServerInfo>
       selectKnowledgeFolder: () => Promise<string | null>
-      indexKnowledge: (folderPath: string) => Promise<number>
-      getIndexMeta: () => Promise<{ chunkCount: number; indexedAt: string } | null>
-      searchChunks: (query: string) => Promise<Array<{ id: string; text: string; filePath: string; chunkIndex: number; score: number }>>
+      indexKnowledge: (workspaceId: string, folderPath: string) => Promise<number>
+      getIndexMeta: (workspaceId: string) => Promise<{ chunkCount: number; indexedAt: string; folderPath?: string } | null>
+      searchChunks: (workspaceId: string, query: string) => Promise<Array<{ id: string; text: string; filePath: string; chunkIndex: number; score: number }>>
     }
   }
 }

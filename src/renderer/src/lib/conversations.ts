@@ -25,26 +25,76 @@ export type Conversation = {
 const STORAGE_KEY = 'chainplate:conversations'
 const WORKSPACES_STORAGE_KEY = 'chainplate:workspaces'
 
+export const CONVERSATIONS_STORAGE_VERSION = 1
+
+type StoredConversations = {
+  version: number
+  conversations: Conversation[]
+}
+
+export type SaveResult =
+  | { ok: true }
+  | { ok: false; reason: 'quota' | 'serialization' | 'unknown' }
+
+function isStoredConversations(value: unknown): value is StoredConversations {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'version' in value &&
+    'conversations' in value &&
+    Array.isArray((value as StoredConversations).conversations)
+  )
+}
+
+function normalizeConversation(c: Conversation): Conversation {
+  return {
+    ...c,
+    workspaceId: c.workspaceId ?? HOME_WORKSPACE_ID
+  }
+}
+
 export function loadConversations(): Conversation[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
-    const parsed = JSON.parse(raw) as Conversation[]
-    // Migrate existing conversations that lack workspaceId
-    return parsed.map((c) => ({
-      ...c,
-      workspaceId: c.workspaceId ?? HOME_WORKSPACE_ID
-    }))
+
+    const parsed: unknown = JSON.parse(raw)
+
+    // Versioned format: { version, conversations }
+    if (isStoredConversations(parsed)) {
+      return parsed.conversations.map(normalizeConversation)
+    }
+
+    // Legacy format: bare Conversation[]
+    if (Array.isArray(parsed)) {
+      return (parsed as Conversation[]).map(normalizeConversation)
+    }
+
+    return []
   } catch {
     return []
   }
 }
 
-export function saveConversations(conversations: Conversation[]): void {
+export function saveConversations(conversations: Conversation[]): SaveResult {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations))
-  } catch {
-    // Storage full or serialization error — fail silently
+    const payload: StoredConversations = {
+      version: CONVERSATIONS_STORAGE_VERSION,
+      conversations
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+    return { ok: true }
+  } catch (error) {
+    if (
+      error instanceof DOMException &&
+      (error.name === 'QuotaExceededError' || error.code === 22)
+    ) {
+      return { ok: false, reason: 'quota' }
+    }
+    if (error instanceof TypeError) {
+      return { ok: false, reason: 'serialization' }
+    }
+    return { ok: false, reason: 'unknown' }
   }
 }
 

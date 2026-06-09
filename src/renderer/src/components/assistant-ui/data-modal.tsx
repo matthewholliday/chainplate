@@ -14,7 +14,6 @@ import {
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import {
   SYSTEM_PROMPT_STORAGE_KEY,
-  KNOWLEDGE_LOCATION_STORAGE_KEY,
   RAG_ENABLED_STORAGE_KEY,
   RAG_MAX_CHUNKS_STORAGE_KEY,
   DEFAULT_RAG_MAX_CHUNKS,
@@ -63,7 +62,12 @@ function ChunkItem({ chunk }: { chunk: SearchResult }) {
   );
 }
 
-export const DataModal: FC = () => {
+type DataModalProps = {
+  workspaceId: string
+  workspaceRoot?: string
+}
+
+export const DataModal: FC<DataModalProps> = ({ workspaceId, workspaceRoot }) => {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [ragEnabled, setRagEnabled] = useState(false);
@@ -86,11 +90,11 @@ export const DataModal: FC = () => {
   const loadExistingIndex = async () => {
     setExplorerLoading(true);
     try {
-      const meta = await window.electronAPI.getIndexMeta();
+      const meta = await window.electronAPI.getIndexMeta(workspaceId);
       if (meta) {
         setHasIndex(true);
         setChunkCount(meta.chunkCount);
-        const results = await window.electronAPI.searchChunks("");
+        const results = await window.electronAPI.searchChunks(workspaceId, "");
         setSearchResults(results);
       } else {
         setHasIndex(false);
@@ -105,7 +109,7 @@ export const DataModal: FC = () => {
   const handleOpen = (isOpen: boolean) => {
     if (isOpen) {
       setDraft(localStorage.getItem(SYSTEM_PROMPT_STORAGE_KEY) ?? "");
-      setKnowledgePath(localStorage.getItem(KNOWLEDGE_LOCATION_STORAGE_KEY) ?? "");
+      setKnowledgePath(workspaceRoot ?? "");
       setRagEnabled(localStorage.getItem(RAG_ENABLED_STORAGE_KEY) === "true");
       const storedMax = parseInt(localStorage.getItem(RAG_MAX_CHUNKS_STORAGE_KEY) ?? "", 10);
       setMaxChunks(Number.isFinite(storedMax) && storedMax > 0 ? storedMax : DEFAULT_RAG_MAX_CHUNKS);
@@ -127,12 +131,6 @@ export const DataModal: FC = () => {
     } else {
       localStorage.removeItem(SYSTEM_PROMPT_STORAGE_KEY);
     }
-    const trimmedPath = knowledgePath.trim();
-    if (trimmedPath) {
-      localStorage.setItem(KNOWLEDGE_LOCATION_STORAGE_KEY, trimmedPath);
-    } else {
-      localStorage.removeItem(KNOWLEDGE_LOCATION_STORAGE_KEY);
-    }
     if (ragEnabled) {
       localStorage.setItem(RAG_ENABLED_STORAGE_KEY, "true");
       localStorage.setItem(RAG_MAX_CHUNKS_STORAGE_KEY, String(maxChunks));
@@ -149,26 +147,18 @@ export const DataModal: FC = () => {
     setDraft("");
   };
 
-  const handleBrowse = async () => {
-    const selected = await window.electronAPI.selectKnowledgeFolder();
-    if (selected !== null) {
-      setKnowledgePath(selected);
-      setIndexResult(null);
-    }
-  };
-
   const handleReindex = async () => {
     if (!knowledgePath) return;
     setIndexing(true);
     setIndexResult(null);
     try {
-      const chunks = await window.electronAPI.indexKnowledge(knowledgePath);
+      const chunks = await window.electronAPI.indexKnowledge(workspaceId, knowledgePath);
       setIndexResult({ chunks });
       setHasIndex(true);
       setChunkCount(chunks);
       setSearchQuery("");
       setCurrentPage(1);
-      const results = await window.electronAPI.searchChunks("");
+      const results = await window.electronAPI.searchChunks(workspaceId, "");
       setSearchResults(results);
     } catch (err) {
       setIndexResult({
@@ -183,7 +173,7 @@ export const DataModal: FC = () => {
     setSearching(true);
     setCurrentPage(1);
     try {
-      const results = await window.electronAPI.searchChunks(query);
+      const results = await window.electronAPI.searchChunks(workspaceId, query);
       setSearchResults(results);
     } finally {
       setSearching(false);
@@ -369,46 +359,25 @@ export const DataModal: FC = () => {
                   </span>
                 </div>
 
-                {/* Knowledge location */}
+                {/* Knowledge location (bound to active workspace) */}
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="knowledge-location"
                     className="text-sm font-medium leading-none"
                   >
-                    Knowledge location
+                    Workspace folder
                   </label>
                   <p className="text-xs text-muted-foreground">
-                    Directory the assistant will use as its knowledge base.
+                    RAG indexes the active workspace folder. Add a workspace with a project folder to enable indexing.
                   </p>
-                  <div className="flex gap-2">
-                    <input
-                      id="knowledge-location"
-                      type="text"
-                      readOnly
-                      value={knowledgePath}
-                      placeholder="No folder selected"
-                      className="flex-1 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleBrowse}
-                      className="rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted"
-                    >
-                      Browse...
-                    </button>
-                  </div>
-                  {knowledgePath && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setKnowledgePath("");
-                        setIndexResult(null);
-                      }}
-                      className="self-start text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      Clear
-                    </button>
-                  )}
+                  <input
+                    id="knowledge-location"
+                    type="text"
+                    readOnly
+                    value={knowledgePath}
+                    placeholder="No workspace folder (HOME has no project root)"
+                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  />
                   <div className="flex items-center gap-3 pt-1">
                     <button
                       type="button"

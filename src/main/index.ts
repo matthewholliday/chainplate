@@ -65,19 +65,19 @@ app.whenReady().then(async () => {
     return canceled ? null : filePaths[0]
   })
 
-  ipcMain.handle('knowledge:index', async (_event, folderPath: string) => {
+  ipcMain.handle('knowledge:index', async (_event, workspaceId: string, folderPath: string) => {
     const { indexKnowledge } = await import('./knowledge-indexer')
-    return indexKnowledge(folderPath)
+    return indexKnowledge(workspaceId, folderPath)
   })
 
-  ipcMain.handle('knowledge:getIndexMeta', async () => {
+  ipcMain.handle('knowledge:getIndexMeta', async (_event, workspaceId: string) => {
     const { getIndexMeta } = await import('./knowledge-indexer')
-    return getIndexMeta()
+    return getIndexMeta(workspaceId)
   })
 
-  ipcMain.handle('knowledge:searchChunks', async (_event, query: string) => {
+  ipcMain.handle('knowledge:searchChunks', async (_event, workspaceId: string, query: string) => {
     const { searchChunks } = await import('./knowledge-indexer')
-    return searchChunks(query)
+    return searchChunks(workspaceId, query)
   })
 
   ipcMain.handle('chat:getApiUrl', (): ChatServerInfo => {

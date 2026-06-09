@@ -4,9 +4,9 @@ const preload = require("@electron-toolkit/preload");
 const electronAppAPI = {
   getChatApiUrl: () => electron.ipcRenderer.invoke("chat:getApiUrl"),
   selectKnowledgeFolder: () => electron.ipcRenderer.invoke("dialog:selectFolder"),
-  indexKnowledge: (folderPath) => electron.ipcRenderer.invoke("knowledge:index", folderPath),
-  getIndexMeta: () => electron.ipcRenderer.invoke("knowledge:getIndexMeta"),
-  searchChunks: (query) => electron.ipcRenderer.invoke("knowledge:searchChunks", query)
+  indexKnowledge: (workspaceId, folderPath) => electron.ipcRenderer.invoke("knowledge:index", workspaceId, folderPath),
+  getIndexMeta: (workspaceId) => electron.ipcRenderer.invoke("knowledge:getIndexMeta", workspaceId),
+  searchChunks: (workspaceId, query) => electron.ipcRenderer.invoke("knowledge:searchChunks", workspaceId, query)
 };
 if (process.contextIsolated) {
   try {

@@ -35,7 +35,10 @@ type RagStore = {
 
 const RagContext = createContext<RagStore | null>(null)
 
-export const RagProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const RagProvider: FC<{ children: ReactNode; workspaceId: string }> = ({
+  children,
+  workspaceId
+}) => {
   const pendingRef = useRef<RagChunk[]>([])
   const [ragChunksMap, setRagChunksMap] = useState<Map<string, RagChunk[]>>(
     () => new Map()
@@ -66,14 +69,14 @@ export const RagProvider: FC<{ children: ReactNode }> = ({ children }) => {
         : DEFAULT_RAG_SIMILARITY_CUTOFF
 
     try {
-      const chunks = await window.electronAPI.searchChunks(query)
+      const chunks = await window.electronAPI.searchChunks(workspaceId, query)
       pendingRef.current = chunks
         .filter((c) => c.score > cutoff)
         .slice(0, maxChunks)
     } catch {
       pendingRef.current = []
     }
-  }, [])
+  }, [workspaceId])
 
   const commitPending = useCallback((messageId: string): void => {
     const chunks = pendingRef.current

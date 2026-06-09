@@ -57,8 +57,28 @@ const SKIP_DIRS = /* @__PURE__ */ new Set([
   ".venv",
   "venv"
 ]);
-function getIndexPath() {
-  return path.join(electron.app.getPath("userData"), "knowledge-index.json");
+function sanitizeWorkspaceId(workspaceId) {
+  return workspaceId.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+const LEGACY_INDEX_FILENAME = "knowledge-index.json";
+function getIndexPath(workspaceId) {
+  return path.join(electron.app.getPath("userData"), `knowledge-index-${sanitizeWorkspaceId(workspaceId)}.json`);
+}
+async function migrateLegacyIndexIfNeeded(workspaceId) {
+  if (workspaceId !== "home") return;
+  const legacyPath = path.join(electron.app.getPath("userData"), LEGACY_INDEX_FILENAME);
+  const newPath = getIndexPath(workspaceId);
+  try {
+    await promises.readFile(newPath, "utf-8");
+    return;
+  } catch {
+  }
+  try {
+    const legacy = await promises.readFile(legacyPath, "utf-8");
+    await promises.mkdir(path.dirname(newPath), { recursive: true });
+    await promises.writeFile(newPath, legacy, "utf-8");
+  } catch {
+  }
 }
 async function walkFiles(dir) {
   const results = [];
@@ -101,7 +121,7 @@ function chunkText(text, size = CHUNK_SIZE, overlap = CHUNK_OVERLAP) {
   }
   return chunks;
 }
-async function indexKnowledge(folderPath) {
+async function indexKnowledge(workspaceId, folderPath) {
   const files = await walkFiles(folderPath);
   const chunks = [];
   for (const filePath of files) {
@@ -129,23 +149,24 @@ async function indexKnowledge(folderPath) {
     indexedAt: (/* @__PURE__ */ new Date()).toISOString(),
     chunks
   };
-  const indexPath = getIndexPath();
+  const indexPath = getIndexPath(workspaceId);
   await promises.mkdir(path.dirname(indexPath), { recursive: true });
   await promises.writeFile(indexPath, JSON.stringify(index, null, 2), "utf-8");
   return chunks.length;
 }
-async function loadKnowledgeIndex() {
+async function loadKnowledgeIndex(workspaceId) {
+  await migrateLegacyIndexIfNeeded(workspaceId);
   try {
-    const raw = await promises.readFile(getIndexPath(), "utf-8");
+    const raw = await promises.readFile(getIndexPath(workspaceId), "utf-8");
     return JSON.parse(raw);
   } catch {
     return null;
   }
 }
-async function getIndexMeta() {
-  const index = await loadKnowledgeIndex();
+async function getIndexMeta(workspaceId) {
+  const index = await loadKnowledgeIndex(workspaceId);
   if (!index) return null;
-  return { chunkCount: index.chunks.length, indexedAt: index.indexedAt };
+  return { chunkCount: index.chunks.length, indexedAt: index.indexedAt, folderPath: index.folderPath };
 }
 function tokenize(text) {
   return text.toLowerCase().replace(/[^\w]/g, " ").split(/\s+/).filter((t) => t.length > 1);
@@ -168,8 +189,8 @@ function cosineSim(a, b) {
   if (normA === 0 || normB === 0) return 0;
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
-async function searchChunks(query) {
-  const index = await loadKnowledgeIndex();
+async function searchChunks(workspaceId, query) {
+  const index = await loadKnowledgeIndex(workspaceId);
   if (!index) return [];
   const q = query.trim();
   if (!q) {

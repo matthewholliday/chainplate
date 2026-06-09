@@ -24,6 +24,8 @@ type Props = {
   workspaces: Workspace[]
   collapsedWorkspaceIds: Set<string>
   activeId: string
+  activeWorkspaceId: string
+  activeWorkspaceRoot?: string
   runningIds: Set<string>
   notificationIds: Set<string>
   onNew: (workspaceId: string) => void
@@ -256,6 +258,8 @@ export const ConversationSidebar: FC<Props> = ({
   workspaces,
   collapsedWorkspaceIds,
   activeId,
+  activeWorkspaceId,
+  activeWorkspaceRoot,
   runningIds,
   notificationIds,
   onNew,
@@ -329,7 +333,10 @@ export const ConversationSidebar: FC<Props> = ({
       {/* Footer */}
       <div className="border-t border-border px-2 py-2">
         <div className="flex items-center gap-1">
-          <DataModal />
+          <DataModal
+            workspaceId={activeWorkspaceId}
+            workspaceRoot={activeWorkspaceRoot}
+          />
           <ToolsModal />
         </div>
       </div>

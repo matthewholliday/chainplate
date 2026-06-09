@@ -69,7 +69,11 @@ function normalizeMessages(messages) {
 }
 let chatServer = null;
 let chatServerInfo = null;
-let lastUsage = null;
+const usageByConversation = /* @__PURE__ */ new Map();
+function storeUsage(conversationId, usage) {
+  if (!conversationId) return;
+  usageByConversation.set(conversationId, usage);
+}
 function isAllowedOrigin(origin) {
   if (!origin) return true;
   return origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:") || origin.startsWith("file://");
@@ -97,7 +101,7 @@ async function startChatServer() {
     }
     try {
       const body = await c.req.json();
-      const { messages, system, tools, metadata } = body;
+      const { messages, system, tools, conversationId, metadata } = body;
       const modelId = resolveAnthropicModelId(metadata?.custom?.model);
       const result = ai.streamText({
         model: anthropic.anthropic(modelId),
@@ -105,10 +109,10 @@ async function startChatServer() {
         messages: await ai.convertToModelMessages(normalizeMessages(messages)),
         tools: reactAiSdk.frontendTools(tools),
         onFinish({ usage }) {
-          lastUsage = {
+          storeUsage(conversationId, {
             promptTokens: usage.inputTokens ?? 0,
             completionTokens: usage.outputTokens ?? 0
-          };
+          });
         }
       });
       return result.toUIMessageStreamResponse();
@@ -132,7 +136,7 @@ async function startChatServer() {
     }
     try {
       const body = await c.req.json();
-      const { messages, system, enabledTools, workspaceRoot, metadata } = body;
+      const { messages, system, enabledTools, workspaceRoot, conversationId, metadata } = body;
       const modelId = resolveAnthropicModelId(metadata?.custom?.model);
       const allTools = {
         read_file: ai.tool({
@@ -221,10 +225,10 @@ async function startChatServer() {
         stopWhen: ai.stepCountIs(20),
         tools,
         onFinish({ usage }) {
-          lastUsage = {
+          storeUsage(conversationId, {
             promptTokens: usage.inputTokens ?? 0,
             completionTokens: usage.outputTokens ?? 0
-          };
+          });
         }
       });
       return result.toUIMessageStreamResponse();
@@ -240,7 +244,11 @@ async function startChatServer() {
     }
   });
   app.get("/api/usage", (c) => {
-    return c.json(lastUsage);
+    const conversationId = c.req.query("conversationId");
+    if (!conversationId) {
+      return c.json(null);
+    }
+    return c.json(usageByConversation.get(conversationId) ?? null);
   });
   return new Promise((resolve, reject) => {
     chatServer = nodeServer.serve(
@@ -325,17 +333,17 @@ electron.app.whenReady().then(async () => {
     });
     return canceled ? null : filePaths[0];
   });
-  electron.ipcMain.handle("knowledge:index", async (_event, folderPath) => {
-    const { indexKnowledge } = await Promise.resolve().then(() => require("./knowledge-indexer-D2HpdFGz.js"));
-    return indexKnowledge(folderPath);
+  electron.ipcMain.handle("knowledge:index", async (_event, workspaceId, folderPath) => {
+    const { indexKnowledge } = await Promise.resolve().then(() => require("./knowledge-indexer-h-7Faqda.js"));
+    return indexKnowledge(workspaceId, folderPath);
   });
-  electron.ipcMain.handle("knowledge:getIndexMeta", async () => {
-    const { getIndexMeta } = await Promise.resolve().then(() => require("./knowledge-indexer-D2HpdFGz.js"));
-    return getIndexMeta();
+  electron.ipcMain.handle("knowledge:getIndexMeta", async (_event, workspaceId) => {
+    const { getIndexMeta } = await Promise.resolve().then(() => require("./knowledge-indexer-h-7Faqda.js"));
+    return getIndexMeta(workspaceId);
   });
-  electron.ipcMain.handle("knowledge:searchChunks", async (_event, query) => {
-    const { searchChunks } = await Promise.resolve().then(() => require("./knowledge-indexer-D2HpdFGz.js"));
-    return searchChunks(query);
+  electron.ipcMain.handle("knowledge:searchChunks", async (_event, workspaceId, query) => {
+    const { searchChunks } = await Promise.resolve().then(() => require("./knowledge-indexer-h-7Faqda.js"));
+    return searchChunks(workspaceId, query);
   });
   electron.ipcMain.handle("chat:getApiUrl", () => {
     const info = getChatServerInfo();

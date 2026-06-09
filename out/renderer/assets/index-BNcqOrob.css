@@ -1256,10 +1256,6 @@
     align-self: flex-end;
   }
 
-  .self-start {
-    align-self: flex-start;
-  }
-
   .truncate {
     text-overflow: ellipsis;
     white-space: nowrap;

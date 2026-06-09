@@ -10,12 +10,12 @@ export type ChatServerInfo = {
 const electronAppAPI = {
   getChatApiUrl: (): Promise<ChatServerInfo> => ipcRenderer.invoke('chat:getApiUrl'),
   selectKnowledgeFolder: (): Promise<string | null> => ipcRenderer.invoke('dialog:selectFolder'),
-  indexKnowledge: (folderPath: string): Promise<number> =>
-    ipcRenderer.invoke('knowledge:index', folderPath),
-  getIndexMeta: (): Promise<{ chunkCount: number; indexedAt: string } | null> =>
-    ipcRenderer.invoke('knowledge:getIndexMeta'),
-  searchChunks: (query: string): Promise<Array<{ id: string; text: string; filePath: string; chunkIndex: number; score: number }>> =>
-    ipcRenderer.invoke('knowledge:searchChunks', query),
+  indexKnowledge: (workspaceId: string, folderPath: string): Promise<number> =>
+    ipcRenderer.invoke('knowledge:index', workspaceId, folderPath),
+  getIndexMeta: (workspaceId: string): Promise<{ chunkCount: number; indexedAt: string; folderPath?: string } | null> =>
+    ipcRenderer.invoke('knowledge:getIndexMeta', workspaceId),
+  searchChunks: (workspaceId: string, query: string): Promise<Array<{ id: string; text: string; filePath: string; chunkIndex: number; score: number }>> =>
+    ipcRenderer.invoke('knowledge:searchChunks', workspaceId, query),
 }
 
 if (process.contextIsolated) {

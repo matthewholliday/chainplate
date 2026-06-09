@@ -49,7 +49,12 @@ type UsageData = {
   completionTokens: number
 }
 
-let lastUsage: UsageData | null = null
+const usageByConversation = new Map<string, UsageData>()
+
+function storeUsage(conversationId: string | undefined, usage: UsageData): void {
+  if (!conversationId) return
+  usageByConversation.set(conversationId, usage)
+}
 
 function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true
@@ -91,9 +96,10 @@ export async function startChatServer(): Promise<ChatServerInfo> {
         messages: UIMessage[]
         system?: string
         tools?: unknown
+        conversationId?: string
         metadata?: { custom?: { model?: unknown } }
       }>()
-      const { messages, system, tools, metadata } = body
+      const { messages, system, tools, conversationId, metadata } = body
       const modelId = resolveAnthropicModelId(metadata?.custom?.model)
 
       const result = streamText({
@@ -102,10 +108,10 @@ export async function startChatServer(): Promise<ChatServerInfo> {
         messages: await convertToModelMessages(normalizeMessages(messages)),
         tools: frontendTools(tools as Parameters<typeof frontendTools>[0]),
         onFinish({ usage }) {
-          lastUsage = {
+          storeUsage(conversationId, {
             promptTokens: usage.inputTokens ?? 0,
             completionTokens: usage.outputTokens ?? 0
-          }
+          })
         }
       })
 
@@ -136,9 +142,10 @@ export async function startChatServer(): Promise<ChatServerInfo> {
         system?: string
         enabledTools?: string[]
         workspaceRoot?: string
+        conversationId?: string
         metadata?: { custom?: { model?: unknown } }
       }>()
-      const { messages, system, enabledTools, workspaceRoot, metadata } = body
+      const { messages, system, enabledTools, workspaceRoot, conversationId, metadata } = body
       const modelId = resolveAnthropicModelId(metadata?.custom?.model)
 
       const allTools = {
@@ -232,10 +239,10 @@ export async function startChatServer(): Promise<ChatServerInfo> {
         stopWhen: stepCountIs(20),
         tools,
         onFinish({ usage }) {
-          lastUsage = {
+          storeUsage(conversationId, {
             promptTokens: usage.inputTokens ?? 0,
             completionTokens: usage.outputTokens ?? 0
-          }
+          })
         }
       })
 
@@ -253,7 +260,11 @@ export async function startChatServer(): Promise<ChatServerInfo> {
   })
 
   app.get('/api/usage', (c) => {
-    return c.json(lastUsage)
+    const conversationId = c.req.query('conversationId')
+    if (!conversationId) {
+      return c.json(null)
+    }
+    return c.json(usageByConversation.get(conversationId) ?? null)
   })
 
   return new Promise((resolve, reject) => {

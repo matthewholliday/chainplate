@@ -33,12 +33,40 @@ export type KnowledgeIndex = {
   chunks: KnowledgeChunk[]
 }
 
-export type IndexMeta = { chunkCount: number; indexedAt: string }
+export type IndexMeta = { chunkCount: number; indexedAt: string; folderPath?: string }
 
 export type KnowledgeSearchResult = KnowledgeChunk & { score: number }
 
-function getIndexPath(): string {
-  return join(app.getPath('userData'), 'knowledge-index.json')
+function sanitizeWorkspaceId(workspaceId: string): string {
+  return workspaceId.replace(/[^a-zA-Z0-9_-]/g, '_')
+}
+
+const LEGACY_INDEX_FILENAME = 'knowledge-index.json'
+
+function getIndexPath(workspaceId: string): string {
+  return join(app.getPath('userData'), `knowledge-index-${sanitizeWorkspaceId(workspaceId)}.json`)
+}
+
+async function migrateLegacyIndexIfNeeded(workspaceId: string): Promise<void> {
+  if (workspaceId !== 'home') return
+
+  const legacyPath = join(app.getPath('userData'), LEGACY_INDEX_FILENAME)
+  const newPath = getIndexPath(workspaceId)
+
+  try {
+    await readFile(newPath, 'utf-8')
+    return
+  } catch {
+    // New per-workspace index does not exist yet
+  }
+
+  try {
+    const legacy = await readFile(legacyPath, 'utf-8')
+    await mkdir(dirname(newPath), { recursive: true })
+    await writeFile(newPath, legacy, 'utf-8')
+  } catch {
+    // No legacy index to migrate
+  }
 }
 
 async function walkFiles(dir: string): Promise<string[]> {
@@ -88,7 +116,7 @@ function chunkText(text: string, size = CHUNK_SIZE, overlap = CHUNK_OVERLAP): st
   return chunks
 }
 
-export async function indexKnowledge(folderPath: string): Promise<number> {
+export async function indexKnowledge(workspaceId: string, folderPath: string): Promise<number> {
   const files = await walkFiles(folderPath)
   const chunks: KnowledgeChunk[] = []
 
@@ -121,26 +149,27 @@ export async function indexKnowledge(folderPath: string): Promise<number> {
     chunks,
   }
 
-  const indexPath = getIndexPath()
+  const indexPath = getIndexPath(workspaceId)
   await mkdir(dirname(indexPath), { recursive: true })
   await writeFile(indexPath, JSON.stringify(index, null, 2), 'utf-8')
 
   return chunks.length
 }
 
-export async function loadKnowledgeIndex(): Promise<KnowledgeIndex | null> {
+export async function loadKnowledgeIndex(workspaceId: string): Promise<KnowledgeIndex | null> {
+  await migrateLegacyIndexIfNeeded(workspaceId)
   try {
-    const raw = await readFile(getIndexPath(), 'utf-8')
+    const raw = await readFile(getIndexPath(workspaceId), 'utf-8')
     return JSON.parse(raw) as KnowledgeIndex
   } catch {
     return null
   }
 }
 
-export async function getIndexMeta(): Promise<IndexMeta | null> {
-  const index = await loadKnowledgeIndex()
+export async function getIndexMeta(workspaceId: string): Promise<IndexMeta | null> {
+  const index = await loadKnowledgeIndex(workspaceId)
   if (!index) return null
-  return { chunkCount: index.chunks.length, indexedAt: index.indexedAt }
+  return { chunkCount: index.chunks.length, indexedAt: index.indexedAt, folderPath: index.folderPath }
 }
 
 function tokenize(text: string): string[] {
@@ -167,8 +196,8 @@ function cosineSim(a: Map<string, number>, b: Map<string, number>): number {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB))
 }
 
-export async function searchChunks(query: string): Promise<KnowledgeSearchResult[]> {
-  const index = await loadKnowledgeIndex()
+export async function searchChunks(workspaceId: string, query: string): Promise<KnowledgeSearchResult[]> {
+  const index = await loadKnowledgeIndex(workspaceId)
   if (!index) return []
 
   const q = query.trim()

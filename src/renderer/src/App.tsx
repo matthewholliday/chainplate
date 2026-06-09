@@ -163,6 +163,7 @@ type ChatAppProps = {
   chatApiUrl: string
   configured: boolean
   conversationId: string
+  workspaceId: string
   initialMessages: ThreadMessage[]
   onSave: (id: string, messages: readonly ThreadMessage[], titleHint?: string) => void
   onRunningChange: (id: string, isRunning: boolean) => void
@@ -172,14 +173,21 @@ type ChatAppProps = {
 
 // Fetches usage from the server after each response completes.
 // Must be rendered inside AssistantRuntimeProvider and UsageProvider.
-function UsageTracker({ chatApiUrl }: { chatApiUrl: string }) {
+function UsageTracker({
+  chatApiUrl,
+  conversationId
+}: {
+  chatApiUrl: string
+  conversationId: string
+}) {
   const isRunning = useAuiState((s) => s.thread.isRunning)
   const wasRunningRef = useRef(false)
   const { setUsage } = useUsage()
 
   useEffect(() => {
     if (wasRunningRef.current && !isRunning) {
-      fetch(`${chatApiUrl}/api/usage`)
+      const params = new URLSearchParams({ conversationId })
+      fetch(`${chatApiUrl}/api/usage?${params}`)
         .then((r) => r.json())
         .then((data) => {
           if (data && typeof data.promptTokens === 'number') {
@@ -189,7 +197,7 @@ function UsageTracker({ chatApiUrl }: { chatApiUrl: string }) {
         .catch(() => {})
     }
     wasRunningRef.current = isRunning
-  }, [isRunning, chatApiUrl, setUsage])
+  }, [isRunning, chatApiUrl, conversationId, setUsage])
 
   return null
 }
@@ -230,13 +238,14 @@ function ChatAppInner({
           return {
             ...(system ? { system } : {}),
             enabledTools,
+            conversationId,
             ...(workspaceRoot ? { workspaceRoot } : {})
           }
         }
       }),
     // pendingRef is stable (useRef); chatApiUrl changes only on server restart
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chatApiUrl, mode, workspaceRoot]
+    [chatApiUrl, mode, workspaceRoot, conversationId]
   )
   // Filter out messages that have no renderable content — these are corrupted
   // ThreadMessage shells saved in an old format (content:[], no parts).
@@ -274,7 +283,7 @@ function ChatAppInner({
             onRunningChange={onRunningChange}
           />
           <RagChunksSyncer />
-          <UsageTracker chatApiUrl={chatApiUrl} />
+          <UsageTracker chatApiUrl={chatApiUrl} conversationId={conversationId} />
           <div className="min-h-0 flex-1">
             <Thread />
           </div>
@@ -284,10 +293,10 @@ function ChatAppInner({
   )
 }
 
-function ChatApp(props: ChatAppProps): React.JSX.Element {
+function ChatApp({ workspaceId, ...props }: ChatAppProps): React.JSX.Element {
   return (
-    <RagProvider>
-      <ChatAppInner {...props} />
+    <RagProvider workspaceId={workspaceId}>
+      <ChatAppInner workspaceId={workspaceId} {...props} />
     </RagProvider>
   )
 }
@@ -359,6 +368,7 @@ function App(): React.JSX.Element {
   )
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set())
   const [notificationIds, setNotificationIds] = useState<Set<string>>(new Set())
+  const [storageError, setStorageError] = useState<string | null>(null)
   // Stable ref so handleRunningChange can read the latest activeId without being recreated
   const activeIdRef = useRef(activeId)
   useEffect(() => {
@@ -385,7 +395,16 @@ function App(): React.JSX.Element {
 
   // Persist whenever conversations change
   useEffect(() => {
-    saveConversations(conversations)
+    const result = saveConversations(conversations)
+    if (!result.ok) {
+      const message =
+        result.reason === 'quota'
+          ? 'Conversation history could not be saved: browser storage is full. Delete old conversations or export data.'
+          : 'Conversation history could not be saved. Your latest messages may be lost after restart.'
+      setStorageError(message)
+    } else {
+      setStorageError(null)
+    }
   }, [conversations])
 
   // Persist workspaces
@@ -472,6 +491,12 @@ function App(): React.JSX.Element {
     const name = folderPath.split('/').filter(Boolean).pop() ?? folderPath
     const ws = createWorkspace(name, folderPath)
     setWorkspaces((prev) => [...prev, ws])
+    // Auto-index the workspace folder so RAG uses the correct knowledge base
+    try {
+      await window.electronAPI.indexKnowledge(ws.id, folderPath)
+    } catch (err) {
+      console.error('Failed to auto-index workspace:', err)
+    }
     // Auto-create an initial conversation in the new workspace
     const conv = createConversation(ws.id)
     setConvState((prev) => ({
@@ -534,9 +559,20 @@ function App(): React.JSX.Element {
     [conversations, activeId, runningIds]
   )
 
+  const activeConversation = conversations.find((c) => c.id === activeId)
+  const activeWorkspaceId = activeConversation?.workspaceId ?? HOME_WORKSPACE_ID
+  const activeWorkspaceRoot = activeConversation
+    ? getWorkspaceRoot(activeConversation)
+    : undefined
+
   return (
     <TooltipProvider>
       <div className="flex h-full flex-col">
+        {storageError && (
+          <div className="border-b border-border bg-destructive/10 px-4 py-2 text-sm text-destructive">
+            {storageError}
+          </div>
+        )}
         <div
           className="flex h-10 w-full shrink-0 items-center border-b border-border px-4"
           style={{ WebkitAppRegion: 'drag', backgroundColor: 'var(--sidebar-bg)' } as React.CSSProperties}
@@ -560,6 +596,8 @@ function App(): React.JSX.Element {
             workspaces={workspaces}
             collapsedWorkspaceIds={collapsedWorkspaceIds}
             activeId={activeId}
+            activeWorkspaceId={activeWorkspaceId}
+            activeWorkspaceRoot={activeWorkspaceRoot}
             runningIds={runningIds}
             notificationIds={notificationIds}
             onNew={handleNew}
@@ -588,6 +626,7 @@ function App(): React.JSX.Element {
                     chatApiUrl={chatInfo.url}
                     configured={chatInfo.configured}
                     conversationId={conv.id}
+                    workspaceId={conv.workspaceId}
                     initialMessages={conv.messages ?? []}
                     onSave={handleSave}
                     onRunningChange={handleRunningChange}

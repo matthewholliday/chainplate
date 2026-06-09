@@ -60134,7 +60134,6 @@ const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-6";
 const CONTEXT_WINDOW_SIZE = 2e5;
 const MODEL_STORAGE_KEY = "chainplate:anthropic-model";
 const SYSTEM_PROMPT_STORAGE_KEY = "chainplate:system-prompt";
-const KNOWLEDGE_LOCATION_STORAGE_KEY = "chainplate:knowledge-location";
 const WORKSPACE_COLLAPSED_STORAGE_KEY = "chainplate:workspace-collapsed";
 const RAG_ENABLED_STORAGE_KEY = "chainplate:rag-enabled";
 const RAG_MAX_CHUNKS_STORAGE_KEY = "chainplate:rag-max-chunks";
@@ -60923,7 +60922,10 @@ ToolFallback.Args = ToolFallbackArgs;
 ToolFallback.Result = ToolFallbackResult;
 ToolFallback.Error = ToolFallbackError;
 const RagContext = reactExports.createContext(null);
-const RagProvider = ({ children }) => {
+const RagProvider = ({
+  children,
+  workspaceId
+}) => {
   const pendingRef = reactExports.useRef([]);
   const [ragChunksMap, setRagChunksMap] = reactExports.useState(
     () => /* @__PURE__ */ new Map()
@@ -60944,12 +60946,12 @@ const RagProvider = ({ children }) => {
     );
     const cutoff = Number.isFinite(storedCutoff) && storedCutoff >= 0 && storedCutoff <= 1 ? storedCutoff : DEFAULT_RAG_SIMILARITY_CUTOFF;
     try {
-      const chunks = await window.electronAPI.searchChunks(query);
+      const chunks = await window.electronAPI.searchChunks(workspaceId, query);
       pendingRef.current = chunks.filter((c) => c.score > cutoff).slice(0, maxChunks);
     } catch {
       pendingRef.current = [];
     }
-  }, []);
+  }, [workspaceId]);
   const commitPending = reactExports.useCallback((messageId) => {
     const chunks = pendingRef.current;
     if (chunks.length === 0) return;
@@ -61521,23 +61523,48 @@ const HOME_WORKSPACE = {
 };
 const STORAGE_KEY = "chainplate:conversations";
 const WORKSPACES_STORAGE_KEY = "chainplate:workspaces";
+const CONVERSATIONS_STORAGE_VERSION = 1;
+function isStoredConversations(value) {
+  return typeof value === "object" && value !== null && "version" in value && "conversations" in value && Array.isArray(value.conversations);
+}
+function normalizeConversation(c) {
+  return {
+    ...c,
+    workspaceId: c.workspaceId ?? HOME_WORKSPACE_ID
+  };
+}
 function loadConversations() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return parsed.map((c) => ({
-      ...c,
-      workspaceId: c.workspaceId ?? HOME_WORKSPACE_ID
-    }));
+    if (isStoredConversations(parsed)) {
+      return parsed.conversations.map(normalizeConversation);
+    }
+    if (Array.isArray(parsed)) {
+      return parsed.map(normalizeConversation);
+    }
+    return [];
   } catch {
     return [];
   }
 }
 function saveConversations(conversations) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
-  } catch {
+    const payload = {
+      version: CONVERSATIONS_STORAGE_VERSION,
+      conversations
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof DOMException && (error.name === "QuotaExceededError" || error.code === 22)) {
+      return { ok: false, reason: "quota" };
+    }
+    if (error instanceof TypeError) {
+      return { ok: false, reason: "serialization" };
+    }
+    return { ok: false, reason: "unknown" };
   }
 }
 function createConversation(workspaceId = HOME_WORKSPACE_ID) {
@@ -61605,7 +61632,7 @@ function ChunkItem({ chunk }) {
     /* @__PURE__ */ jsxRuntimeExports.jsx(CollapsibleContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("pre", { className: "mx-3 mb-2.5 mt-0.5 max-h-48 overflow-auto rounded-md border border-border bg-muted/40 px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap break-all font-mono", children: chunk.text }) })
   ] });
 }
-const DataModal = () => {
+const DataModal = ({ workspaceId, workspaceRoot }) => {
   const [open, setOpen] = reactExports.useState(false);
   const [draft, setDraft] = reactExports.useState("");
   const [ragEnabled, setRagEnabled] = reactExports.useState(false);
@@ -61625,11 +61652,11 @@ const DataModal = () => {
   const loadExistingIndex = async () => {
     setExplorerLoading(true);
     try {
-      const meta = await window.electronAPI.getIndexMeta();
+      const meta = await window.electronAPI.getIndexMeta(workspaceId);
       if (meta) {
         setHasIndex(true);
         setChunkCount(meta.chunkCount);
-        const results = await window.electronAPI.searchChunks("");
+        const results = await window.electronAPI.searchChunks(workspaceId, "");
         setSearchResults(results);
       } else {
         setHasIndex(false);
@@ -61643,7 +61670,7 @@ const DataModal = () => {
   const handleOpen = (isOpen) => {
     if (isOpen) {
       setDraft(localStorage.getItem(SYSTEM_PROMPT_STORAGE_KEY) ?? "");
-      setKnowledgePath(localStorage.getItem(KNOWLEDGE_LOCATION_STORAGE_KEY) ?? "");
+      setKnowledgePath(workspaceRoot ?? "");
       setRagEnabled(localStorage.getItem(RAG_ENABLED_STORAGE_KEY) === "true");
       const storedMax = parseInt(localStorage.getItem(RAG_MAX_CHUNKS_STORAGE_KEY) ?? "", 10);
       setMaxChunks(Number.isFinite(storedMax) && storedMax > 0 ? storedMax : DEFAULT_RAG_MAX_CHUNKS);
@@ -61664,12 +61691,6 @@ const DataModal = () => {
     } else {
       localStorage.removeItem(SYSTEM_PROMPT_STORAGE_KEY);
     }
-    const trimmedPath = knowledgePath.trim();
-    if (trimmedPath) {
-      localStorage.setItem(KNOWLEDGE_LOCATION_STORAGE_KEY, trimmedPath);
-    } else {
-      localStorage.removeItem(KNOWLEDGE_LOCATION_STORAGE_KEY);
-    }
     if (ragEnabled) {
       localStorage.setItem(RAG_ENABLED_STORAGE_KEY, "true");
       localStorage.setItem(RAG_MAX_CHUNKS_STORAGE_KEY, String(maxChunks));
@@ -61684,25 +61705,18 @@ const DataModal = () => {
   const handleClear = () => {
     setDraft("");
   };
-  const handleBrowse = async () => {
-    const selected = await window.electronAPI.selectKnowledgeFolder();
-    if (selected !== null) {
-      setKnowledgePath(selected);
-      setIndexResult(null);
-    }
-  };
   const handleReindex = async () => {
     if (!knowledgePath) return;
     setIndexing(true);
     setIndexResult(null);
     try {
-      const chunks = await window.electronAPI.indexKnowledge(knowledgePath);
+      const chunks = await window.electronAPI.indexKnowledge(workspaceId, knowledgePath);
       setIndexResult({ chunks });
       setHasIndex(true);
       setChunkCount(chunks);
       setSearchQuery("");
       setCurrentPage(1);
-      const results = await window.electronAPI.searchChunks("");
+      const results = await window.electronAPI.searchChunks(workspaceId, "");
       setSearchResults(results);
     } catch (err) {
       setIndexResult({
@@ -61716,7 +61730,7 @@ const DataModal = () => {
     setSearching(true);
     setCurrentPage(1);
     try {
-      const results = await window.electronAPI.searchChunks(query);
+      const results = await window.electronAPI.searchChunks(workspaceId, query);
       setSearchResults(results);
     } finally {
       setSearching(false);
@@ -61888,42 +61902,19 @@ const DataModal = () => {
                 {
                   htmlFor: "knowledge-location",
                   className: "text-sm font-medium leading-none",
-                  children: "Knowledge location"
+                  children: "Workspace folder"
                 }
               ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "Directory the assistant will use as its knowledge base." }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "input",
-                  {
-                    id: "knowledge-location",
-                    type: "text",
-                    readOnly: true,
-                    value: knowledgePath,
-                    placeholder: "No folder selected",
-                    className: "flex-1 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "button",
-                  {
-                    type: "button",
-                    onClick: handleBrowse,
-                    className: "rounded-md border border-input px-3 py-1.5 text-sm hover:bg-muted",
-                    children: "Browse..."
-                  }
-                )
-              ] }),
-              knowledgePath && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-muted-foreground", children: "RAG indexes the active workspace folder. Add a workspace with a project folder to enable indexing." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
                 {
-                  type: "button",
-                  onClick: () => {
-                    setKnowledgePath("");
-                    setIndexResult(null);
-                  },
-                  className: "self-start text-xs text-muted-foreground hover:text-foreground",
-                  children: "Clear"
+                  id: "knowledge-location",
+                  type: "text",
+                  readOnly: true,
+                  value: knowledgePath,
+                  placeholder: "No workspace folder (HOME has no project root)",
+                  className: "w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 pt-1", children: [
@@ -62301,6 +62292,8 @@ const ConversationSidebar = ({
   workspaces,
   collapsedWorkspaceIds,
   activeId,
+  activeWorkspaceId,
+  activeWorkspaceRoot,
   runningIds,
   notificationIds,
   onNew,
@@ -62370,7 +62363,13 @@ const ConversationSidebar = ({
           ))
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-border px-2 py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DataModal, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            DataModal,
+            {
+              workspaceId: activeWorkspaceId,
+              workspaceRoot: activeWorkspaceRoot
+            }
+          ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ToolsModal, {})
         ] }) })
       ]
@@ -62456,13 +62455,17 @@ function RagChunksSyncer() {
   }, []);
   return null;
 }
-function UsageTracker({ chatApiUrl }) {
+function UsageTracker({
+  chatApiUrl,
+  conversationId
+}) {
   const isRunning = useAuiState((s) => s.thread.isRunning);
   const wasRunningRef = reactExports.useRef(false);
   const { setUsage } = useUsage();
   reactExports.useEffect(() => {
     if (wasRunningRef.current && !isRunning) {
-      fetch(`${chatApiUrl}/api/usage`).then((r2) => r2.json()).then((data) => {
+      const params = new URLSearchParams({ conversationId });
+      fetch(`${chatApiUrl}/api/usage?${params}`).then((r2) => r2.json()).then((data) => {
         if (data && typeof data.promptTokens === "number") {
           setUsage({ promptTokens: data.promptTokens, completionTokens: data.completionTokens });
         }
@@ -62470,7 +62473,7 @@ function UsageTracker({ chatApiUrl }) {
       });
     }
     wasRunningRef.current = isRunning;
-  }, [isRunning, chatApiUrl, setUsage]);
+  }, [isRunning, chatApiUrl, conversationId, setUsage]);
   return null;
 }
 function ChatAppInner({
@@ -62505,13 +62508,14 @@ ${header}` : header;
         return {
           ...system ? { system } : {},
           enabledTools,
+          conversationId,
           ...workspaceRoot ? { workspaceRoot } : {}
         };
       }
     }),
     // pendingRef is stable (useRef); chatApiUrl changes only on server restart
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chatApiUrl, mode, workspaceRoot]
+    [chatApiUrl, mode, workspaceRoot, conversationId]
   );
   const validMessages = reactExports.useMemo(() => initialMessages.filter((m) => {
     if (Array.isArray(m.parts) && m.parts.some((p) => p.type !== "step-start")) return true;
@@ -62537,12 +62541,12 @@ ${header}` : header;
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(RagChunksSyncer, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(UsageTracker, { chatApiUrl }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(UsageTracker, { chatApiUrl, conversationId }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-0 flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Thread, {}) })
   ] }) }) });
 }
-function ChatApp(props) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(RagProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatAppInner, { ...props }) });
+function ChatApp({ workspaceId, ...props }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(RagProvider, { workspaceId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatAppInner, { workspaceId, ...props }) });
 }
 function ModeToggle({ mode, onChange }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -62603,6 +62607,7 @@ function App() {
   );
   const [runningIds, setRunningIds] = reactExports.useState(/* @__PURE__ */ new Set());
   const [notificationIds, setNotificationIds] = reactExports.useState(/* @__PURE__ */ new Set());
+  const [storageError, setStorageError] = reactExports.useState(null);
   const activeIdRef = reactExports.useRef(activeId);
   reactExports.useEffect(() => {
     activeIdRef.current = activeId;
@@ -62620,7 +62625,13 @@ function App() {
     localStorage.setItem(APP_MODE_STORAGE_KEY, appMode);
   }, [appMode]);
   reactExports.useEffect(() => {
-    saveConversations(conversations);
+    const result = saveConversations(conversations);
+    if (!result.ok) {
+      const message = result.reason === "quota" ? "Conversation history could not be saved: browser storage is full. Delete old conversations or export data." : "Conversation history could not be saved. Your latest messages may be lost after restart.";
+      setStorageError(message);
+    } else {
+      setStorageError(null);
+    }
   }, [conversations]);
   reactExports.useEffect(() => {
     saveWorkspaces(workspaces);
@@ -62693,6 +62704,11 @@ function App() {
     const name2 = folderPath.split("/").filter(Boolean).pop() ?? folderPath;
     const ws = createWorkspace(name2, folderPath);
     setWorkspaces((prev) => [...prev, ws]);
+    try {
+      await window.electronAPI.indexKnowledge(ws.id, folderPath);
+    } catch (err) {
+      console.error("Failed to auto-index workspace:", err);
+    }
     const conv = createConversation(ws.id);
     setConvState((prev) => ({
       conversations: [conv, ...prev.conversations],
@@ -62738,7 +62754,11 @@ function App() {
     () => conversations.filter((c) => c.id === activeId || runningIds.has(c.id)),
     [conversations, activeId, runningIds]
   );
+  const activeConversation = conversations.find((c) => c.id === activeId);
+  const activeWorkspaceId = activeConversation?.workspaceId ?? HOME_WORKSPACE_ID;
+  const activeWorkspaceRoot = activeConversation ? getWorkspaceRoot(activeConversation) : void 0;
   return /* @__PURE__ */ jsxRuntimeExports.jsx(TooltipProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex h-full flex-col", children: [
+    storageError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-b border-border bg-destructive/10 px-4 py-2 text-sm text-destructive", children: storageError }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
@@ -62771,6 +62791,8 @@ function App() {
           workspaces,
           collapsedWorkspaceIds,
           activeId,
+          activeWorkspaceId,
+          activeWorkspaceRoot,
           runningIds,
           notificationIds,
           onNew: handleNew,
@@ -62795,6 +62817,7 @@ function App() {
               chatApiUrl: chatInfo.url,
               configured: chatInfo.configured,
               conversationId: conv.id,
+              workspaceId: conv.workspaceId,
               initialMessages: conv.messages ?? [],
               onSave: handleSave,
               onRunningChange: handleRunningChange,
