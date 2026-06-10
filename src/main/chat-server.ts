@@ -1,40 +1,19 @@
 import { anthropic } from '@ai-sdk/anthropic'
 import { resolveAnthropicModelId } from '../shared/models'
+import { normalizeMessages } from '../shared/normalize-messages'
+import {
+  handleExecuteCommand,
+  handleListDirectory,
+  handleReadFile,
+  handleWriteFile
+} from './agent-tool-handlers'
 import { frontendTools } from '@assistant-ui/react-ai-sdk'
 import { convertToModelMessages, streamText, stepCountIs, tool } from 'ai'
 import type { UIMessage } from 'ai'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { serve, type ServerType } from '@hono/node-server'
-import { readFile, writeFile, readdir } from 'fs/promises'
-import { exec } from 'child_process'
-import { promisify } from 'util'
-import { resolve as resolvePath } from 'path'
 import { z } from 'zod'
-
-const execAsync = promisify(exec)
-
-// Converts old-format messages (content: ContentPart[]) to AI SDK v6 UIMessage format (parts: UIMessagePart[]).
-// Messages saved from earlier sessions may be in assistant-ui ThreadMessage format without `parts`.
-function normalizeMessages(messages: UIMessage[]): UIMessage[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return messages.map((msg: any) => {
-    if (Array.isArray(msg.parts)) return msg
-    if (Array.isArray(msg.content)) {
-      return {
-        ...msg,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        parts: msg.content.map((c: any) =>
-          c.type === 'text' ? { type: 'text', text: c.text ?? '' } : c
-        )
-      }
-    }
-    if (typeof msg.content === 'string') {
-      return { ...msg, parts: [{ type: 'text', text: msg.content }] }
-    }
-    return msg
-  })
-}
 
 export type ChatServerInfo = {
   url: string
@@ -154,15 +133,7 @@ export async function startChatServer(): Promise<ChatServerInfo> {
           inputSchema: z.object({
             path: z.string().describe('Absolute or relative path to the file to read.')
           }),
-          execute: async ({ path }) => {
-            try {
-              const resolved = workspaceRoot ? resolvePath(workspaceRoot, path) : path
-              const content = await readFile(resolved, 'utf-8')
-              return { success: true, content }
-            } catch (err) {
-              return { success: false, error: err instanceof Error ? err.message : String(err) }
-            }
-          }
+          execute: async ({ path }) => handleReadFile(path, workspaceRoot)
         }),
         write_file: tool({
           description: 'Write content to a file at the given path, creating it if it does not exist.',
@@ -170,34 +141,14 @@ export async function startChatServer(): Promise<ChatServerInfo> {
             path: z.string().describe('Absolute or relative path to the file to write.'),
             content: z.string().describe('Content to write to the file.')
           }),
-          execute: async ({ path, content }) => {
-            try {
-              const resolved = workspaceRoot ? resolvePath(workspaceRoot, path) : path
-              await writeFile(resolved, content, 'utf-8')
-              return { success: true }
-            } catch (err) {
-              return { success: false, error: err instanceof Error ? err.message : String(err) }
-            }
-          }
+          execute: async ({ path, content }) => handleWriteFile(path, content, workspaceRoot)
         }),
         list_directory: tool({
           description: 'List the files and subdirectories in a directory.',
           inputSchema: z.object({
             path: z.string().describe('Absolute or relative path to the directory to list.')
           }),
-          execute: async ({ path }) => {
-            try {
-              const resolved = workspaceRoot ? resolvePath(workspaceRoot, path) : path
-              const entries = await readdir(resolved, { withFileTypes: true })
-              const items = entries.map((e) => ({
-                name: e.name,
-                type: e.isDirectory() ? 'directory' : 'file'
-              }))
-              return { success: true, items }
-            } catch (err) {
-              return { success: false, error: err instanceof Error ? err.message : String(err) }
-            }
-          }
+          execute: async ({ path }) => handleListDirectory(path, workspaceRoot)
         }),
         execute_command: tool({
           description: 'Run a shell command and return its stdout and stderr output.',
@@ -205,24 +156,8 @@ export async function startChatServer(): Promise<ChatServerInfo> {
             command: z.string().describe('The shell command to execute.'),
             cwd: z.string().optional().describe('Working directory for the command. Defaults to the workspace root if set, otherwise the process cwd.')
           }),
-          execute: async ({ command, cwd }) => {
-            try {
-              const effectiveCwd = cwd ?? workspaceRoot ?? process.cwd()
-              const { stdout, stderr } = await execAsync(command, {
-                cwd: effectiveCwd,
-                timeout: 30_000
-              })
-              return { success: true, stdout: stdout.trim(), stderr: stderr.trim() }
-            } catch (err: unknown) {
-              const e = err as { stdout?: string; stderr?: string; message?: string }
-              return {
-                success: false,
-                stdout: e.stdout?.trim() ?? '',
-                stderr: e.stderr?.trim() ?? '',
-                error: e.message ?? String(err)
-              }
-            }
-          }
+          execute: async ({ command, cwd }) =>
+            handleExecuteCommand(command, { cwd, workspaceRoot })
         })
       }
 
@@ -308,4 +243,9 @@ export function stopChatServer(): void {
     chatServer = null
     chatServerInfo = null
   }
+  usageByConversation.clear()
+}
+
+export function setConversationUsage(conversationId: string, usage: UsageData): void {
+  storeUsage(conversationId, usage)
 }
