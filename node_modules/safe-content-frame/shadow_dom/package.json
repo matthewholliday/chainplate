@@ -1,5 +1,0 @@
-{
-  "type": "module",
-  "main": "../dist/shadow_dom.js",
-  "types": "../dist/shadow_dom.d.ts"
-}

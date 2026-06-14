@@ -2,6 +2,7 @@ __pycache__
 data
 dist
 memory
+node_modules/
 output
 scratch.xml
 scripts
