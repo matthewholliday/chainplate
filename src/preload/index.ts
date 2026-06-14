@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 import { electronAPI } from '@electron-toolkit/preload'
+import type { ProviderConfig, ProviderConfigStatus } from '../shared/models'
 
 export type ChatServerInfo = {
   url: string
@@ -16,6 +17,12 @@ const electronAppAPI = {
     ipcRenderer.invoke('knowledge:getIndexMeta', workspaceId),
   searchChunks: (workspaceId: string, query: string): Promise<Array<{ id: string; text: string; filePath: string; chunkIndex: number; score: number }>> =>
     ipcRenderer.invoke('knowledge:searchChunks', workspaceId, query),
+  getProviderConfigs: (): Promise<ProviderConfigStatus[]> =>
+    ipcRenderer.invoke('provider:getConfigs'),
+  saveProviderConfig: (config: ProviderConfig, apiKey?: string): Promise<ProviderConfigStatus> =>
+    ipcRenderer.invoke('provider:saveConfig', config, apiKey),
+  deleteProviderConfig: (providerId: string): Promise<void> =>
+    ipcRenderer.invoke('provider:deleteConfig', providerId)
 }
 
 if (process.contextIsolated) {

@@ -3,12 +3,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   ALL_TOOL_IDS,
   DEFAULT_ANTHROPIC_MODEL,
+  DEFAULT_PROVIDER_SELECTION,
   ENABLED_TOOLS_STORAGE_KEY,
   MODEL_STORAGE_KEY,
+  PROVIDER_SELECTION_STORAGE_KEY,
   isAnthropicModelId,
   readEnabledTools,
   readStoredModelId,
-  resolveAnthropicModelId
+  readStoredProviderSelection,
+  resolveAnthropicModelId,
+  resolveProviderSelection,
+  writeStoredProviderSelection
 } from './models'
 
 describe('resolveAnthropicModelId', () => {
@@ -86,5 +91,52 @@ describe('readStoredModelId', () => {
     vi.stubGlobal('localStorage', undefined)
     expect(readStoredModelId()).toBe(DEFAULT_ANTHROPIC_MODEL)
     vi.unstubAllGlobals()
+  })
+})
+
+describe('provider selection', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  it('reads stored provider selection', () => {
+    writeStoredProviderSelection({
+      providerId: 'openai',
+      modelId: 'gpt-4o',
+      contextWindow: 128_000
+    })
+    expect(readStoredProviderSelection()).toEqual({
+      providerId: 'openai',
+      modelId: 'gpt-4o',
+      contextWindow: 128_000
+    })
+  })
+
+  it('migrates legacy anthropic model storage', () => {
+    localStorage.setItem(MODEL_STORAGE_KEY, 'claude-opus-4-6')
+    expect(readStoredProviderSelection()).toEqual({
+      providerId: 'anthropic',
+      modelId: 'claude-opus-4-6',
+      contextWindow: 200_000
+    })
+    expect(localStorage.getItem(PROVIDER_SELECTION_STORAGE_KEY)).toContain('claude-opus-4-6')
+  })
+
+  it('falls back to default for invalid selection', () => {
+    localStorage.setItem(PROVIDER_SELECTION_STORAGE_KEY, JSON.stringify({ providerId: 'bad', modelId: 'bad' }))
+    expect(readStoredProviderSelection()).toEqual(DEFAULT_PROVIDER_SELECTION)
+  })
+
+  it('resolves unknown model to first model in provider', () => {
+    const resolved = resolveProviderSelection({
+      providerId: 'anthropic',
+      modelId: 'unknown-model'
+    })
+    expect(resolved.providerId).toBe('anthropic')
+    expect(resolved.modelId).toBe(DEFAULT_ANTHROPIC_MODEL)
   })
 })

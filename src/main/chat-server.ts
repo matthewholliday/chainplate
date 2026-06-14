@@ -1,5 +1,6 @@
 import { anthropic } from '@ai-sdk/anthropic'
-import { resolveAnthropicModelId } from '../shared/models'
+import { createOpenAI } from '@ai-sdk/openai'
+import { resolveProviderSelection, type ProviderSelection } from '../shared/models'
 import { normalizeMessages } from '../shared/normalize-messages'
 import {
   handleExecuteCommand,
@@ -7,9 +8,15 @@ import {
   handleReadFile,
   handleWriteFile
 } from './agent-tool-handlers'
+import {
+  getApiKey,
+  getProviderConfig,
+  hasAnyConfiguredProvider,
+  isProviderConfigured
+} from './provider-config'
 import { frontendTools } from '@assistant-ui/react-ai-sdk'
 import { convertToModelMessages, streamText, stepCountIs, tool } from 'ai'
-import type { UIMessage } from 'ai'
+import type { LanguageModel, UIMessage } from 'ai'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { serve, type ServerType } from '@hono/node-server'
@@ -44,12 +51,64 @@ function isAllowedOrigin(origin: string | undefined): boolean {
   )
 }
 
+function resolveSelection(metadata?: {
+  custom?: { provider?: unknown; model?: unknown; contextWindow?: unknown }
+}): ProviderSelection {
+  return resolveProviderSelection({
+    providerId: metadata?.custom?.provider,
+    modelId: metadata?.custom?.model,
+    contextWindow:
+      typeof metadata?.custom?.contextWindow === 'number'
+        ? metadata.custom.contextWindow
+        : undefined
+  })
+}
+
+function resolveModel(selection: ProviderSelection): LanguageModel {
+  const config = getProviderConfig(selection.providerId)
+  if (!config) {
+    throw new Error(`Unknown provider: ${selection.providerId}`)
+  }
+
+  if (!isProviderConfigured(config)) {
+    throw new Error(`Provider "${config.label}" is not configured`)
+  }
+
+  const apiKey = getApiKey(config.id)
+
+  if (config.type === 'anthropic') {
+    return anthropic(selection.modelId)
+  }
+
+  if (config.type === 'openai') {
+    return createOpenAI({ apiKey })(selection.modelId)
+  }
+
+  return createOpenAI({
+    baseURL: config.baseUrl,
+    apiKey: apiKey ?? 'ollama'
+  })(selection.modelId)
+}
+
+function providerErrorMessage(selection: ProviderSelection): string {
+  const config = getProviderConfig(selection.providerId)
+  if (!config) {
+    return `Unknown provider "${selection.providerId}". Configure providers in settings.`
+  }
+
+  if (config.type === 'openai-compatible') {
+    return `Provider "${config.label}" is not configured. Add a base URL in provider settings.`
+  }
+
+  return `Provider "${config.label}" is not configured. Add an API key in provider settings.`
+}
+
 export async function startChatServer(): Promise<ChatServerInfo> {
   if (chatServerInfo) {
     return chatServerInfo
   }
 
-  const configured = Boolean(process.env.ANTHROPIC_API_KEY)
+  const configured = hasAnyConfiguredProvider()
 
   const app = new Hono()
 
@@ -63,26 +122,24 @@ export async function startChatServer(): Promise<ChatServerInfo> {
   )
 
   app.post('/api/chat', async (c) => {
-    if (!configured) {
-      return c.json(
-        { error: 'ANTHROPIC_API_KEY is not set. Add it to .env and restart the app.' },
-        503
-      )
-    }
-
     try {
       const body = await c.req.json<{
         messages: UIMessage[]
         system?: string
         tools?: unknown
         conversationId?: string
-        metadata?: { custom?: { model?: unknown } }
+        metadata?: { custom?: { provider?: unknown; model?: unknown; contextWindow?: unknown } }
       }>()
       const { messages, system, tools, conversationId, metadata } = body
-      const modelId = resolveAnthropicModelId(metadata?.custom?.model)
+      const selection = resolveSelection(metadata)
+
+      const providerConfig = getProviderConfig(selection.providerId)
+      if (!providerConfig || !isProviderConfigured(providerConfig)) {
+        return c.json({ error: providerErrorMessage(selection) }, 503)
+      }
 
       const result = streamText({
-        model: anthropic(modelId),
+        model: resolveModel(selection),
         system,
         messages: await convertToModelMessages(normalizeMessages(messages)),
         tools: frontendTools(tools as Parameters<typeof frontendTools>[0]),
@@ -108,13 +165,6 @@ export async function startChatServer(): Promise<ChatServerInfo> {
   })
 
   app.post('/api/agent', async (c) => {
-    if (!configured) {
-      return c.json(
-        { error: 'ANTHROPIC_API_KEY is not set. Add it to .env and restart the app.' },
-        503
-      )
-    }
-
     try {
       const body = await c.req.json<{
         messages: UIMessage[]
@@ -122,10 +172,15 @@ export async function startChatServer(): Promise<ChatServerInfo> {
         enabledTools?: string[]
         workspaceRoot?: string
         conversationId?: string
-        metadata?: { custom?: { model?: unknown } }
+        metadata?: { custom?: { provider?: unknown; model?: unknown; contextWindow?: unknown } }
       }>()
       const { messages, system, enabledTools, workspaceRoot, conversationId, metadata } = body
-      const modelId = resolveAnthropicModelId(metadata?.custom?.model)
+      const selection = resolveSelection(metadata)
+
+      const providerConfig = getProviderConfig(selection.providerId)
+      if (!providerConfig || !isProviderConfigured(providerConfig)) {
+        return c.json({ error: providerErrorMessage(selection) }, 503)
+      }
 
       const allTools = {
         read_file: tool({
@@ -136,7 +191,7 @@ export async function startChatServer(): Promise<ChatServerInfo> {
           execute: async ({ path }) => handleReadFile(path, workspaceRoot)
         }),
         write_file: tool({
-          description: 'Write content to a file at the given path, creating it if it does not exist.',
+          description: 'Write content to a file at the given path, creating it if not exist.',
           inputSchema: z.object({
             path: z.string().describe('Absolute or relative path to the file to write.'),
             content: z.string().describe('Content to write to the file.')
@@ -154,7 +209,12 @@ export async function startChatServer(): Promise<ChatServerInfo> {
           description: 'Run a shell command and return its stdout and stderr output.',
           inputSchema: z.object({
             command: z.string().describe('The shell command to execute.'),
-            cwd: z.string().optional().describe('Working directory for the command. Defaults to the workspace root if set, otherwise the process cwd.')
+            cwd: z
+              .string()
+              .optional()
+              .describe(
+                'Working directory for the command. Defaults to the workspace root if set, otherwise the process cwd.'
+              )
           }),
           execute: async ({ command, cwd }) =>
             handleExecuteCommand(command, { cwd, workspaceRoot })
@@ -168,7 +228,7 @@ export async function startChatServer(): Promise<ChatServerInfo> {
         : allTools
 
       const result = streamText({
-        model: anthropic(modelId),
+        model: resolveModel(selection),
         system,
         messages: await convertToModelMessages(normalizeMessages(messages)),
         stopWhen: stepCountIs(20),
@@ -217,7 +277,7 @@ export async function startChatServer(): Promise<ChatServerInfo> {
 
         if (!configured) {
           console.error(
-            `[chat-server] ANTHROPIC_API_KEY is missing. Set it in .env and restart. (${chatServerInfo.url})`
+            `[chat-server] No LLM providers are configured. Add API keys or custom providers in settings. (${chatServerInfo.url})`
           )
         } else {
           console.log(`[chat-server] Listening on ${chatServerInfo.url}`)

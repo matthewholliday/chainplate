@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils'
 import { useUsage } from '@/lib/usage-context'
-import { CONTEXT_WINDOW_SIZE } from '@shared/models'
 import type { FC } from 'react'
 
 function formatTokens(n: number): string {
@@ -23,7 +22,7 @@ function textColor(pct: number): string {
 }
 
 export const ContextIndicator: FC = () => {
-  const { usage } = useUsage()
+  const { usage, contextWindowSize } = useUsage()
 
   if (!usage) return null
 
@@ -33,7 +32,7 @@ export const ContextIndicator: FC = () => {
   return (
     <div
       className={cn('flex items-center gap-1.5', textColor(pct))}
-      title={`${formatTokens(promptTokens)} / ${formatTokens(CONTEXT_WINDOW_SIZE)} input tokens`}
+      title={`${formatTokens(promptTokens)} / ${formatTokens(contextWindowSize)} input tokens`}
     >
       <div className="relative h-1.5 w-12 overflow-hidden rounded-full bg-muted-foreground/15">
         <div

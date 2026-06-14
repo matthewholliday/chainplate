@@ -9,6 +9,13 @@ import {
   stopChatServer,
   type ChatServerInfo
 } from './chat-server'
+import {
+  deleteProviderConfig,
+  getProviderConfigStatuses,
+  initializeProviderConfig,
+  saveProviderConfig
+} from './provider-config'
+import type { ProviderConfig } from '../shared/models'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -88,6 +95,18 @@ app.whenReady().then(async () => {
     return info
   })
 
+  ipcMain.handle('provider:getConfigs', () => getProviderConfigStatuses())
+
+  ipcMain.handle(
+    'provider:saveConfig',
+    (_event, config: ProviderConfig, apiKey?: string) => saveProviderConfig(config, apiKey)
+  )
+
+  ipcMain.handle('provider:deleteConfig', (_event, providerId: string) => {
+    deleteProviderConfig(providerId)
+  })
+
+  initializeProviderConfig()
   await startChatServer()
   createWindow()
 

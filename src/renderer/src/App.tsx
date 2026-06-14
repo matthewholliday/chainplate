@@ -271,7 +271,7 @@ function ChatAppInner({
         <div className="flex h-full min-h-0 flex-col">
           {!configured && (
             <div className="border-b border-border bg-destructive/10 px-4 py-2 text-sm text-destructive">
-              Set ANTHROPIC_API_KEY in .env and restart the app to enable chat.
+              No LLM provider is configured. Open provider settings and add an API key or custom endpoint.
             </div>
           )}
           <ConversationSyncer

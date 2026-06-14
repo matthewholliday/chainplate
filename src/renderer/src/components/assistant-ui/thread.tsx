@@ -5,6 +5,7 @@ import {
 } from "@/components/assistant-ui/attachment";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { ModelSelector } from "@/components/assistant-ui/model-selector";
+import { ProviderSettingsModal } from "@/components/assistant-ui/provider-settings-modal";
 import { ContextIndicator } from "@/components/assistant-ui/context-indicator";
 import {
   Reasoning,
@@ -50,9 +51,11 @@ import {
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react";
-import { type FC, useCallback, useState } from "react";
+import { type FC, useCallback, useEffect, useState } from "react";
 import { useRagStore } from "@/lib/rag-context";
 import { RagChunksModal } from "@/components/assistant-ui/rag-chunks-modal";
+import { BUILT_IN_PROVIDERS, type ProviderConfig, type ProviderConfigStatus, type ProviderSelection } from "@shared/models";
+import { useUsage } from "@/lib/usage-context";
 
 export const Thread: FC = () => {
   return (
@@ -286,11 +289,7 @@ const RagComposerInput: FC = () => {
 const ComposerAction: FC = () => {
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between gap-2">
-      <div className="flex min-w-0 items-center gap-1">
-        <ComposerAddAttachment />
-        <ModelSelector />
-        <ContextIndicator />
-      </div>
+      <ComposerControls />
       <AuiIf condition={(s) => !s.thread.isRunning}>
         <RagSendButton />
       </AuiIf>
@@ -309,6 +308,41 @@ const ComposerAction: FC = () => {
       </AuiIf>
     </div>
   );
+};
+
+const ComposerControls: FC = () => {
+  const { setContextWindowSize } = useUsage()
+  const [providers, setProviders] = useState<ProviderConfigStatus[]>(
+    BUILT_IN_PROVIDERS.map((provider) => ({
+      ...provider,
+      hasApiKey: false,
+      configured: false
+    }))
+  )
+
+  useEffect(() => {
+    void window.electronAPI?.getProviderConfigs?.().then(setProviders).catch(() => {})
+  }, [])
+
+  const handleSelectionChange = useCallback(
+    (selection: ProviderSelection) => {
+      if (selection.contextWindow) {
+        setContextWindowSize(selection.contextWindow)
+      }
+    },
+    [setContextWindowSize]
+  )
+
+  const providerConfigs: ProviderConfig[] = providers
+
+  return (
+    <div className="flex min-w-0 items-center gap-1">
+      <ComposerAddAttachment />
+      <ProviderSettingsModal providers={providers} onProvidersChange={setProviders} />
+      <ModelSelector providers={providerConfigs} onSelectionChange={handleSelectionChange} />
+      <ContextIndicator />
+    </div>
+  )
 };
 
 const MessageError: FC = () => {
